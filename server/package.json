@@ -1,0 +1,19 @@
+{
+  "name": "@codesync/server",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "ts-node --transpile-only index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@codesync/db": "workspace:*",
+    "@codesync/socket-types": "workspace:*",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

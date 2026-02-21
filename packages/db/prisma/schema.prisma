@@ -1,0 +1,78 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rooms     RoomMember[]
+  sessions  Session[]
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @default("// Start coding together!\n")
+  language  String   @default("javascript")
+  fileName  String   @default("index.js")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members   RoomMember[]
+  changes   CodeChange[]
+}
+
+model RoomMember {
+  id       String @id @default(cuid())
+  roomId   String
+  userId   String
+  role     Role   @default(MEMBER)
+
+  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+}
+
+model CodeChange {
+  id        String      @id @default(cuid())
+  roomId    String
+  authorId  String
+  code      String
+  delta     String?     // JSON diff
+  status    ChangeStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+
+  room      Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  OWNER
+  MEMBER
+}
+
+enum ChangeStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}

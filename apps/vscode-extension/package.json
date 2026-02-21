@@ -1,0 +1,70 @@
+{
+  "name": "codesync-vscode",
+  "displayName": "CodeSync — Live Collaboration",
+  "description": "Share your VS Code files in real-time with your CodeSync session",
+  "version": "0.0.1",
+  "publisher": "codesync",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:codesync.connect",
+    "onCommand:codesync.disconnect",
+    "onCommand:codesync.startSharing",
+    "onCommand:codesync.stopSharing"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codesync.connect",
+        "title": "CodeSync: Connect to Room"
+      },
+      {
+        "command": "codesync.disconnect",
+        "title": "CodeSync: Disconnect"
+      },
+      {
+        "command": "codesync.startSharing",
+        "title": "CodeSync: Start Sharing Current File"
+      },
+      {
+        "command": "codesync.stopSharing",
+        "title": "CodeSync: Stop Sharing"
+      }
+    ],
+    "configuration": {
+      "title": "CodeSync",
+      "properties": {
+        "codesync.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:3001",
+          "description": "Socket.io server URL"
+        },
+        "codesync.userName": {
+          "type": "string",
+          "default": "",
+          "description": "Your display name in CodeSync sessions"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "watch": "npm run build -- --watch"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.11.5",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@codesync/socket-types": "workspace:*",
+    "socket.io-client": "^4.7.2"
+  }
+}

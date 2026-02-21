@@ -1,0 +1,25 @@
+{
+  "name": "codesync",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "server/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "db:push": "turbo run db:push --filter=@codesync/db",
+    "db:studio": "cd packages/db && npx prisma studio"
+  },
+  "devDependencies": {
+    "turbo": "^1.13.3",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

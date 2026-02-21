@@ -1,0 +1,16 @@
+services:
+  postgres-db-devsync:
+    image: postgres:15
+    container_name: devsync-postgres-new
+    restart: always
+    environment:
+      POSTGRES_USER: devsync
+      POSTGRES_PASSWORD: devsync123
+      POSTGRES_DB: devsyncdb
+    ports:
+      - "5434:5432"
+    volumes:
+      - devsync_pgdata_new:/var/lib/postgresql/data
+
+volumes:
+  devsync_pgdata_new:

@@ -1,0 +1,33 @@
+{
+  "name": "@codesync/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+   "@codesync/db": "workspace:*",
+    "@codesync/socket-types": "workspace:*",
+    "@monaco-editor/react": "^4.6.0",
+    "monaco-editor": "^0.45.0",
+    "next": "14.1.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "socket.io-client": "^4.7.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/uuid": "^9.0.7",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5"
+  }
+}
