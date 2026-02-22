@@ -37,7 +37,7 @@ export function TopBar({ roomId, connected, user }: TopBarProps) {
             <div className="flex items-center gap-1.5">
                 <span className="text-xs text-[#8b949e] font-mono">Room:</span>
                 <span className="text-xs text-[#58a6ff] font-mono font-semibold tracking-wide">
-                    {roomId.slice(0, 8)}...
+                    {(roomId ?? "......").slice(0, 8)}...
                 </span>
             </div>
 
@@ -68,9 +68,9 @@ export function TopBar({ roomId, connected, user }: TopBarProps) {
             {/* User badge */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-[#58a6ff22] rounded border border-[#58a6ff33]">
                 <div className="w-5 h-5 rounded-full bg-[#58a6ff] flex items-center justify-center text-xs font-bold text-[#0d1117]">
-                    {user.name[0]}
+                    {user?.name?.[0]?.toUpperCase() ?? "?"}
                 </div>
-                <span className="text-xs font-mono text-[#58a6ff]">{user.name}</span>
+                <span className="text-xs font-mono text-[#58a6ff]">{user?.name ?? "Guest"}</span>
             </div>
         </div>
     );
