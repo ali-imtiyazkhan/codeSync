@@ -16,14 +16,11 @@ export function useSocket() {
   useEffect(() => {
     const socket: AppSocket = io(
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001",
-      { transports: ["websocket"] }
+      { transports: ["websocket"] },
     );
-
     socket.on("connect", () => setConnected(true));
     socket.on("disconnect", () => setConnected(false));
-
     socketRef.current = socket;
-
     return () => {
       socket.disconnect();
     };
