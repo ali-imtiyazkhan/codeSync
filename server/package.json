@@ -9,10 +9,15 @@
   "dependencies": {
     "@codesync/db": "workspace:*",
     "@codesync/socket-types": "workspace:*",
+    "@types/ws": "^8.18.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "https": "^1.0.0",
-    "socket.io": "^4.8.3"
+    "nodemon": "^3.1.14",
+    "socket.io": "^4.8.3",
+    "ws": "^8.19.0",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.29"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
