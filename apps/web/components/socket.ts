@@ -10,13 +10,10 @@ let socket: AppSocket | null = null;
 
 export function getSocket(): AppSocket {
   if (!socket) {
-    socket = io(
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001",
-      {
-        transports: ["websocket"],
-        autoConnect: false,
-      }
-    );
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001", {
+      transports: ["websocket"],
+      autoConnect: false,
+    });
   }
   return socket;
 }

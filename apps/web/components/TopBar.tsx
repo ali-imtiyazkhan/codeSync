@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 interface TopBarProps {
   roomId: string;
   userName: string;
@@ -17,149 +19,235 @@ interface TopBarProps {
 }
 
 export default function TopBar({
-  roomId,
-  userName,
-  connected,
-  peerCount,
-  cameraOn,
-  micOn,
-  screenSharing,
-  onToggleCamera,
-  onToggleMic,
-  onToggleScreen,
-  onCopyRoomId,
-  copySuccess,
-  pendingCount,
+  roomId, userName, connected, peerCount,
+  cameraOn, micOn, screenSharing,
+  onToggleCamera, onToggleMic, onToggleScreen,
+  onCopyRoomId, copySuccess, pendingCount,
 }: TopBarProps) {
+  const [time, setTime] = useState("");
+  const [uptime, setUptime] = useState(0);
+  const [ping] = useState(() => Math.floor(Math.random() * 30) + 8);
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      setTime(now.toTimeString().slice(0, 8));
+      setUptime((u) => u + 1);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const fmtUptime = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  };
+
   return (
     <header
-      className="h-13 flex items-center px-4 gap-3 border-b border-border flex-shrink-0"
-      style={{ background: "#0f0f17", height: "52px" }}
+      className="flex items-center flex-shrink-0"
+      style={{
+        height: 52,
+        background: "linear-gradient(to right, #030c12, #040e16, #030c12)",
+        borderBottom: "1px solid var(--border2)",
+        boxShadow: "0 1px 20px rgba(0,255,225,0.06)",
+        position: "relative",
+        zIndex: 50,
+      }}
     >
+      {/* Left edge accent */}
+      <div style={{ width: 3, height: "100%", background: "linear-gradient(to bottom, var(--neon), var(--neon2))", boxShadow: "var(--glow-neon)", flexShrink: 0 }} />
+
       {/* Logo */}
-      <span className="font-display font-black text-lg bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent mr-2">
-        CodeSync
-      </span>
+      <div className="px-4 flex items-center gap-3" style={{ borderRight: "1px solid var(--border)", paddingRight: 16 }}>
+        <span
+          style={{
+            fontFamily: "'Orbitron', sans-serif",
+            fontWeight: 900,
+            fontSize: "1rem",
+            letterSpacing: "0.12em",
+            color: "var(--neon)",
+            textShadow: "var(--glow-neon)",
+          }}
+        >
+          CS
+        </span>
+        <div>
+          <div style={{ fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.1em" }}>CODESYNC</div>
+          <div style={{ fontSize: "0.55rem", color: "var(--dim)", letterSpacing: "0.08em" }}>v2.077</div>
+        </div>
+      </div>
 
       {/* Room ID */}
       <button
         onClick={onCopyRoomId}
-        className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-mono hover:border-violet-500 transition-colors"
+        className="flex items-center gap-2 px-3 mx-2 py-1 transition-all"
+        style={{
+          background: "rgba(0,255,225,0.03)",
+          border: "1px solid var(--border)",
+          color: "var(--muted)",
+          fontSize: "0.7rem",
+          letterSpacing: "0.1em",
+          cursor: "pointer",
+          clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--neon)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)"; }}
       >
-        <span className="text-slate-500">Room:</span>
-        <span className="text-violet-400">{roomId}</span>
-        <span className="text-slate-600">{copySuccess ? "✓ Copied!" : "⎘"}</span>
+        <span style={{ color: "var(--dim)" }}>SESSION://</span>
+        <span style={{ color: "var(--neon2)", textShadow: "var(--glow-blue)" }}>{roomId}</span>
+        <span style={{ color: "var(--dim)", fontSize: "0.6rem" }}>{copySuccess ? "✓ COPIED" : "⎘"}</span>
       </button>
 
       {/* Connection status */}
-      <div className="flex items-center gap-1.5">
-        <span
-          className={`w-2 h-2 rounded-full ${connected ? "bg-emerald-400" : "bg-red-500"}`}
-          style={connected ? { boxShadow: "0 0 6px #10b981" } : {}}
+      <div className="flex items-center gap-2 px-3" style={{ borderRight: "1px solid var(--border)" }}>
+        <div
+          className="w-2 h-2 rounded-full"
+          style={{
+            background: connected ? "var(--neon4)" : "var(--neon3)",
+            boxShadow: connected ? "var(--glow-lime)" : "var(--glow-red)",
+            animation: "neon-pulse 2s infinite",
+          }}
         />
-        <span className="text-xs font-mono text-slate-500">
-          {connected ? `${peerCount + 1} connected` : "Disconnected"}
+        <span style={{ fontSize: "0.65rem", color: connected ? "var(--neon4)" : "var(--neon3)", letterSpacing: "0.08em" }}>
+          {connected ? `NET:OK` : "NET:ERR"}
+        </span>
+        <span style={{ fontSize: "0.6rem", color: "var(--dim)" }}>
+          {peerCount + 1} NODE{peerCount !== 0 ? "S" : ""}
         </span>
       </div>
 
-      {/* Pending changes badge */}
+      {/* Ping / uptime */}
+      <div className="flex items-center gap-3 px-3" style={{ borderRight: "1px solid var(--border)" }}>
+        <div style={{ fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
+          <span style={{ color: "var(--dim)" }}>PING:</span>
+          <span style={{ color: "var(--neon4)", textShadow: "var(--glow-lime)", marginLeft: 4 }}>{ping}ms</span>
+        </div>
+        <div style={{ fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
+          <span style={{ color: "var(--dim)" }}>UP:</span>
+          <span style={{ color: "var(--neon)", marginLeft: 4 }}>{fmtUptime(uptime)}</span>
+        </div>
+      </div>
+
+      {/* Pending badge */}
       {pendingCount > 0 && (
-        <div className="flex items-center gap-1.5 bg-red-950/50 border border-red-800 px-2.5 py-1 rounded-lg notification-pulse">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-          <span className="text-xs font-mono text-red-400">
-            {pendingCount} pending change{pendingCount > 1 ? "s" : ""}
-          </span>
+        <div
+          className="flex items-center gap-2 px-3 mx-2 pending-pulse"
+          style={{
+            border: "1px solid var(--neon3)",
+            background: "rgba(255,45,107,0.08)",
+            fontSize: "0.65rem",
+            letterSpacing: "0.1em",
+            color: "var(--neon3)",
+            textShadow: "var(--glow-red)",
+            clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
+            padding: "5px 12px",
+          }}
+        >
+          <span style={{ animation: "neon-pulse 0.8s infinite", display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "var(--neon3)", boxShadow: "var(--glow-red)" }} />
+          ⚠ {pendingCount} PENDING CHANGE{pendingCount > 1 ? "S" : ""}
         </div>
       )}
 
-      {/* Controls */}
-      <div className="ml-auto flex items-center gap-2">
+      {/* Controls — right side */}
+      <div className="ml-auto flex items-center gap-1 pr-3">
         {/* Camera */}
-        <ControlButton
+        <CyberCtrlBtn
           onClick={onToggleCamera}
           active={cameraOn}
-          activeColor="violet"
-          icon={
-            cameraOn ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.828v6.344a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-              </svg>
-            )
-          }
-          label={cameraOn ? "Cam On" : "Camera"}
+          activeClass="active-neon"
+          label={cameraOn ? "CAM:ON" : "CAM:OFF"}
+          icon="◈"
         />
-
         {/* Mic */}
-        <ControlButton
+        <CyberCtrlBtn
           onClick={onToggleMic}
           active={micOn}
-          activeColor="violet"
-          icon={
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={micOn ? "M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" : "M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"} />
-            </svg>
-          }
-          label={micOn ? "Mic On" : "Muted"}
+          activeClass="active-neon"
+          label={micOn ? "MIC:ON" : "MIC:OFF"}
+          icon="◉"
         />
-
-        {/* Screen share */}
-        <ControlButton
+        {/* Screen */}
+        <CyberCtrlBtn
           onClick={onToggleScreen}
           active={screenSharing}
-          activeColor="emerald"
-          icon={
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          }
-          label={screenSharing ? "Sharing" : "Share Screen"}
+          activeClass="active-lime"
+          label={screenSharing ? "SHARING" : "SCREEN"}
+          icon="◆"
         />
 
+        {/* Divider */}
+        <div style={{ width: 1, height: 28, background: "var(--border)", margin: "0 6px" }} />
+
         {/* User badge */}
-        <div className="ml-2 flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-xs font-bold text-white">
+        <div
+          className="flex items-center gap-2 px-3 py-1"
+          style={{
+            background: "rgba(0,255,225,0.04)",
+            border: "1px solid var(--border)",
+            clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
+          }}
+        >
+          <div
+            style={{
+              width: 22, height: 22,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "'Orbitron', sans-serif",
+              fontSize: "0.6rem",
+              fontWeight: 700,
+              color: "var(--bg)",
+              background: "linear-gradient(135deg, var(--neon), var(--neon2))",
+              boxShadow: "var(--glow-neon)",
+              clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))",
+            }}
+          >
             {userName[0]?.toUpperCase()}
           </div>
-          <span className="text-xs font-mono text-slate-300">{userName}</span>
+          <span style={{ fontSize: "0.65rem", color: "var(--neon)", letterSpacing: "0.08em" }}>
+            {userName.toUpperCase()}
+          </span>
         </div>
+      </div>
+
+      {/* Clock */}
+      <div
+        className="flex items-center px-3"
+        style={{ borderLeft: "1px solid var(--border)", height: "100%" }}
+      >
+        <span
+          style={{
+            fontFamily: "'Orbitron', sans-serif",
+            fontSize: "0.7rem",
+            letterSpacing: "0.12em",
+            color: "var(--amber)",
+            textShadow: "var(--glow-amber)",
+          }}
+        >
+          {time}
+        </span>
       </div>
     </header>
   );
 }
 
-function ControlButton({
-  onClick,
-  active,
-  activeColor,
-  icon,
-  label,
+function CyberCtrlBtn({
+  onClick, active, activeClass, label, icon,
 }: {
   onClick: () => void;
   active: boolean;
-  activeColor: "violet" | "emerald" | "cyan";
-  icon: React.ReactNode;
+  activeClass: string;
   label: string;
+  icon: string;
 }) {
-  const activeStyles = {
-    violet: "bg-violet-600 border-violet-600 text-white",
-    emerald: "bg-emerald-600 border-emerald-600 text-white",
-    cyan: "bg-cyan-600 border-cyan-600 text-white",
-  };
-
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-mono transition-all ${
-        active
-          ? activeStyles[activeColor]
-          : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white"
-      }`}
+      className={`cyber-btn ${active ? activeClass : ""}`}
+      style={{ fontSize: "0.65rem", padding: "5px 10px" }}
     >
-      {icon}
+      <span>{icon}</span>
       <span>{label}</span>
     </button>
   );

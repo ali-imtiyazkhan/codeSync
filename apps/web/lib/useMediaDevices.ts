@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 
 export function useMediaDevices() {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [localScreenStream, setLocalScreenStream] = useState<MediaStream | null>(null);
+  const [localScreenStream, setLocalScreenStream] =
+    useState<MediaStream | null>(null);
   const [cameraOn, setCameraOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
   const [screenSharing, setScreenSharing] = useState(false);
@@ -33,33 +34,31 @@ export function useMediaDevices() {
   }, [localStream]);
 
   const toggleCamera = useCallback(() => {
-    const videoTrack = localStream?.getVideoTracks()[0];
-    if (videoTrack) {
-      videoTrack.enabled = !videoTrack.enabled;
-      setCameraOn(videoTrack.enabled);
+    const track = localStream?.getVideoTracks()[0];
+    if (track) {
+      track.enabled = !track.enabled;
+      setCameraOn(track.enabled);
     }
   }, [localStream]);
 
   const toggleMic = useCallback(() => {
-    const audioTrack = localStream?.getAudioTracks()[0];
-    if (audioTrack) {
-      audioTrack.enabled = !audioTrack.enabled;
-      setMicOn(audioTrack.enabled);
+    const track = localStream?.getAudioTracks()[0];
+    if (track) {
+      track.enabled = !track.enabled;
+      setMicOn(track.enabled);
     }
   }, [localStream]);
 
   const startScreenShare = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: 15 },
+        video: { frameRate: 15 } as MediaTrackConstraints,
         audio: false,
       });
-
-      stream.getVideoTracks()[0].onended = () => {
+      stream.getVideoTracks()[0]!.onended = () => {
         setLocalScreenStream(null);
         setScreenSharing(false);
       };
-
       setLocalScreenStream(stream);
       setScreenSharing(true);
       return stream;
