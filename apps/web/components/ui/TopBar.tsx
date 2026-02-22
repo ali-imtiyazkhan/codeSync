@@ -44,8 +44,8 @@ export function TopBar({ roomId, connected, user }: TopBarProps) {
             {/* Connection status */}
             <div
                 className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-mono ${connected
-                        ? "bg-[#3fb95022] text-[#3fb950]"
-                        : "bg-[#f8514922] text-[#f85149]"
+                    ? "bg-[#3fb95022] text-[#3fb950]"
+                    : "bg-[#f8514922] text-[#f85149]"
                     }`}
             >
                 <div
