@@ -9,7 +9,7 @@ import { Socket } from "socket.io-client";
 import { useRoomStore } from "../../store/roomStore";
 
 interface EditorPanelProps {
-    roomId: string;
+    roomId?: string;
     userId: string;
     role: "owner" | "editor";
     value: string;
@@ -31,25 +31,31 @@ export function EditorPanel({
     readOnly = false,
     isFriendPanel = false,
 }: EditorPanelProps) {
+
     const editorRef = useRef<any>(null);
     const monacoRef = useRef<any>(null);
     const ydocRef = useRef<Y.Doc | null>(null);
     const providerRef = useRef<WebsocketProvider | null>(null);
     const bindingRef = useRef<MonacoBinding | null>(null);
+
     const [language, setLanguage] = useState("javascript");
     const { setPendingChange, myCode } = useRoomStore();
 
+    // ✅ ONLY store editor reference here (DO NOT INIT YJS HERE)
     const handleEditorMount: OnMount = (editor, monaco) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
+    };
 
-        // Setup Yjs document
-        const ydoc = new Y.Doc();
-        ydocRef.current = ydoc;
+    // ✅ SAFE YJS INIT — WAIT FOR roomId + editor
+    useEffect(() => {
+        if (!roomId || !editorRef.current) return;
 
         const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001";
 
-        // Each panel connects to its own Yjs room channel
+        const ydoc = new Y.Doc();
+        ydocRef.current = ydoc;
+
         const channelName = isFriendPanel
             ? `colabcode-${roomId}-friend`
             : `colabcode-${roomId}-owner`;
@@ -59,36 +65,31 @@ export function EditorPanel({
 
         const yText = ydoc.getText("monaco");
 
-        // Bind Monaco editor to Yjs text
         const binding = new MonacoBinding(
             yText,
-            editor.getModel()!,
-            new Set([editor]),
+            editorRef.current.getModel()!,
+            new Set([editorRef.current]),
             provider.awareness
         );
+
         bindingRef.current = binding;
 
-        // Awareness: show cursor colors
         provider.awareness.setLocalStateField("user", {
             name: isFriendPanel ? "Friend" : "You",
             color: isFriendPanel ? "#3fb950" : "#58a6ff",
         });
 
-        // If friend panel, listen for propose-change events
-        if (isFriendPanel && socket) {
-            editor.onDidChangeModelContent(() => {
-                const currentCode = editor.getValue();
-                // Emit friend's changes live to socket
-                socket.emit("friend-typing", { roomId, code: currentCode });
-            });
-        }
-    };
+        return () => {
+            binding.destroy();
+            provider.destroy();
+            ydoc.destroy();
+        };
+    }, [roomId, isFriendPanel]);
 
-    // When owner clicks "Send to Friend" — push code to friend panel
+    // Owner receives accepted changes back from friend
     useEffect(() => {
         if (!socket) return;
 
-        // Owner receives accepted changes back from friend
         socket.on("change-proposed", (data: { original: string; newCode: string }) => {
             if (!isFriendPanel) {
                 setPendingChange(data);
@@ -100,18 +101,11 @@ export function EditorPanel({
         };
     }, [socket, isFriendPanel]);
 
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            bindingRef.current?.destroy();
-            providerRef.current?.destroy();
-            ydocRef.current?.destroy();
-        };
-    }, []);
-
     const handleProposeChange = () => {
-        if (!socket || !editorRef.current) return;
+        if (!socket || !editorRef.current || !roomId) return;
+
         const newCode = editorRef.current.getValue();
+
         socket.emit("propose-change", {
             roomId,
             original: myCode,
@@ -121,8 +115,10 @@ export function EditorPanel({
 
     return (
         <div className="flex flex-col h-full">
-            {/* Editor Toolbar */}
+
+            {/* Toolbar */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-[#161b22] border-b border-[#30363d]">
+
                 <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
@@ -137,7 +133,7 @@ export function EditorPanel({
 
                 <div className="flex-1" />
 
-                {/* Friend panel: propose change button */}
+                {/* Friend panel */}
                 {isFriendPanel && (
                     <button
                         onClick={handleProposeChange}
@@ -147,11 +143,12 @@ export function EditorPanel({
                     </button>
                 )}
 
-                {/* Owner panel: send to friend */}
+                {/* Owner panel */}
                 {!isFriendPanel && socket && (
                     <button
                         onClick={() => {
-                            if (!editorRef.current) return;
+                            if (!editorRef.current || !roomId) return;
+
                             socket.emit("sync-to-friend", {
                                 roomId,
                                 code: editorRef.current.getValue(),
@@ -178,24 +175,13 @@ export function EditorPanel({
                     options={{
                         fontSize: 13,
                         fontFamily: "'JetBrains Mono', monospace",
-                        fontLigatures: true,
                         minimap: { enabled: false },
                         scrollBeyondLastLine: false,
                         lineNumbers: "on",
-                        glyphMargin: true,
-                        folding: true,
-                        lineDecorationsWidth: 10,
-                        renderLineHighlight: "line",
-                        cursorBlinking: "smooth",
-                        cursorSmoothCaretAnimation: "on",
                         smoothScrolling: true,
                         readOnly: readOnly,
                         padding: { top: 12 },
                         bracketPairColorization: { enabled: true },
-                        guides: {
-                            bracketPairs: true,
-                            indentation: true,
-                        },
                     }}
                 />
             </div>
