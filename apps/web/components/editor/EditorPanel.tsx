@@ -42,13 +42,13 @@ export function EditorPanel({
     const [language, setLanguage] = useState("javascript");
     const { setPendingChange, myCode } = useRoomStore();
 
-    // ✅ ONLY store editor reference here (DO NOT INIT YJS HERE)
+    // ONLY store editor reference here (DO NOT INIT YJS HERE)
     const handleEditorMount: OnMount = (editor, monaco) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
     };
 
-    // ✅ SAFE YJS INIT — WAIT FOR roomId + editor
+    // SAFE YJS INIT — WAIT FOR roomId + editor
     useEffect(() => {
         if (!roomId || !editorRef.current) return;
 
