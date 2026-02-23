@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+     "@codesync/server": "workspace:*",
     "@codesync/db": "workspace:*",
     "@codesync/socket-types": "workspace:*",
     "@monaco-editor/react": "^4.6.0",

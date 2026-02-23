@@ -166,7 +166,7 @@ io.on("connection", (socket: Socket) => {
         io.to(owner.socketId).emit("change-proposed", {
           original: data.original,
           newCode: data.newCode,
-          authorId: proposer.id, // ✅ SERVER GENERATED
+          authorId: proposer.id, // SERVER GENERATED
         });
       }
     },
@@ -194,13 +194,27 @@ io.on("connection", (socket: Socket) => {
     io.to(data.roomId).emit("vscode-push", { code: data.code });
   });
 
-  // ── WebRTC signaling passthrough ──────────────────────────────────────────
-  socket.on("webrtc-signal", (data: { signal: unknown; userId: string }) => {
-    // Forward to everyone else in the room
-    socket.to(roomId).emit("webrtc-signal", {
-      signal: data.signal,
-      userId: data.userId,
-    });
+
+  // ── WebRTC signaling passthrough (camera + screen, identified by kind) ──
+  socket.on(
+    "webrtc-signal",
+    (data: { signal: unknown; userId: string; kind: "camera" | "screen" }) => {
+      socket.to(roomId).emit("webrtc-signal", {
+        signal: data.signal,
+        userId: data.userId,
+        kind: data.kind,
+      });
+    }
+  );
+
+  // ── Screen share events ───────────────────────────────────────────────
+  socket.on("screen-share-start", (data: { userId: string }) => {
+    // Notify everyone else that this user started sharing
+    socket.to(roomId).emit("screen-share-started", { userId: data.userId });
+  });
+
+  socket.on("screen-share-stop", (data: { userId: string }) => {
+    socket.to(roomId).emit("screen-share-stopped", { userId: data.userId });
   });
 
   // ── Disconnect ────────────────────────────────────────────────────────────
