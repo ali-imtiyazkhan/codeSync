@@ -1,34 +1,54 @@
 import { create } from "zustand";
 
-interface PendingChange {
-  original: string;
-  newCode: string;
-  authorId?: string;
+import type { PendingChange } from "@codesync/socket-types";
+
+export interface RoomUser {
+  id: string;
+  name: string;
+  color: string;
+  role: "owner" | "editor";
 }
 
 interface RoomState {
+  // Code state
   myCode: string;
   friendCode: string;
-  pendingChange: PendingChange | null;
-  language: string;
 
+  // Diff/pending change
+  pendingChange: PendingChange | null;
+
+  // Users
+  users: RoomUser[];
+  myRole: "owner" | "editor" | null;
+  myUser: RoomUser | null;
+  friendUser: RoomUser | null;
+
+  // Actions
   setMyCode: (code: string) => void;
   setFriendCode: (code: string) => void;
-  setPendingChange: (change: PendingChange) => void;
+  setPendingChange: (change: PendingChange | null) => void;
   clearPendingChange: () => void;
-  setLanguage: (lang: string) => void;
+  setUsers: (users: RoomUser[]) => void;
+  setMyRole: (role: "owner" | "editor") => void;
+  setMyUser: (user: RoomUser) => void;
+  setFriendUser: (user: RoomUser | null) => void;
 }
 
 export const useRoomStore = create<RoomState>((set) => ({
-  myCode:
-    "// Your code will appear here\n// Push from VS Code or type directly\n",
+  myCode: '// Start coding here...\nconsole.log("Hello, ColabCode!");',
   friendCode: "",
   pendingChange: null,
-  language: "javascript",
+  users: [],
+  myRole: null,
+  myUser: null,
+  friendUser: null,
 
   setMyCode: (code) => set({ myCode: code }),
   setFriendCode: (code) => set({ friendCode: code }),
   setPendingChange: (change) => set({ pendingChange: change }),
   clearPendingChange: () => set({ pendingChange: null }),
-  setLanguage: (lang) => set({ language: lang }),
+  setUsers: (users) => set({ users }),
+  setMyRole: (role) => set({ myRole: role }),
+  setMyUser: (user) => set({ myUser: user }),
+  setFriendUser: (user) => set({ friendUser: user }),
 }));

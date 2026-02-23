@@ -7,6 +7,7 @@ import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
 import { Socket } from "socket.io-client";
 import { useRoomStore } from "../../store/roomStore";
+import type { PendingChange } from "@codesync/socket-types"
 
 interface EditorPanelProps {
     roomId?: string;
@@ -90,16 +91,18 @@ export function EditorPanel({
     useEffect(() => {
         if (!socket) return;
 
-        socket.on("change-proposed", (data: { original: string; newCode: string }) => {
+        const handleChangeProposed = (data: PendingChange) => {
             if (!isFriendPanel) {
                 setPendingChange(data);
             }
-        });
+        };
+
+        socket.on("change-proposed", handleChangeProposed);
 
         return () => {
-            socket.off("change-proposed");
+            socket.off("change-proposed", handleChangeProposed);
         };
-    }, [socket, isFriendPanel]);
+    }, [socket, isFriendPanel, setPendingChange]);
 
     const handleProposeChange = () => {
         if (!socket || !editorRef.current || !roomId) return;
