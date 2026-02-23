@@ -7,6 +7,7 @@ interface VideoPanelProps {
     label: string;
     color: string;
     muted: boolean;
+    callStatus: "connected" | "idle" | "calling" | "failed"
 }
 
 export function VideoPanel({ stream, label, color, muted }: VideoPanelProps) {
@@ -72,8 +73,8 @@ export function VideoPanel({ stream, label, color, muted }: VideoPanelProps) {
                         onClick={toggleMic}
                         title={isMicOn ? "Mute mic" : "Unmute mic"}
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors ${isMicOn
-                                ? "bg-[#30363d] hover:bg-[#3d444d] text-white"
-                                : "bg-[#f85149] text-white"
+                            ? "bg-[#30363d] hover:bg-[#3d444d] text-white"
+                            : "bg-[#f85149] text-white"
                             }`}
                     >
                         {isMicOn ? "🎤" : "🔇"}
@@ -82,8 +83,8 @@ export function VideoPanel({ stream, label, color, muted }: VideoPanelProps) {
                         onClick={toggleCam}
                         title={isCamOn ? "Turn off camera" : "Turn on camera"}
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors ${isCamOn
-                                ? "bg-[#30363d] hover:bg-[#3d444d] text-white"
-                                : "bg-[#f85149] text-white"
+                            ? "bg-[#30363d] hover:bg-[#3d444d] text-white"
+                            : "bg-[#f85149] text-white"
                             }`}
                     >
                         {isCamOn ? "📷" : "🚫"}

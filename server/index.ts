@@ -1,261 +1,233 @@
 import { createServer } from "http";
-import { Server } from "socket.io";
-import { prisma } from "@codesync/db";
-import type {
-  ServerToClientEvents,
-  ClientToServerEvents,
-  InterServerEvents,
-  SocketData,
-  PendingChange,
-} from "@codesync/socket-types";
-import { randomUUID } from "crypto";
+import { Server, Socket } from "socket.io";
 
 const httpServer = createServer();
 
-const io = new Server<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  SocketData
->(httpServer, {
+const io = new Server(httpServer, {
   cors: {
-    origin: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     methods: ["GET", "POST"],
-    credentials: true,
   },
 });
 
-// In-memory state per room
-interface RoomState {
-  users: Map<string, { name: string; socketId: string }>;
-  code: string;
-  language: string;
-  fileName: string;
-  pendingChanges: Map<string, PendingChange>;
-  vsCodeOwner?: string; // socketId of user sharing VS Code
+// Types
+interface RoomUser {
+  id: string;
+  name: string;
+  color: string;
+  role: "owner" | "editor";
+  socketId: string;
 }
 
-const rooms = new Map<string, RoomState>();
+interface Room {
+  users: Map<string, RoomUser>; // userId → RoomUser
+  ownerCode: string;
+}
 
-function getOrCreateRoom(roomId: string): RoomState {
+// State
+
+const rooms = new Map<string, Room>();
+
+const OWNER_COLOR = "#58a6ff";
+const EDITOR_COLOR = "#3fb950";
+
+// Helpers
+
+function getOrCreateRoom(roomId: string): Room {
   if (!rooms.has(roomId)) {
     rooms.set(roomId, {
       users: new Map(),
-      code: "// Start coding together!\n",
-      language: "javascript",
-      fileName: "index.js",
-      pendingChanges: new Map(),
+      ownerCode: '// Start coding here...\nconsole.log("Hello, ColabCode!");',
     });
   }
   return rooms.get(roomId)!;
 }
 
-io.on("connection", (socket) => {
-  console.log(`[SOCKET] Connected: ${socket.id}`);
+function getRoomUserList(room: Room): RoomUser[] {
+  return Array.from(room.users.values());
+}
 
-  // ── JOIN ROOM ─────────────────────────────────────────────────────────────
-  socket.on("room:join", async ({ roomId, userName }) => {
-    socket.join(roomId);
-    socket.data.roomId = roomId;
-    socket.data.userName = userName;
+function broadcastRoomUsers(roomId: string, room: Room) {
+  const users = getRoomUserList(room).map(({ socketId: _s, ...rest }) => rest);
+  io.to(roomId).emit("room-users", { users });
+}
 
-    const room = getOrCreateRoom(roomId);
-    room.users.set(socket.id, { name: userName, socketId: socket.id });
+//Connection handler
 
-    // Sync Prisma: load saved code if room exists in DB
-    try {
-      const dbRoom = await prisma.room.findUnique({ where: { id: roomId } });
-      if (dbRoom) {
-        room.code = dbRoom.code;
-        room.language = dbRoom.language;
-        room.fileName = dbRoom.fileName;
-      }
-    } catch (e) {
-      console.warn("DB read failed, using in-memory state");
-    }
+io.on("connection", (socket: Socket) => {
+  const { roomId, userId, userName } = socket.handshake.query as {
+    roomId: string;
+    userId: string;
+    userName: string;
+  };
 
-    // Tell newcomer about current state
-    socket.emit("code:init", {
-      code: room.code,
-      language: room.language,
-      fileName: room.fileName,
-    });
+  console.log(`[connect] ${userName} (${userId}) socket=${socket.id}`);
 
-    // Tell newcomer about other users
-    const otherUsers = [...room.users.entries()]
-      .filter(([id]) => id !== socket.id)
-      .map(([id, u]) => ({ id, name: u.name, socketId: id }));
-
-    socket.emit("room:joined", {
-      room: {
-        id: roomId,
-        name: roomId,
-        code: room.code,
-        language: room.language,
-        fileName: room.fileName,
-      },
-      users: otherUsers,
-    });
-
-    // Tell others a new user joined
-    socket.to(roomId).emit("room:user-joined", {
-      id: socket.id,
-      name: userName,
-      socketId: socket.id,
-    });
-
-    console.log(`[ROOM] ${userName} joined ${roomId}`);
-  });
-
-  // ── VS CODE EXTENSION → ROOM ──────────────────────────────────────────────
-  // When VS Code extension sends the current file content
+  // Join Room
   socket.on(
-    "code:vscode-update",
-    async ({ roomId, code, fileName, language }) => {
-      const room = getOrCreateRoom(roomId);
-      room.code = code;
-      room.language = language;
-      room.fileName = fileName;
-      room.vsCodeOwner = socket.id;
+    "join-room",
+    (data: { roomId: string; userId: string; userName: string }) => {
+      const room = getOrCreateRoom(data.roomId);
 
-      const fromName = socket.data.userName || "Unknown";
+      // If user is already in room (reconnect), reuse their role
+      const existing = room.users.get(data.userId);
+      let role: "owner" | "editor";
+      let color: string;
 
-      // Broadcast to all other users in room (browser clients)
-      socket.to(roomId).emit("code:vscode-update", {
-        code,
-        fileName,
-        language,
-        from: socket.id,
-        fromName,
+      if (existing) {
+        role = existing.role;
+        color = existing.color;
+        // Update socketId for reconnect
+        existing.socketId = socket.id;
+      } else {
+        // First person in the room → owner; second → editor; extras → editor
+        const hasOwner = Array.from(room.users.values()).some(
+          (u) => u.role === "owner",
+        );
+        role = hasOwner ? "editor" : "owner";
+        color = role === "owner" ? OWNER_COLOR : EDITOR_COLOR;
+
+        const user: RoomUser = {
+          id: data.userId,
+          name: data.userName,
+          color,
+          role,
+          socketId: socket.id,
+        };
+        room.users.set(data.userId, user);
+      }
+
+      socket.join(data.roomId);
+
+      const user = room.users.get(data.userId)!;
+
+      // Tell this client their assigned role
+      socket.emit("role-assigned", {
+        role: user.role,
+        user: {
+          id: user.id,
+          name: user.name,
+          color: user.color,
+          role: user.role,
+        },
       });
 
-      // Persist to DB async
-      try {
-        await prisma.room.upsert({
-          where: { id: roomId },
-          update: { code, language, fileName },
-          create: { id: roomId, name: roomId, code, language, fileName },
+      // Send current owner code to new joiner
+      socket.emit("owner-code-update", { code: room.ownerCode });
+
+      // Notify everyone else a user joined (triggers WebRTC re-initiation)
+      socket.to(data.roomId).emit("user-joined", {
+        user: {
+          id: user.id,
+          name: user.name,
+          color: user.color,
+          role: user.role,
+        },
+      });
+
+      // Broadcast updated user list
+      broadcastRoomUsers(data.roomId, room);
+
+      console.log(
+        `[join] ${data.userName} joined ${data.roomId} as ${role}. Total: ${room.users.size}`,
+      );
+    },
+  );
+
+  // Owner code change (live sync)
+  socket.on("owner-code-change", (data: { roomId: string; code: string }) => {
+    const room = rooms.get(data.roomId);
+    if (!room) return;
+    room.ownerCode = data.code;
+    // Broadcast to everyone else in room
+    socket.to(data.roomId).emit("owner-code-update", { code: data.code });
+  });
+
+  //Editor proposes a change
+  socket.on(
+    "propose-change",
+    (data: { roomId: string; original: string; newCode: string }) => {
+      const room = rooms.get(data.roomId);
+      if (!room) return;
+
+      // Find proposing user using socket.id (server-trusted)
+      const proposer = Array.from(room.users.values()).find(
+        (u) => u.socketId === socket.id,
+      );
+
+      if (!proposer || proposer.role !== "editor") return;
+
+      // Find owner
+      const owner = Array.from(room.users.values()).find(
+        (u) => u.role === "owner",
+      );
+
+      if (owner) {
+        io.to(owner.socketId).emit("change-proposed", {
+          original: data.original,
+          newCode: data.newCode,
+          authorId: proposer.id, // ✅ SERVER GENERATED
         });
-      } catch (e) {
-        console.warn("DB write failed");
       }
     },
   );
 
-  // ── BROWSER EDITOR → ROOM ─────────────────────────────────────────────────
-  // When browser user edits code, create a pending change for VS Code owner to review
-  socket.on("code:editor-change", ({ roomId, code, delta }) => {
-    const room = getOrCreateRoom(roomId);
-    const fromName = socket.data.userName || "Unknown";
+  // ── Owner accepts change ──────────────────────────────────────────────────
+  socket.on("accept-change", (data: { roomId: string; newCode: string }) => {
+    const room = rooms.get(data.roomId);
+    if (!room) return;
+    room.ownerCode = data.newCode;
+    // Tell everyone the new canonical code
+    io.to(data.roomId).emit("change-accepted", { newCode: data.newCode });
+  });
 
-    const changeId = randomUUID();
-    const pendingChange: PendingChange = {
-      id: changeId,
-      code,
-      delta,
-      fromSocketId: socket.id,
-      fromName,
-      timestamp: Date.now(),
-    };
+  // ── Owner rejects change ─────────────────────────────────────────────────
+  socket.on("reject-change", (data: { roomId: string }) => {
+    socket.to(data.roomId).emit("change-rejected", {});
+  });
 
-    room.pendingChanges.set(changeId, pendingChange);
+  // ── VS Code push ──────────────────────────────────────────────────────────
+  socket.on("vscode-push", (data: { roomId: string; code: string }) => {
+    const room = rooms.get(data.roomId);
+    if (!room) return;
+    room.ownerCode = data.code;
+    io.to(data.roomId).emit("vscode-push", { code: data.code });
+  });
 
-    // Notify the VS Code owner (and everyone else) about pending change
-    socket.to(roomId).emit("code:pending-change", pendingChange);
-
-    // Also tell sender it was sent
-    socket.emit("code:editor-change", {
-      code,
-      from: socket.id,
-      fromName,
+  // ── WebRTC signaling passthrough ──────────────────────────────────────────
+  socket.on("webrtc-signal", (data: { signal: unknown; userId: string }) => {
+    // Forward to everyone else in the room
+    socket.to(roomId).emit("webrtc-signal", {
+      signal: data.signal,
+      userId: data.userId,
     });
   });
 
-  // ── ACCEPT CHANGE (VS Code owner accepts browser edit) ────────────────────
-  socket.on("code:accept-change", async ({ roomId, changeId, code }) => {
-    const room = getOrCreateRoom(roomId);
-    room.pendingChanges.delete(changeId);
-    room.code = code;
-
-    // Broadcast accepted code to everyone in room
-    io.to(roomId).emit("code:change-accepted", { changeId, code });
-
-    // Persist
-    try {
-      await prisma.room.update({
-        where: { id: roomId },
-        data: { code },
-      });
-      await prisma.codeChange.updateMany({
-        where: { roomId },
-        data: { status: "ACCEPTED" },
-      });
-    } catch (e) {}
-  });
-
-  // ── REJECT CHANGE ─────────────────────────────────────────────────────────
-  socket.on("code:reject-change", ({ roomId, changeId }) => {
-    const room = getOrCreateRoom(roomId);
-    room.pendingChanges.delete(changeId);
-
-    io.to(roomId).emit("code:change-rejected", {
-      changeId,
-      code: room.code,
-    });
-  });
-
-  // ── WEBRTC SIGNALING ──────────────────────────────────────────────────────
-  socket.on("webrtc:offer", ({ to, offer, fromName, streamType }) => {
-    io.to(to).emit("webrtc:offer", {
-      from: socket.id,
-      fromName,
-      offer,
-      streamType,
-    });
-  });
-
-  socket.on("webrtc:answer", ({ to, answer, streamType }) => {
-    io.to(to).emit("webrtc:answer", {
-      from: socket.id,
-      answer,
-      streamType,
-    });
-  });
-
-  socket.on("webrtc:ice-candidate", ({ to, candidate, streamType }) => {
-    io.to(to).emit("webrtc:ice-candidate", {
-      from: socket.id,
-      candidate,
-      streamType,
-    });
-  });
-
-  socket.on("webrtc:screen-started", ({ roomId }) => {
-    socket
-      .to(roomId)
-      .emit("webrtc:peer-screen-started", { socketId: socket.id });
-  });
-
-  socket.on("webrtc:screen-stopped", ({ roomId }) => {
-    socket
-      .to(roomId)
-      .emit("webrtc:peer-screen-stopped", { socketId: socket.id });
-  });
-
-  // ── DISCONNECT ────────────────────────────────────────────────────────────
+  // ── Disconnect ────────────────────────────────────────────────────────────
   socket.on("disconnect", () => {
-    const { roomId } = socket.data;
-    if (roomId && rooms.has(roomId)) {
-      const room = rooms.get(roomId)!;
-      room.users.delete(socket.id);
-      if (room.users.size === 0) rooms.delete(roomId);
+    console.log(`[disconnect] socket=${socket.id}`);
+
+    for (const [rid, room] of rooms.entries()) {
+      for (const [uid, user] of room.users.entries()) {
+        if (user.socketId === socket.id) {
+          room.users.delete(uid);
+          broadcastRoomUsers(rid, room);
+          io.to(rid).emit("user-left", { userId: uid });
+          console.log(`[leave] ${user.name} left ${rid}`);
+
+          // Clean up empty rooms
+          if (room.users.size === 0) {
+            rooms.delete(rid);
+          }
+          break;
+        }
+      }
     }
-    socket.broadcast.emit("room:user-left", { socketId: socket.id });
-    console.log(`[SOCKET] Disconnected: ${socket.id}`);
   });
 });
 
-const PORT = process.env.SOCKET_PORT || 3001;
+//Start
+const PORT = parseInt(process.env.PORT || "3001", 10);
 httpServer.listen(PORT, () => {
-  console.log(`[SERVER] Socket.io server running on port ${PORT}`);
+  console.log(`[server] Socket.io running on :${PORT}`);
 });
