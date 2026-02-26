@@ -1,74 +1,323 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --panel: #13131c;
-  --border: #1e1e2e;
-  --accent: #7c3aed;
-  --accent2: #06b6d4;
-  --accent3: #10b981;
+  --bg: #070a0f;
+  --bg-surface: #0d1117;
+  --bg-panel: #161b22;
+  --bg-elevated: #1c2128;
+  --border: #21262d;
+  --border-light: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --text-dim: #484f58;
+  --blue: #58a6ff;
+  --green: #3fb950;
+  --orange: #f0883e;
+  --purple: #d2a8ff;
+  --red: #f85149;
+  --yellow: #d29922;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLOBAL RESETS
+   ═══════════════════════════════════════════════════════════════════════════ */
 * {
   box-sizing: border-box;
 }
 
 body {
   background: var(--bg);
-  color: #e2e8f0;
-  font-family: "JetBrains Mono", monospace;
+  color: var(--text);
+  font-family: "Inter", "JetBrains Mono", sans-serif;
   overflow: hidden;
   height: 100vh;
+  margin: 0;
 }
 
-/* Monaco editor overrides */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROOT LAYOUT — Full screen, 3-row: topbar / main / controls
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cs-root {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOP BAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cs-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  flex-shrink: 0;
+  background: linear-gradient(to right, #0a0e14, #0d1117 50%, #0a0e14);
+  border-bottom: 1px solid var(--border);
+  padding-right: 12px;
+  position: relative;
+  z-index: 50;
+}
+
+.cs-topbar-accent {
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--blue), var(--green));
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.3);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAIN GRID — Video tiles left, code editor right
+   
+   ┌──────────┬──────────┬─────────────────┐
+   │ Your Cam │ Friend   │                 │
+   │          │ Cam      │   Code Editor   │
+   ├──────────┼──────────┤   (Monaco)      │
+   │ Your     │ Friend   │                 │
+   │ Screen   │ Screen   │                 │
+   └──────────┴──────────┴─────────────────┘
+
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cs-main-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 2fr) minmax(320px, 3fr);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  height: 0;
+  /* force flex child to respect flex: 1 */
+}
+
+/* Video grid: 2×2 within the left column */
+.cs-video-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Single video tile */
+.video-tile {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.video-tile:hover {
+  z-index: 2;
+}
+
+.video-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: border-color 0.2s ease;
+}
+
+.video-tile:hover::after {
+  border-color: rgba(88, 166, 255, 0.2);
+}
+
+/* Expanded tile takes full 2×2 area */
+.video-tile-expanded {
+  z-index: 10;
+}
+
+/* Avatar in empty tile */
+.tile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.video-tile:hover .tile-avatar {
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EDITOR PANEL — Right column
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cs-editor-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.cs-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTROLS BAR — Bottom
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cs-controls-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 16px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+/* Control button */
+.ctrl-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.15s ease;
+  min-width: 52px;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-light);
+  transform: scale(1.05);
+}
+
+.ctrl-btn:active {
+  transform: scale(0.95);
+}
+
+.ctrl-btn-danger {
+  background: rgba(248, 81, 73, 0.08);
+  border-color: rgba(248, 81, 73, 0.25);
+}
+
+.ctrl-btn-danger:hover {
+  background: rgba(248, 81, 73, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MONACO EDITOR OVERRIDES
+   ═══════════════════════════════════════════════════════════════════════════ */
 .monaco-editor .margin {
-  background: #0d0d14 !important;
+  background: #0a0c12 !important;
 }
 
 .monaco-editor,
 .monaco-editor-background {
-  background: #0d0d14 !important;
+  background: #0a0c12 !important;
 }
 
-/* Custom scrollbar */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════════════════════ */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-::-webkit-scrollbar-thumb {
-  background: #2d2d3f;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
+  background: var(--bg);
 }
 
-/* Video elements */
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--blue);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VIDEO ELEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
 video {
   object-fit: cover;
   background: #000;
 }
 
-/* Panel border glow on hover */
-.panel-glow:hover {
-  box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.3);
-}
-
-/* Pending change notification pulse */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
 @keyframes notification-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
 }
 
 .notification-pulse {
   animation: notification-pulse 2s ease-in-out infinite;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Stack layout on narrow screens
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .cs-main-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .cs-video-grid {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 35vh;
+  }
 }
