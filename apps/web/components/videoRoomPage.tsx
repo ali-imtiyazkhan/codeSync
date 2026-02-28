@@ -272,8 +272,8 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
 
   const handleAcceptChange = useCallback(() => {
     if (!pendingChange || !socket) return;
-    setMyCode(pendingChange.code);
-    socket.emit("accept-change", { roomId, newCode: pendingChange.code });
+    setMyCode(pendingChange.newCode);
+    socket.emit("accept-change", { roomId, newCode: pendingChange.newCode });
     clearPendingChange();
   }, [pendingChange, socket, roomId, setMyCode, clearPendingChange]);
 
@@ -438,7 +438,7 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
       {pendingChange && isOwner && (
         <DiffPanel
           original={myCode}
-          modified={pendingChange.code}
+          modified={pendingChange.newCode}
           authorName={editorLabel}
           onAccept={handleAcceptChange}
           onReject={handleRejectChange}
