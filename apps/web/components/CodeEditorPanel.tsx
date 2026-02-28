@@ -68,97 +68,111 @@ export default function CodeEditorPanel({
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden bg-[var(--bg-surface)]">
       {/* Editor header */}
-      <div
-        className="flex items-center gap-3 px-4 py-2 border-b border-border flex-shrink-0"
-        style={{ background: "#0d0d14" }}
-      >
-        {/* Traffic lights */}
-        <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-red-500/70" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
-          <div className="w-3 h-3 rounded-full bg-green-500/70" />
-        </div>
-
-        {/* File name */}
-        <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1 rounded text-xs font-mono text-slate-300">
-          <span className="text-slate-500">📄</span>
-          {fileName}
-        </div>
-
-        {/* Language selector */}
-        <select
-          value={language}
-          onChange={(e) => {
-            // Language change is cosmetic for now; VS Code extension controls language
-          }}
-          className="ml-auto bg-slate-900 border border-slate-700 text-slate-400 text-xs font-mono px-2 py-1 rounded outline-none cursor-pointer"
-        >
-          {LANGUAGE_OPTIONS.map((l) => (
-            <option key={l.value} value={l.value}>
-              {l.label}
-            </option>
-          ))}
-        </select>
-
-        {/* Pending indicator */}
-        {pendingChanges.length > 0 && (
-          <div className="flex items-center gap-1 text-xs font-mono text-amber-400 bg-amber-950/40 border border-amber-800/50 px-2 py-1 rounded">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            {pendingChanges.length} pending
+      <div className="cs-editor-header">
+        {/* Left Section: File & Control */}
+        <div className="flex items-center gap-4">
+          <div className="flex gap-1.5 p-1 rounded-lg bg-black/20 border border-white/5">
+            <div className="w-2.5 h-2.5 rounded-full bg-[var(--red)] opacity-70" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[var(--orange)] opacity-70" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[var(--green)] opacity-70" />
           </div>
-        )}
 
-        {/* Read-only badge */}
-        <span className="text-xs font-mono text-slate-600 bg-slate-900 border border-slate-800 px-2 py-1 rounded">
-          {readOnly ? "read-only" : "editable"}
-        </span>
+          <div className="flex items-center gap-2 group cursor-pointer">
+            <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)] flex items-center justify-center text-xs group-hover:border-[var(--blue-soft)] transition-all shadow-lg">
+              📄
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[11px] font-bold text-[var(--text)] tracking-tight">{fileName}</span>
+              <span className="text-[9px] font-mono text-[var(--text-dim)] uppercase tracking-widest">{language} active</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Section: Status & Meta */}
+        <div className="flex items-center gap-3">
+          {/* Pending indicator */}
+          {pendingChanges.length > 0 && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[hsla(var(--blue-h),100%,68%,0.1)] border border-[hsla(var(--blue-h),100%,68%,0.2)] text-[var(--blue)] animate-pulse">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--blue)]" />
+              <span className="text-[10px] font-bold tracking-tight">{pendingChanges.length} PENDING</span>
+            </div>
+          )}
+
+          {/* Visibility badge */}
+          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)]">
+            <div className={`w-1 h-1 rounded-full ${readOnly ? "bg-[var(--text-dim)]" : "bg-[var(--green)]"}`} />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              {readOnly ? "ReadOnly" : "Editable"}
+            </span>
+          </div>
+
+          <select
+            value={language}
+            onChange={() => { }}
+            className="bg-[var(--bg-elevated)] border border-[var(--border-light)] text-[var(--text-muted)] text-[10px] font-bold px-3 py-1 rounded-lg outline-none cursor-pointer hover:border-[var(--blue-soft)] transition-all appearance-none text-center min-w-[60px]"
+          >
+            {LANGUAGE_OPTIONS.map((l) => (
+              <option key={l.value} value={l.value}>{l.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Monaco Editor */}
-      <div className="flex-1 overflow-hidden">
-        <MonacoEditor
-          height="100%"
-          language={language}
-          value={code}
-          onChange={handleEditorChange}
-          onMount={handleEditorMount}
-          theme="vs-dark"
-          options={{
-            fontSize: 14,
-            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-            fontLigatures: true,
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            lineNumbers: "on",
-            glyphMargin: false,
-            folding: true,
-            lineDecorationsWidth: 8,
-            lineNumbersMinChars: 3,
-            renderLineHighlight: "gutter",
-            cursorBlinking: "smooth",
-            smoothScrolling: true,
-            wordWrap: "on",
-            automaticLayout: true,
-            readOnly,
-            padding: { top: 16, bottom: 16 },
-            bracketPairColorization: { enabled: true },
-          }}
-        />
+      {/* Monaco Editor Container */}
+      <div className="flex-1 relative">
+        <div className="absolute inset-0">
+          <MonacoEditor
+            height="100%"
+            language={language}
+            value={code}
+            onChange={handleEditorChange}
+            onMount={handleEditorMount}
+            theme="vs-dark"
+            options={{
+              fontSize: 14,
+              fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+              fontLigatures: true,
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              lineNumbers: "on",
+              glyphMargin: false,
+              folding: true,
+              lineDecorationsWidth: 10,
+              lineNumbersMinChars: 3,
+              renderLineHighlight: "gutter",
+              cursorBlinking: "smooth",
+              smoothScrolling: true,
+              wordWrap: "on",
+              automaticLayout: true,
+              readOnly,
+              padding: { top: 20, bottom: 20 },
+              bracketPairColorization: { enabled: true },
+              scrollbar: {
+                vertical: 'visible',
+                horizontal: 'visible',
+                useShadows: false,
+                verticalScrollbarSize: 8,
+                horizontalScrollbarSize: 8
+              }
+            }}
+          />
+        </div>
       </div>
 
       {/* Footer: keyboard shortcut hint */}
-      <div
-        className="px-4 py-1.5 border-t border-border flex items-center gap-4 flex-shrink-0"
-        style={{ background: "#0a0a12" }}
-      >
-        <span className="text-xs font-mono text-slate-600">
-          Changes are sent to VS Code owner for review
-        </span>
-        <span className="ml-auto text-xs font-mono text-slate-700">
-          Ctrl+Z to undo
-        </span>
+      <div className="px-6 py-2 border-t border-[var(--border)] flex items-center justify-between bg-[hsla(215,25%,5%,0.35)] backdrop-blur-md">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-[var(--blue)] opacity-40 animate-pulse" />
+          <span className="text-[10px] font-bold text-[var(--text-dim)] tracking-wide uppercase">
+            Sync Active ↔ {readOnly ? "Watching owner" : "Streaming changes"}
+          </span>
+        </div>
+        <div className="flex items-center gap-4 text-[10px] font-mono text-[var(--text-dim)]">
+          <span className="px-2 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-light)]">CTRL+Z UNDO</span>
+          <span className="px-2 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-light)]">LN {code.split('\n').length}</span>
+        </div>
       </div>
     </div>
   );
