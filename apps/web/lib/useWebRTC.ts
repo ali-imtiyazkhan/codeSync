@@ -13,14 +13,13 @@ export function useWebRTC(
   roomId: string,
   isOwner: boolean,
 ) {
-  // ── Camera state ───────────────────────────────────────────────────────
+  // Camera state
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [callStatus, setCallStatus] = useState<CallStatus>("idle");
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(true);
 
-  // ── Screen share state ─────────────────────────────────────────────────
   const [localScreenStream, setLocalScreenStream] =
     useState<MediaStream | null>(null);
   const [remoteScreenStream, setRemoteScreenStream] =
@@ -28,12 +27,14 @@ export function useWebRTC(
   const [screenShareState, setScreenShareState] =
     useState<ScreenShareState>("inactive");
 
-  // ── Refs ───────────────────────────────────────────────────────────────
+
+// Refs
   const cameraPeerRef = useRef<SimplePeer.Instance | null>(null);
   const screenPeerRef = useRef<SimplePeer.Instance | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const localScreenRef = useRef<MediaStream | null>(null);
 
+  // ICE servers
   const ICE = {
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" },
@@ -41,6 +42,7 @@ export function useWebRTC(
     ],
   };
 
+  // Destroy peer
   const destroyPeer = useCallback(
     (ref: React.MutableRefObject<SimplePeer.Instance | null>) => {
       if (ref.current && !ref.current.destroyed) {
@@ -51,7 +53,7 @@ export function useWebRTC(
     [],
   );
 
-  // ── Camera peer ────────────────────────────────────────────────────────
+  // Create camera peer
   const createCameraPeer = useCallback(
     (stream: MediaStream, initiator: boolean) => {
       if (!socket) return;
@@ -85,7 +87,7 @@ export function useWebRTC(
     [socket, userId, destroyPeer],
   );
 
-  // ── Screen share peer (sender) ─────────────────────────────────────────
+  // Create screen sender peer
   const createScreenSenderPeer = useCallback(
     (stream: MediaStream) => {
       if (!socket) return;
@@ -111,7 +113,7 @@ export function useWebRTC(
     [socket, userId, destroyPeer],
   );
 
-  // ── Screen share peer (receiver) ───────────────────────────────────────
+  // Create screen receiver peer
   const createScreenReceiverPeer = useCallback(() => {
     if (!socket) return;
     destroyPeer(screenPeerRef);
@@ -139,7 +141,7 @@ export function useWebRTC(
     return peer;
   }, [socket, userId, destroyPeer]);
 
-  // ── Start camera call ──────────────────────────────────────────────────
+  // Start camera call
   const startCall = useCallback(async () => {
     if (!socket) return;
     try {
@@ -157,7 +159,7 @@ export function useWebRTC(
     }
   }, [socket, isOwner, createCameraPeer]);
 
-  // ── Stop screen share ──────────────────────────────────────────────────
+  // Stop screen share
   const stopScreenShare = useCallback(() => {
     localScreenRef.current?.getTracks().forEach((t) => t.stop());
     localScreenRef.current = null;
@@ -167,7 +169,7 @@ export function useWebRTC(
     socket?.emit("screen-share-stop", { userId, roomId });
   }, [socket, userId, roomId, destroyPeer]);
 
-  // ── Start screen share ─────────────────────────────────────────────────
+  // Start screen share
   const startScreenShare = useCallback(async () => {
     if (!socket || screenShareState === "viewing") return;
     try {
@@ -198,7 +200,7 @@ export function useWebRTC(
     }
   }, [socket, userId, roomId, screenShareState, createScreenSenderPeer, stopScreenShare]);
 
-  // ── Toggle camera / mic ────────────────────────────────────────────────
+  // Toggle camera / mic
   const toggleCamera = useCallback(() => {
     const track = localStreamRef.current?.getVideoTracks()[0];
     if (track) {
@@ -215,7 +217,7 @@ export function useWebRTC(
     }
   }, []);
 
-  // ── Incoming WebRTC signals ────────────────────────────────────────────
+  // Incoming WebRTC signals
   useEffect(() => {
     if (!socket) return;
 
@@ -259,7 +261,7 @@ export function useWebRTC(
     };
   }, [socket, createCameraPeer, createScreenReceiverPeer]);
 
-  // ── Friend screen share events ─────────────────────────────────────────
+  // Friend screen share events
   useEffect(() => {
     if (!socket) return;
 
@@ -281,7 +283,7 @@ export function useWebRTC(
     };
   }, [socket, destroyPeer]);
 
-  // ── Owner re-initiates camera call when editor joins ───────────────────
+  // Owner re-initiates camera call when editor joins
   useEffect(() => {
     if (!socket) return;
     const handleUserJoined = () => {
@@ -295,7 +297,7 @@ export function useWebRTC(
     };
   }, [socket, isOwner, createCameraPeer]);
 
-  // ── Cleanup ────────────────────────────────────────────────────────────
+  // Cleanup
   useEffect(() => {
     return () => {
       destroyPeer(cameraPeerRef);
