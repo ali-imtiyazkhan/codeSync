@@ -74,7 +74,10 @@ function VideoTile({
 
   return (
     <div
-      className={`video-tile ${expanded ? "video-tile-expanded" : ""}`}
+      className={`
+        video-tile group relative rounded-lg overflow-hidden border border-[var(--border)]
+        ${expanded ? "video-tile-expanded" : ""}
+      `}
       onDoubleClick={onToggleExpand}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -83,29 +86,53 @@ function VideoTile({
         gridRow: expanded ? "1 / 3" : undefined,
       }}
     >
+      {/* Background Glow */}
+      <div
+        className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at center, ${tile.color}44 0%, transparent 70%)`
+        }}
+      />
+
       {/* Main content */}
       {tile.stream ? (
-        <VideoEl
-          stream={tile.stream}
-          muted={tile.muted}
-          mirror={tile.mirror}
-          className="w-full h-full object-cover"
-        />
+        <div className="relative w-full h-full">
+          <VideoEl
+            stream={tile.stream}
+            muted={tile.muted}
+            mirror={tile.mirror}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+          />
+          {/* Glass overlay on hover */}
+          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        </div>
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-          {/* Avatar */}
-          <div
-            className="tile-avatar"
-            style={{
-              background: `${tile.color}18`,
-              border: `1px solid ${tile.color}40`,
-              color: tile.color,
-            }}
-          >
-            <span className="text-xl">{tile.icon}</span>
+        <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-[var(--bg-surface)]">
+          {/* Avatar Container */}
+          <div className="relative">
+            <div
+              className={`
+                tile-avatar relative z-10 w-16 h-16 rounded-[22px] flex items-center justify-center text-2xl
+                transition-all duration-500 group-hover:rounded-[18px]
+              `}
+              style={{
+                background: `linear-gradient(135deg, ${tile.color}22, ${tile.color}11)`,
+                border: `1px solid ${tile.color}33`,
+                color: tile.color,
+                boxShadow: hovered ? `0 10px 25px ${tile.color}22` : "none",
+              }}
+            >
+              {tile.icon}
+            </div>
+            {/* Animated Ring */}
+            <div
+              className="absolute inset-0 rounded-[22px] border border-[var(--blue)] opacity-20 animate-ping"
+              style={{ borderColor: tile.color, animationDuration: '3s' }}
+            />
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-xs font-mono text-[#484f58]">
+
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--text-dim)] uppercase">
               {tile.sublabel}
             </span>
             {tile.onAction && (
@@ -114,68 +141,65 @@ function VideoTile({
                   e.stopPropagation();
                   tile.onAction?.();
                 }}
-                className="mt-1 px-3 py-1.5 text-[10px] font-mono font-bold rounded-md transition-all scale-110 active:scale-95"
-                style={{
-                  background: `${tile.color}20`,
-                  border: `1px solid ${tile.color}50`,
-                  color: tile.color,
-                  boxShadow: `0 0 15px ${tile.color}30`,
-                }}
+                className={`
+                  mt-1 px-4 py-2 text-[10px] font-bold tracking-widest rounded-xl transition-all duration-300
+                  bg-[var(--bg-elevated)] border border-[var(--border-light)] text-[var(--text)]
+                  hover:border-[var(--blue-soft)] hover:shadow-[0_0_15px_var(--blue-glow)]
+                  active:scale-95
+                `}
               >
-                {tile.actionLabel ?? "Click to Start"}
+                {tile.actionLabel ?? "START SESSION"}
               </button>
             )}
           </div>
         </div>
       )}
 
-      {/* Bottom gradient overlay with label */}
-      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-        <div className="flex items-center gap-2">
+      {/* Bottom Information Layer */}
+      <div className="absolute bottom-4 left-4 right-4 z-20">
+        <div className="flex items-center gap-3 p-1.5 pr-4 rounded-xl cs-glass">
           <div
-            className="w-2 h-2 rounded-full flex-shrink-0"
+            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ml-1.5"
             style={{
-              backgroundColor: tile.stream ? tile.color : "#484f58",
-              boxShadow: tile.stream
-                ? `0 0 8px ${tile.color}80`
-                : "none",
+              backgroundColor: tile.stream ? tile.color : "var(--text-dim)",
+              boxShadow: tile.stream ? `0 0 10px ${tile.color}` : "none",
             }}
           />
           <span
-            className="text-xs font-mono font-semibold truncate"
-            style={{ color: tile.stream ? tile.color : "#8b949e" }}
+            className="text-[11px] font-bold tracking-tight truncate"
+            style={{ color: tile.stream ? "var(--text)" : "var(--text-muted)" }}
           >
             {tile.label}
           </span>
+
           {tile.stream && tile.id.includes("screen") && (
-            <span className="ml-auto text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 flex items-center gap-1">
-              <span className="w-1 h-1 rounded-full bg-red-400 animate-pulse" />
-              LIVE
-            </span>
+            <div className="ml-auto flex items-center gap-2 px-2 py-0.5 rounded-md bg-[hsla(var(--red-h),92%,63%,0.15)] border border-[hsla(var(--red-h),92%,63%,0.3)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] animate-pulse" />
+              <span className="text-[9px] font-black text-[var(--red)] tracking-widest">LIVE</span>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Expand hint — only visible on hover */}
-      <div
-        className="absolute top-2 right-2 transition-opacity"
-        style={{ opacity: hovered ? 1 : 0 }}
-      >
-        <span className="text-[10px] font-mono text-white/60 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
-          {expanded ? "dbl-click: restore" : "dbl-click: expand"}
-        </span>
+      {/* Action Badges */}
+      <div className="absolute top-4 left-4 flex gap-2">
+        <div className="cs-glass w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-lg leading-none">
+          {tile.id.includes("cam") ? "👤" : "🖥️"}
+        </div>
       </div>
 
-      {/* Top-left icon badge */}
-      <div className="absolute top-2 left-2">
-        <div
-          className="w-6 h-6 rounded-md flex items-center justify-center text-xs backdrop-blur-sm"
-          style={{
-            background: `${tile.color}18`,
-            border: `1px solid ${tile.color}30`,
-          }}
-        >
-          {tile.id.includes("cam") ? "📷" : "🖥️"}
+      {/* Expand/Restore Hint */}
+      <div
+        className={`
+          absolute top-4 right-4 transition-all duration-300
+          ${hovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}
+        `}
+      >
+        <div className="cs-glass px-3 py-1.5 rounded-lg flex items-center gap-2">
+          <span className="text-[10px] font-bold tracking-wide text-[var(--text-muted)]">
+            {expanded ? "RESTORE" : "EXPAND"}
+          </span>
+          <div className="w-2 h-2 rounded-[2px] border border-[var(--text-dim)]" />
         </div>
       </div>
     </div>
@@ -375,85 +399,64 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     <div className="cs-root">
       {/* ═══ TOP BAR ═══ */}
       <header className="cs-topbar">
-        {/* Left accent */}
         <div className="cs-topbar-accent" />
 
-        {/* Logo */}
-        <div className="flex items-center gap-2 px-4">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#58a6ff] to-[#3fb950] flex items-center justify-center text-xs font-black text-[#0d1117] shadow-lg shadow-[#58a6ff]/20">
-            C
+        <div className="flex items-center gap-3 px-4 h-full border-r border-[var(--border)]">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--blue)] to-[var(--green)] flex items-center justify-center text-[#0d1117] shadow-lg shadow-[var(--blue-glow)]">
+            <span className="font-black text-sm tracking-tighter">CS</span>
           </div>
-          <div>
-            <span className="font-mono font-bold text-sm text-white tracking-tight">
-              CodeSync
-            </span>
-            <span className="text-[10px] font-mono text-[#484f58] ml-1.5">
-              v2.0
-            </span>
+          <div className="flex flex-col leading-none">
+            <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--text)] uppercase">CodeSync</span>
+            <span className="text-[8px] font-mono text-[var(--text-dim)] tracking-widest mt-0.5">EST. 2024 v2.0</span>
           </div>
         </div>
 
-        <div className="w-px h-5 bg-[#21262d]" />
-
-        {/* Connection badge */}
-        <div
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono border ${connected
-            ? "bg-[#3fb95010] text-[#3fb950] border-[#3fb95030]"
-            : "bg-[#f8514910] text-[#f85149] border-[#f8514930]"
-            }`}
-        >
-          <div
-            className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-[#3fb950] animate-pulse" : "bg-[#f85149]"
-              }`}
-          />
-          {connected ? "Connected" : "Offline"}
-        </div>
-
-        {/* Role badge */}
-        {myRole && (
-          <span
-            className="text-xs font-mono px-2.5 py-1 rounded-md border"
-            style={{
-              color: isOwner ? "#58a6ff" : "#3fb950",
-              backgroundColor: isOwner ? "#58a6ff10" : "#3fb95010",
-              borderColor: isOwner ? "#58a6ff30" : "#3fb95030",
-            }}
-          >
-            {myRole.toUpperCase()}
-          </span>
-        )}
-
-        {/* Peer indicator */}
-        {friendConnected && (
-          <div className="flex items-center gap-1.5 text-xs font-mono text-[#8b949e]">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#3fb950]" />
-            {friendName} online
+        {/* Connection status */}
+        <div className="flex items-center gap-4 px-4 h-full">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${connected ? "bg-[var(--green)] shadow-[0_0_8px_var(--green-glow)] animate-pulse" : "bg-[var(--red)] shadow-[0_0_8px_var(--red)]"}`} />
+            <span className={`text-[10px] font-bold tracking-tight ${connected ? "text-[var(--green)]" : "text-[var(--red)]"}`}>
+              {connected ? "LIVE" : "OFFLINE"}
+            </span>
           </div>
-        )}
+          {myRole && (
+            <div className="px-2.5 py-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)] shadow-sm">
+              <span className={`text-[10px] font-bold tracking-widest uppercase ${isOwner ? "text-[var(--blue)]" : "text-[var(--green)]"}`}>
+                {myRole}
+              </span>
+            </div>
+          )}
+        </div>
 
         <div className="flex-1" />
 
-        {/* Room ID */}
-        <span className="text-xs font-mono text-[#484f58] hidden sm:block">
-          {(roomId ?? "").slice(0, 12)}...
-        </span>
-
-        {/* Invite */}
-        <button
-          onClick={copyInvite}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-md border border-[#21262d] text-[#8b949e] hover:border-[#58a6ff] hover:text-[#58a6ff] transition-all hover:bg-[#58a6ff08]"
-        >
-          {copied ? "✓ Copied!" : "⎘ Invite"}
-        </button>
-
-        {/* User badge */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#58a6ff10] border border-[#58a6ff25]">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#58a6ff] to-[#79b8ff] flex items-center justify-center text-[10px] font-bold text-[#0d1117]">
-            {userName[0]?.toUpperCase()}
+        {/* Room & Invite */}
+        <div className="flex items-center gap-3 pr-4">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)]">
+            <span className="text-[10px] font-mono text-[var(--text-dim)] uppercase">Room:</span>
+            <span className="text-[11px] font-mono font-bold text-[var(--blue)] tracking-wider">
+              {roomId.slice(0, 12)}...
+            </span>
           </div>
-          <span className="text-xs font-mono text-[#58a6ff]">
-            {userName}
-          </span>
+
+          <button
+            onClick={copyInvite}
+            className="flex items-center gap-2 px-4 py-1.5 text-[11px] font-bold rounded-xl border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--blue-soft)] hover:text-[var(--text)] transition-all hover:bg-[var(--blue-glow)] active:scale-95"
+          >
+            {copied ? "✓ COPIED" : "⎘ INVITE"}
+          </button>
+
+          <div className="w-px h-6 bg-[var(--border)] mx-1" />
+
+          {/* User Badge */}
+          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[var(--bg-surface)] to-transparent border border-[var(--border)] group hover:border-[var(--blue-glow)] transition-all">
+            <div className="w-6 h-6 rounded-lg bg-[var(--blue)] flex items-center justify-center text-[10px] font-bold text-[var(--bg)] shadow-md group-hover:scale-110 transition-transform">
+              {userName[0]?.toUpperCase()}
+            </div>
+            <span className="text-[11px] font-bold text-[var(--text)] tracking-tight">
+              {userName}
+            </span>
+          </div>
         </div>
       </header>
 
@@ -545,53 +548,58 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
       </div>
 
       {/* ═══ BOTTOM CONTROLS BAR ═══ */}
-      <div className="cs-controls-bar">
-        {/* Left: status info */}
-        <div className="flex items-center gap-3">
-          <span
-            className={`text-xs font-mono ${connected ? "text-[#3fb950]" : "text-[#f85149]"
-              }`}
-          >
-            ● {connected ? "Live" : "Disconnected"}
-          </span>
-          {callStatus === "connected" && (
-            <span className="text-xs font-mono text-[#3fb950]">
-              🎥 Video active
+      <footer className="cs-controls-bar">
+        {/* Left: Status info with glows */}
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className={`w-2 h-2 rounded-full ${connected ? "bg-[var(--green)] shadow-[0_0_10px_var(--green-glow)] animate-pulse" : "bg-[var(--red)] shadow-[0_0_10px_var(--red)]"}`} />
+            <span className={`text-[11px] font-bold tracking-widest ${connected ? "text-[var(--text)]" : "text-[var(--red)]"}`}>
+              {connected ? "SECURE CONNECTION" : "LINK SEVERED"}
             </span>
-          )}
-          {isSharing && (
-            <span className="text-xs font-mono text-[#f0883e] flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#f0883e] animate-pulse" />
-              Sharing screen
-            </span>
-          )}
-          {screenShareState === "viewing" && (
-            <span className="text-xs font-mono text-[#d2a8ff]">
-              🖥️ Viewing {friendName}'s screen
-            </span>
-          )}
+          </div>
+
+          <div className="h-4 w-px bg-[var(--border)]" />
+
+          <div className="flex items-center gap-4">
+            {callStatus === "connected" && (
+              <div className="flex items-center gap-2 group">
+                <div className="w-6 h-6 rounded-lg bg-[hsla(var(--blue-h),100%,68%,0.1)] flex items-center justify-center text-xs group-hover:scale-110 transition-transform">🎥</div>
+                <span className="text-[10px] font-bold text-[var(--blue-soft)] tracking-tight">AV FEED ACTIVE</span>
+              </div>
+            )}
+            {isSharing && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-[hsla(var(--orange-h),88%,59%,0.1)] border border-[hsla(var(--orange-h),88%,59%,0.2)] animate-pulse">
+                <span className="text-[9px] font-black text-[var(--orange)] tracking-widest uppercase">Streaming Screen</span>
+              </div>
+            )}
+            {screenShareState === "viewing" && (
+              <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--purple)] tracking-tight">
+                <span className="text-sm">🖥️</span> MONITORING PEER STREAM
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Center: media controls */}
-        <div className="flex items-center gap-2">
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3 p-1 rounded-2xl cs-glass border border-white/5 shadow-2xl">
           <CtrlBtn
             emoji={isMicOn ? "🎤" : "🔇"}
-            label={isMicOn ? "Mute Mic" : "Unmute Mic"}
+            label={isMicOn ? "MUTE" : "UNMUTE"}
             onClick={toggleMic}
             danger={!isMicOn}
           />
           <CtrlBtn
             emoji={isCameraOn ? "📷" : "📵"}
-            label={isCameraOn ? "Camera: Off" : "Camera: On"}
+            label={isCameraOn ? "CAM: OFF" : "CAM: ON"}
             onClick={toggleCamera}
             danger={!isCameraOn}
           />
 
-          <div className="w-px h-7 bg-[#21262d] mx-1" />
+          <div className="w-px h-8 bg-white/10 mx-1" />
 
           <CtrlBtn
             emoji="🖥️"
-            label={isSharing ? "Stop Sharing" : "Share Screen"}
+            label={isSharing ? "STOP" : "SHARE"}
             onClick={isSharing ? stopScreenShare : startScreenShare}
             danger={isSharing}
             pulse={isSharing}
@@ -599,20 +607,20 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
         </div>
 
         {/* Right: session info */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-[#484f58]">
-            Role:{" "}
-            <span
-              className={isOwner ? "text-[#58a6ff]" : "text-[#3fb950]"}
-            >
-              {myRole ?? "assigning..."}
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col items-end">
+            <span className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-[0.2em]">Session Access</span>
+            <span className={`text-[11px] font-bold ${isOwner ? "text-[var(--blue)]" : "text-[var(--green)]"} tracking-tight`}>
+              {isOwner ? "ROOT AUTHORIZATION" : "EDITOR PERMISSIONS"}
             </span>
-          </span>
-          <span className="text-xs font-mono text-[#30363d]">
-            CodeSync v2.0
-          </span>
+          </div>
+          <div className="h-8 w-px bg-[var(--border)]" />
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-[var(--text)] tracking-wider italic">CodeSync</span>
+            <span className="text-[8px] font-mono text-[var(--text-dim)] uppercase tracking-widest text-right">System v2.0</span>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

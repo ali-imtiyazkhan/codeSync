@@ -46,209 +46,136 @@ export default function TopBar({
   };
 
   return (
-    <header
-      className="flex items-center flex-shrink-0"
-      style={{
-        height: 52,
-        background: "linear-gradient(to right, #030c12, #040e16, #030c12)",
-        borderBottom: "1px solid var(--border2)",
-        boxShadow: "0 1px 20px rgba(0,255,225,0.06)",
-        position: "relative",
-        zIndex: 50,
-      }}
-    >
-      {/* Left edge accent */}
-      <div style={{ width: 3, height: "100%", background: "linear-gradient(to bottom, var(--neon), var(--neon2))", boxShadow: "var(--glow-neon)", flexShrink: 0 }} />
+    <header className="cs-topbar">
+      {/* Animated accent line */}
+      <div className="cs-topbar-accent" />
 
-      {/* Logo */}
-      <div className="px-4 flex items-center gap-3" style={{ borderRight: "1px solid var(--border)", paddingRight: 16 }}>
-        <span
-          style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontWeight: 900,
-            fontSize: "1rem",
-            letterSpacing: "0.12em",
-            color: "var(--neon)",
-            textShadow: "var(--glow-neon)",
-          }}
+      {/* Logo Section */}
+      <div className="flex items-center gap-3 px-4 border-r border-[var(--border)] h-full">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--blue)] to-[var(--green)] flex items-center justify-center text-[#0d1117] shadow-lg shadow-[var(--blue-glow)]">
+          <span className="font-black text-sm tracking-tighter">CS</span>
+        </div>
+        <div className="flex flex-col leading-none">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--text)] uppercase">CodeSync</span>
+          <span className="text-[8px] font-mono text-[var(--text-dim)] tracking-widest mt-0.5">EST. 2024 v2.0</span>
+        </div>
+      </div>
+
+      {/* Room Selection / Info */}
+      <div className="flex items-center gap-2 px-2">
+        <button
+          onClick={onCopyRoomId}
+          className="group flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--blue-soft)] transition-all duration-300"
         >
-          CS
-        </span>
-        <div>
-          <div style={{ fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.1em" }}>CODESYNC</div>
-          <div style={{ fontSize: "0.55rem", color: "var(--dim)", letterSpacing: "0.08em" }}>v2.077</div>
+          <span className="text-[10px] font-mono text-[var(--text-dim)] group-hover:text-[var(--blue)] transition-colors">ROOM://</span>
+          <span className="text-[11px] font-mono font-bold text-[var(--blue)] tracking-wider">
+            {roomId.slice(0, 8)}...
+          </span>
+          <span className="text-[10px] text-[var(--text-muted)] opacity-50">
+            {copySuccess ? "✓" : "⎘"}
+          </span>
+        </button>
+      </div>
+
+      {/* Network / Nodes */}
+      <div className="flex items-center gap-4 px-4 border-l border-[var(--border)] h-full">
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-2 h-2 rounded-full ${connected ? "bg-[var(--green)] shadow-[0_0_8px_var(--green-glow)] animate-pulse" : "bg-[var(--red)] shadow-[0_0_8px_var(--red)]"}`}
+          />
+          <span className={`text-[10px] font-bold tracking-tight ${connected ? "text-[var(--green)]" : "text-[var(--red)]"}`}>
+            {connected ? "LIVE" : "DISCONNECTED"}
+          </span>
+        </div>
+        <div className="flex items-center gap-3 text-[10px] font-mono text-[var(--text-muted)]">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[var(--text-dim)]">PING:</span>
+            <span className="text-[var(--green)] font-bold">{ping}ms</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[var(--text-dim)]">UP:</span>
+            <span className="text-[var(--blue)] font-bold">{fmtUptime(uptime)}</span>
+          </div>
         </div>
       </div>
 
-      {/* Room ID */}
-      <button
-        onClick={onCopyRoomId}
-        className="flex items-center gap-2 px-3 mx-2 py-1 transition-all"
-        style={{
-          background: "rgba(0,255,225,0.03)",
-          border: "1px solid var(--border)",
-          color: "var(--muted)",
-          fontSize: "0.7rem",
-          letterSpacing: "0.1em",
-          cursor: "pointer",
-          clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
-        }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--neon)"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)"; }}
-      >
-        <span style={{ color: "var(--dim)" }}>SESSION://</span>
-        <span style={{ color: "var(--neon2)", textShadow: "var(--glow-blue)" }}>{roomId}</span>
-        <span style={{ color: "var(--dim)", fontSize: "0.6rem" }}>{copySuccess ? "✓ COPIED" : "⎘"}</span>
-      </button>
-
-      {/* Connection status */}
-      <div className="flex items-center gap-2 px-3" style={{ borderRight: "1px solid var(--border)" }}>
-        <div
-          className="w-2 h-2 rounded-full"
-          style={{
-            background: connected ? "var(--neon4)" : "var(--neon3)",
-            boxShadow: connected ? "var(--glow-lime)" : "var(--glow-red)",
-            animation: "neon-pulse 2s infinite",
-          }}
-        />
-        <span style={{ fontSize: "0.65rem", color: connected ? "var(--neon4)" : "var(--neon3)", letterSpacing: "0.08em" }}>
-          {connected ? `NET:OK` : "NET:ERR"}
-        </span>
-        <span style={{ fontSize: "0.6rem", color: "var(--dim)" }}>
-          {peerCount + 1} NODE{peerCount !== 0 ? "S" : ""}
-        </span>
-      </div>
-
-      {/* Ping / uptime */}
-      <div className="flex items-center gap-3 px-3" style={{ borderRight: "1px solid var(--border)" }}>
-        <div style={{ fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
-          <span style={{ color: "var(--dim)" }}>PING:</span>
-          <span style={{ color: "var(--neon4)", textShadow: "var(--glow-lime)", marginLeft: 4 }}>{ping}ms</span>
-        </div>
-        <div style={{ fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
-          <span style={{ color: "var(--dim)" }}>UP:</span>
-          <span style={{ color: "var(--neon)", marginLeft: 4 }}>{fmtUptime(uptime)}</span>
-        </div>
-      </div>
-
-      {/* Pending badge */}
+      {/* Alerts */}
       {pendingCount > 0 && (
-        <div
-          className="flex items-center gap-2 px-3 mx-2 pending-pulse"
-          style={{
-            border: "1px solid var(--neon3)",
-            background: "rgba(255,45,107,0.08)",
-            fontSize: "0.65rem",
-            letterSpacing: "0.1em",
-            color: "var(--neon3)",
-            textShadow: "var(--glow-red)",
-            clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
-            padding: "5px 12px",
-          }}
-        >
-          <span style={{ animation: "neon-pulse 0.8s infinite", display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "var(--neon3)", boxShadow: "var(--glow-red)" }} />
-          ⚠ {pendingCount} PENDING CHANGE{pendingCount > 1 ? "S" : ""}
+        <div className="flex items-center gap-2 px-3 py-1.5 mx-2 rounded-lg bg-[hsla(var(--red-h),92%,63%,0.1)] border border-[hsla(var(--red-h),92%,63%,0.2)] text-[var(--red)] animate-pulse">
+          <span className="text-[10px] font-bold tracking-tight uppercase">
+            ⚠️ {pendingCount} PENDING CHANGES
+          </span>
         </div>
       )}
 
-      {/* Controls — right side */}
-      <div className="ml-auto flex items-center gap-1 pr-3">
-        {/* Camera */}
-        <CyberCtrlBtn
-          onClick={onToggleCamera}
-          active={cameraOn}
-          activeClass="active-neon"
-          label={cameraOn ? "CAM:ON" : "CAM:OFF"}
-          icon="◈"
-        />
-        {/* Mic */}
-        <CyberCtrlBtn
-          onClick={onToggleMic}
-          active={micOn}
-          activeClass="active-neon"
-          label={micOn ? "MIC:ON" : "MIC:OFF"}
-          icon="◉"
-        />
-        {/* Screen */}
-        <CyberCtrlBtn
-          onClick={onToggleScreen}
-          active={screenSharing}
-          activeClass="active-lime"
-          label={screenSharing ? "SHARING" : "SCREEN"}
-          icon="◆"
-        />
+      {/* Main Controls - Right Side */}
+      <div className="ml-auto flex items-center gap-2 pr-4">
+        <div className="flex items-center gap-1 bg-[var(--bg-surface)] p-1 rounded-xl border border-[var(--border)]">
+          <TopBarActionBtn
+            onClick={onToggleCamera}
+            active={cameraOn}
+            icon={cameraOn ? "📷" : "📵"}
+            label="CAM"
+          />
+          <TopBarActionBtn
+            onClick={onToggleMic}
+            active={micOn}
+            icon={micOn ? "🎤" : "🔇"}
+            label="MIC"
+          />
+          <TopBarActionBtn
+            onClick={onToggleScreen}
+            active={screenSharing}
+            icon="🖥️"
+            label="SHARE"
+            highlight={screenSharing}
+          />
+        </div>
 
-        {/* Divider */}
-        <div style={{ width: 1, height: 28, background: "var(--border)", margin: "0 6px" }} />
+        <div className="w-px h-6 bg-[var(--border)] mx-1" />
 
-        {/* User badge */}
-        <div
-          className="flex items-center gap-2 px-3 py-1"
-          style={{
-            background: "rgba(0,255,225,0.04)",
-            border: "1px solid var(--border)",
-            clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))",
-          }}
-        >
-          <div
-            style={{
-              width: 22, height: 22,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontFamily: "'Orbitron', sans-serif",
-              fontSize: "0.6rem",
-              fontWeight: 700,
-              color: "var(--bg)",
-              background: "linear-gradient(135deg, var(--neon), var(--neon2))",
-              boxShadow: "var(--glow-neon)",
-              clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))",
-            }}
-          >
+        {/* User Card */}
+        <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[var(--bg-surface)] to-transparent border border-[var(--border)] group hover:border-[var(--blue-glow)] transition-all">
+          <div className="w-6 h-6 rounded-lg bg-[var(--blue)] flex items-center justify-center text-[10px] font-bold text-[var(--bg)] shadow-md group-hover:scale-110 transition-transform">
             {userName[0]?.toUpperCase()}
           </div>
-          <span style={{ fontSize: "0.65rem", color: "var(--neon)", letterSpacing: "0.08em" }}>
-            {userName.toUpperCase()}
+          <span className="text-[11px] font-bold text-[var(--text)] tracking-tight">
+            {userName}
           </span>
         </div>
-      </div>
 
-      {/* Clock */}
-      <div
-        className="flex items-center px-3"
-        style={{ borderLeft: "1px solid var(--border)", height: "100%" }}
-      >
-        <span
-          style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: "0.7rem",
-            letterSpacing: "0.12em",
-            color: "var(--amber)",
-            textShadow: "var(--glow-amber)",
-          }}
-        >
-          {time}
-        </span>
+        {/* Clock */}
+        <div className="pl-4 ml-2 border-l border-[var(--border)] h-full flex items-center">
+          <span className="text-[11px] font-mono font-medium text-[var(--purple)] tabular-nums tracking-wider opacity-80">
+            {time}
+          </span>
+        </div>
       </div>
     </header>
   );
 }
 
-function CyberCtrlBtn({
-  onClick, active, activeClass, label, icon,
+function TopBarActionBtn({
+  onClick, active, icon, label, highlight = false,
 }: {
   onClick: () => void;
   active: boolean;
-  activeClass: string;
-  label: string;
   icon: string;
+  label: string;
+  highlight?: boolean;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`cyber-btn ${active ? activeClass : ""}`}
-      style={{ fontSize: "0.65rem", padding: "5px 10px" }}
+      className={`
+        flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200
+        ${active ? "bg-[var(--bg-elevated)] border border-[var(--border-light)]" : "bg-transparent border border-transparent"}
+        ${highlight ? "text-[var(--orange)] border-[hsla(var(--orange-h),88%,59%,0.3)] shadow-[0_0_10px_var(--orange-glow)]" : "text-[var(--text-muted)]"}
+        hover:text-[var(--text)] hover:bg-[var(--bg-elevated)]
+      `}
     >
-      <span>{icon}</span>
-      <span>{label}</span>
+      <span className="text-sm">{icon}</span>
+      <span className="text-[9px] font-bold tracking-wider">{label}</span>
     </button>
   );
 }

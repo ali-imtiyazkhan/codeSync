@@ -5,24 +5,51 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DESIGN TOKENS
+   DESIGN TOKENS (HSL for flexibility)
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --bg: #070a0f;
-  --bg-surface: #0d1117;
-  --bg-panel: #161b22;
-  --bg-elevated: #1c2128;
-  --border: #21262d;
-  --border-light: #30363d;
-  --text: #e6edf3;
-  --text-muted: #8b949e;
-  --text-dim: #484f58;
-  --blue: #58a6ff;
-  --green: #3fb950;
-  --orange: #f0883e;
-  --purple: #d2a8ff;
-  --red: #f85149;
-  --yellow: #d29922;
+  /* Core brand */
+  --blue-h: 213;
+  --blue: hsl(var(--blue-h), 100%, 68%);
+  --blue-soft: hsl(var(--blue-h), 100%, 75%);
+  --blue-glow: hsla(var(--blue-h), 100%, 68%, 0.35);
+
+  --green-h: 128;
+  --green: hsl(var(--green-h), 50%, 49%);
+  --green-glow: hsla(var(--green-h), 50%, 49%, 0.3);
+
+  --purple-h: 265;
+  --purple: hsl(var(--purple-h), 100%, 83%);
+  --purple-glow: hsla(var(--purple-h), 100%, 83%, 0.3);
+
+  --orange-h: 25;
+  --orange: hsl(var(--orange-h), 88%, 59%);
+  --orange-glow: hsla(var(--orange-h), 88%, 59%, 0.35);
+
+  --red-h: 2;
+  --red: hsl(var(--red-h), 92%, 63%);
+
+  /* Neutrals */
+  --bg: hsl(215, 28%, 4%);
+  --bg-surface: hsl(215, 25%, 7%);
+  --bg-panel: hsl(215, 21%, 11%);
+  --bg-elevated: hsl(215, 18%, 15%);
+
+  --glass: hsla(215, 20%, 10%, 0.6);
+  --glass-border: hsla(215, 15%, 25%, 0.5);
+
+  --border: hsl(215, 15%, 15%);
+  --border-light: hsl(215, 12%, 22%);
+
+  --text: hsl(210, 20%, 93%);
+  --text-muted: hsl(210, 10%, 65%);
+  --text-dim: hsl(210, 8%, 40%);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -30,19 +57,41 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 * {
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   background: var(--bg);
+  background-image:
+    radial-gradient(at 0% 0%, hsla(var(--blue-h), 30%, 15%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(var(--purple-h), 30%, 15%, 0.1) 0px, transparent 50%);
   color: var(--text);
-  font-family: "Inter", "JetBrains Mono", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   overflow: hidden;
   height: 100vh;
   margin: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ROOT LAYOUT — Full screen, 3-row: topbar / main / controls
+   GLASS UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cs-glass {
+  background: var(--glass);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid var(--glass-border);
+}
+
+.cs-glass-strong {
+  background: hsla(215, 25%, 5%, 0.85);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid var(--glass-border);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROOT LAYOUT
    ═══════════════════════════════════════════════════════════════════════════ */
 .cs-root {
   display: flex;
@@ -59,56 +108,51 @@ body {
 .cs-topbar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 48px;
+  gap: 12px;
+  height: 56px;
   flex-shrink: 0;
-  background: linear-gradient(to right, #0a0e14, #0d1117 50%, #0a0e14);
+  background: hsla(215, 28%, 4%, 0.7);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
-  padding-right: 12px;
+  padding: 0 16px;
   position: relative;
   z-index: 50;
 }
 
 .cs-topbar-accent {
-  width: 3px;
-  height: 100%;
-  background: linear-gradient(to bottom, var(--blue), var(--green));
-  box-shadow: 0 0 12px rgba(88, 166, 255, 0.3);
-  flex-shrink: 0;
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, var(--blue), var(--green), transparent);
+  opacity: 0.6;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MAIN GRID — Video tiles left, code editor right
-   
-   ┌──────────┬──────────┬─────────────────┐
-   │ Your Cam │ Friend   │                 │
-   │          │ Cam      │   Code Editor   │
-   ├──────────┼──────────┤   (Monaco)      │
-   │ Your     │ Friend   │                 │
-   │ Screen   │ Screen   │                 │
-   └──────────┴──────────┴─────────────────┘
-
+   MAIN GRID
    ═══════════════════════════════════════════════════════════════════════════ */
 .cs-main-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 2fr) minmax(320px, 3fr);
+  grid-template-columns: minmax(320px, 450px) 1fr;
   flex: 1;
   min-height: 0;
   overflow: hidden;
   height: 0;
-  /* force flex child to respect flex: 1 */
+  gap: 1px;
+  background: var(--border);
 }
 
-/* Video grid: 2×2 within the left column */
+/* Video grid */
 .cs-video-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 2px;
-  background: var(--bg);
-  border-right: 1px solid var(--border);
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  gap: 1px;
+  background: var(--border);
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  padding: 1px;
 }
 
 /* Single video tile */
@@ -116,49 +160,50 @@ body {
   position: relative;
   overflow: hidden;
   background: var(--bg-surface);
-  cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.video-tile:hover {
-  z-index: 2;
-}
-
-.video-tile::after {
+.video-tile::before {
   content: "";
   position: absolute;
   inset: 0;
-  border: 1px solid transparent;
+  background: radial-gradient(circle at top left, hsla(var(--blue-h), 100%, 68%, 0.05), transparent 70%);
   pointer-events: none;
-  transition: border-color 0.2s ease;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.video-tile:hover::after {
-  border-color: rgba(88, 166, 255, 0.2);
+.video-tile:hover::before {
+  opacity: 1;
 }
 
-/* Expanded tile takes full 2×2 area */
 .video-tile-expanded {
-  z-index: 10;
+  position: absolute;
+  inset: 12px;
+  z-index: 100;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--glass-border);
 }
 
 /* Avatar in empty tile */
 .tile-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .video-tile:hover .tile-avatar {
-  transform: scale(1.05);
+  transform: scale(1.1) rotate(5deg);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   EDITOR PANEL — Right column
+   EDITOR PANEL
    ═══════════════════════════════════════════════════════════════════════════ */
 .cs-editor-panel {
   display: flex;
@@ -173,26 +218,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  background: var(--bg-panel);
+  padding: 0 20px;
+  height: 48px;
+  background: hsla(215, 21%, 11%, 0.5);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CONTROLS BAR — Bottom
+   CONTROLS BAR
    ═══════════════════════════════════════════════════════════════════════════ */
 .cs-controls-bar {
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  height: 52px;
-  padding: 0 16px;
-  background: var(--bg-surface);
+  height: 64px;
+  padding: 0 24px;
+  background: hsla(215, 25%, 5%, 0.8);
+  backdrop-filter: blur(16px);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
-  gap: 8px;
+  z-index: 60;
 }
 
 /* Control button */
@@ -200,34 +247,39 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 6px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  justify-content: center;
+  gap: 4px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.03);
   cursor: pointer;
   color: var(--text);
-  transition: all 0.15s ease;
-  min-width: 52px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ctrl-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--border-light);
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--blue-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--blue-h), 100%, 68%, 0.1);
 }
 
 .ctrl-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
 .ctrl-btn-danger {
-  background: rgba(248, 81, 73, 0.08);
-  border-color: rgba(248, 81, 73, 0.25);
+  background: hsla(var(--red-h), 92%, 63%, 0.1);
+  border-color: hsla(var(--red-h), 92%, 63%, 0.3);
+  color: var(--red);
 }
 
 .ctrl-btn-danger:hover {
-  background: rgba(248, 81, 73, 0.15);
+  background: hsla(var(--red-h), 92%, 63%, 0.2);
+  border-color: var(--red);
+  box-shadow: 0 4px 12px hsla(var(--red-h), 92%, 63%, 0.2);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
