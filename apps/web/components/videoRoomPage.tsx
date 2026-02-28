@@ -7,7 +7,7 @@ import { useWebRTC } from "../lib/useWebRTC";
 import { useRoomStore } from "../store/roomStore";
 import { DiffPanel } from "./diff/DiffPanel";
 
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
+const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
   ssr: false,
   loading: () => (
     <div className="flex-1 flex items-center justify-center bg-[#0a0c10]">
@@ -246,6 +246,7 @@ interface VideoRoomPageProps {
 }
 
 export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) {
+  const [activeMainId, setActiveMainId] = useState<string>("editor");
   const [expandedTile, setExpandedTile] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [language] = useState("javascript");
@@ -288,10 +289,10 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     if (socket && myRole !== null) startCall();
   }, [socket, myRole]);
 
-  // Auto-expand screen share tile
+  // Auto-promote screen share to Main Stage
   useEffect(() => {
-    if (screenShareState === "viewing") setExpandedTile("friend-screen");
-    else if (screenShareState === "sharing") setExpandedTile("my-screen");
+    if (screenShareState === "viewing") setActiveMainId("friend-screen");
+    else if (screenShareState === "sharing") setActiveMainId("my-screen");
   }, [screenShareState]);
 
   // ── Code sync handlers ──
@@ -390,10 +391,24 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     },
   ];
 
-  // Code for the editor panel
-  const editorCode = isOwner ? myCode : myCode;
-  const editorOnChange = isOwner ? handleOwnerCodeChange : handleEditorCodeChange;
-  const editorReadOnly = false; // both can edit, owner's is authoritative
+  // Virtual "Editor" Tile Data
+  const editorTile: TileData = {
+    id: "editor",
+    label: "Code Editor",
+    sublabel: isOwner ? "Authoritative" : "Collaborative",
+    stream: null,
+    muted: true,
+    mirror: false,
+    color: "#a371f7",
+    icon: "💻",
+  };
+
+  const allLayoutElements = [...tiles, editorTile];
+  const activeMainElement = allLayoutElements.find(e => e.id === activeMainId) || editorTile;
+  const sidebarElements = allLayoutElements.filter(e => e.id !== activeMainId);
+
+  // Styles for thumbnails
+  const thumbStyle = { height: '160px', flexShrink: 0 };
 
   return (
     <div className="cs-root">
@@ -401,13 +416,13 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
       <header className="cs-topbar">
         <div className="cs-topbar-accent" />
 
-        <div className="flex items-center gap-3 px-4 h-full border-r border-[var(--border)]">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--blue)] to-[var(--green)] flex items-center justify-center text-[#0d1117] shadow-lg shadow-[var(--blue-glow)]">
+        <div className="cs-logo-container">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--blue)] to-[var(--green)] flex items-center justify-center text-[#0d1117] shadow-lg shadow-[var(--blue-glow)] flex-shrink-0">
             <span className="font-black text-sm tracking-tighter">CS</span>
           </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--text)] uppercase">CodeSync</span>
-            <span className="text-[8px] font-mono text-[var(--text-dim)] tracking-widest mt-0.5">EST. 2024 v2.0</span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-[11px] font-black tracking-[0.15em] text-[var(--text)] uppercase">CodeSync</span>
+            <span className="text-[8px] font-mono text-[var(--text-dim)] tracking-widest uppercase">EST. 2024 v2.0</span>
           </div>
         </div>
 
@@ -471,110 +486,90 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
         />
       )}
 
-      {/* ═══ MAIN 5-PANEL GRID ═══ */}
+      {/* ═══ MAIN STAGE + SIDEBAR ═══ */}
       <div className="cs-main-grid">
-        {/* ── Left: 2×2 video grid ── */}
-        <div className="cs-video-grid">
-          {tiles.map((tile) => (
-            <VideoTile
-              key={tile.id}
-              tile={tile}
-              expanded={expandedTile === tile.id}
-              onToggleExpand={() =>
-                setExpandedTile((prev) =>
-                  prev === tile.id ? null : tile.id
-                )
-              }
+        {/* ── CENTRAL MAIN STAGE ── */}
+        <main className="cs-main-stage">
+          {activeMainId === "editor" ? (
+            <CodeEditorPanel
+              code={isOwner ? myCode : (friendCode || myCode)}
+              language={language}
+              fileName="main.js"
+              onChange={isOwner ? handleOwnerCodeChange : handleEditorCodeChange}
+              readOnly={false}
+              socket={socket}
+              roomId={roomId}
+              pendingChanges={pendingChange ? [pendingChange] : []}
             />
-          ))}
-        </div>
-
-        {/* ── Right: Code editor (spans full height) ── */}
-        <div className="cs-editor-panel">
-          {/* Editor header */}
-          <div className="cs-editor-header">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">💻</span>
-              <span className="text-xs font-mono font-semibold text-white">
-                Code Editor
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {isOwner ? (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#58a6ff15] text-[#58a6ff] border border-[#58a6ff30]">
-                  OWNER · editable
-                </span>
+          ) : (
+            <div className="w-full h-full bg-[#070a0f]">
+              {activeMainElement.stream ? (
+                <VideoEl
+                  stream={activeMainElement.stream}
+                  muted={activeMainElement.muted}
+                  mirror={activeMainElement.mirror}
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#3fb95015] text-[#3fb950] border border-[#3fb95030]">
-                  EDITOR · your changes are proposed
-                </span>
+                <div className="w-full h-full flex flex-col items-center justify-center gap-6">
+                  <div className="w-32 h-32 rounded-[40px] flex items-center justify-center text-4xl cs-glass" style={{ color: activeMainElement.color, border: `2px solid ${activeMainElement.color}44` }}>
+                    {activeMainElement.icon}
+                  </div>
+                  <div className="text-center">
+                    <h2 className="text-xl font-bold tracking-tight">{activeMainElement.label}</h2>
+                    <p className="text-[11px] font-mono text-[var(--text-dim)] uppercase tracking-widest mt-2">{activeMainElement.sublabel}</p>
+                  </div>
+                </div>
               )}
             </div>
+          )}
+        </main>
+
+        {/* ── SIDEBAR THUMBNAILS ── */}
+        <aside className="cs-sidebar-thumbnails">
+          <div className="px-2 mb-1">
+            <h3 className="text-[10px] font-black text-[var(--text-dim)] uppercase tracking-[0.2em]">Live Peeks</h3>
           </div>
 
-          {/* Monaco Editor — rendered directly for proper height chain */}
-          <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
-              <MonacoEditor
-                height="100%"
-                language={language}
-                value={editorCode}
-                onChange={(value: string | undefined) => editorOnChange(value || "")}
-                theme="vs-dark"
-                options={{
-                  fontSize: 14,
-                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  fontLigatures: true,
-                  minimap: { enabled: false },
-                  scrollBeyondLastLine: false,
-                  lineNumbers: "on",
-                  glyphMargin: false,
-                  folding: true,
-                  lineDecorationsWidth: 8,
-                  lineNumbersMinChars: 3,
-                  renderLineHighlight: "gutter",
-                  cursorBlinking: "smooth",
-                  smoothScrolling: true,
-                  wordWrap: "on",
-                  automaticLayout: true,
-                  readOnly: false,
-                  padding: { top: 16, bottom: 16 },
-                  bracketPairColorization: { enabled: true },
-                }}
-              />
-            </div>
+          <div className="cs-video-grid">
+            {sidebarElements.map((el) => (
+              <div
+                key={el.id}
+                onClick={() => setActiveMainId(el.id)}
+                style={thumbStyle}
+              >
+                <VideoTile
+                  tile={el}
+                  expanded={false}
+                  onToggleExpand={() => { }}
+                />
+              </div>
+            ))}
           </div>
-        </div>
+        </aside>
       </div>
 
       {/* ═══ BOTTOM CONTROLS BAR ═══ */}
       <footer className="cs-controls-bar">
         {/* Left: Status info with glows */}
-        <div className="flex items-center gap-6">
+        <div className="cs-controls-left">
           <div className="flex items-center gap-3">
             <div className={`w-2 h-2 rounded-full ${connected ? "bg-[var(--green)] shadow-[0_0_10px_var(--green-glow)] animate-pulse" : "bg-[var(--red)] shadow-[0_0_10px_var(--red)]"}`} />
-            <span className={`text-[11px] font-bold tracking-widest ${connected ? "text-[var(--text)]" : "text-[var(--red)]"}`}>
-              {connected ? "SECURE CONNECTION" : "LINK SEVERED"}
-            </span>
+            <span className="text-[10px] font-bold tracking-widest hidden sm:inline">SECURE CHANNEL</span>
           </div>
 
-          <div className="h-4 w-px bg-[var(--border)]" />
+          <div className="h-4 w-px bg-white/10" />
 
           <div className="flex items-center gap-4">
             {callStatus === "connected" && (
-              <div className="flex items-center gap-2 group">
-                <div className="w-6 h-6 rounded-lg bg-[hsla(var(--blue-h),100%,68%,0.1)] flex items-center justify-center text-xs group-hover:scale-110 transition-transform">🎥</div>
-                <span className="text-[10px] font-bold text-[var(--blue-soft)] tracking-tight">AV FEED ACTIVE</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs">🎥</span>
+                <span className="text-[9px] font-bold text-[var(--blue-soft)] uppercase tracking-tight hidden md:inline">AV ACTIVE</span>
               </div>
             )}
             {isSharing && (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-[hsla(var(--orange-h),88%,59%,0.1)] border border-[hsla(var(--orange-h),88%,59%,0.2)] animate-pulse">
-                <span className="text-[9px] font-black text-[var(--orange)] tracking-widest uppercase">Streaming Screen</span>
-              </div>
-            )}
-            {screenShareState === "viewing" && (
-              <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--purple)] tracking-tight">
-                <span className="text-sm">🖥️</span> MONITORING PEER STREAM
+              <div className="flex items-center gap-2 px-2 py-0.5 rounded-lg bg-orange-500/10 border border-orange-500/20 animate-pulse">
+                <span className="text-[8px] font-black text-[var(--orange)] uppercase">Streaming</span>
               </div>
             )}
           </div>
@@ -607,17 +602,17 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
         </div>
 
         {/* Right: session info */}
-        <div className="flex items-center gap-6">
-          <div className="flex flex-col items-end">
-            <span className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-[0.2em]">Session Access</span>
-            <span className={`text-[11px] font-bold ${isOwner ? "text-[var(--blue)]" : "text-[var(--green)]"} tracking-tight`}>
-              {isOwner ? "ROOT AUTHORIZATION" : "EDITOR PERMISSIONS"}
+        <div className="cs-controls-right">
+          <div className="hidden sm:flex flex-col items-end leading-tight">
+            <span className="text-[8px] font-bold text-[var(--text-dim)] uppercase tracking-wider">Access Level</span>
+            <span className={`text-[10px] font-black ${isOwner ? "text-[var(--blue)]" : "text-[var(--green)]"} tracking-tighter`}>
+              {isOwner ? "ROOT_AUTH" : "EDITOR_SYNC"}
             </span>
           </div>
-          <div className="h-8 w-px bg-[var(--border)]" />
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black text-[var(--text)] tracking-wider italic">CodeSync</span>
-            <span className="text-[8px] font-mono text-[var(--text-dim)] uppercase tracking-widest text-right">System v2.0</span>
+          <div className="h-4 w-px bg-white/10 mx-2" />
+          <div className="flex flex-col items-end leading-tight">
+            <span className="text-[9px] font-black text-[var(--text)] italic tracking-tighter">CodeSync</span>
+            <span className="text-[7px] font-mono text-[var(--text-dim)] uppercase tracking-tighter">SYST_V2.0</span>
           </div>
         </div>
       </footer>
