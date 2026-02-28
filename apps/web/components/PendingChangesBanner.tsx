@@ -68,7 +68,7 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
             padding: "1px 6px",
             background: "rgba(255,179,0,0.06)",
           }}>
-            FROM: {first.fromName.toUpperCase()}
+            FROM: {first.authorId.toUpperCase()}
           </span>
           {changes.length > 1 && (
             <span style={{
@@ -83,7 +83,7 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
           )}
         </div>
         <div style={{ fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.08em", marginTop: 2 }}>
-          DIFF SIZE: {first.code?.length ?? 0} CHARS • AWAITING AUTHORIZATION
+          DIFF SIZE: {first.newCode?.length ?? 0} CHARS • AWAITING AUTHORIZATION
         </div>
       </div>
 

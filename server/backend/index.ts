@@ -25,14 +25,12 @@ interface Room {
 }
 
 // State
-
 const rooms = new Map<string, Room>();
 
 const OWNER_COLOR = "#58a6ff";
 const EDITOR_COLOR = "#3fb950";
 
 // Helpers
-
 function getOrCreateRoom(roomId: string): Room {
   if (!rooms.has(roomId)) {
     rooms.set(roomId, {
@@ -198,8 +196,9 @@ io.on("connection", (socket: Socket) => {
   // ── WebRTC signaling passthrough (camera + screen, identified by kind) ──
   socket.on(
     "webrtc-signal",
-    (data: { signal: unknown; userId: string; kind: "camera" | "screen" }) => {
-      socket.to(roomId).emit("webrtc-signal", {
+    (data: { signal: unknown; userId: string; roomId: string; kind: "camera" | "screen" }) => {
+      console.log(`[webrtc-signal] ${data.kind} from ${data.userId} in ${data.roomId}`);
+      socket.to(data.roomId).emit("webrtc-signal", {
         signal: data.signal,
         userId: data.userId,
         kind: data.kind,
@@ -208,13 +207,15 @@ io.on("connection", (socket: Socket) => {
   );
 
   // ── Screen share events ───────────────────────────────────────────────
-  socket.on("screen-share-start", (data: { userId: string }) => {
+  socket.on("screen-share-start", (data: { userId: string; roomId: string }) => {
+    console.log(`[screen-share-start] ${data.userId} in ${data.roomId}`);
     // Notify everyone else that this user started sharing
-    socket.to(roomId).emit("screen-share-started", { userId: data.userId });
+    socket.to(data.roomId).emit("screen-share-started", { userId: data.userId });
   });
 
-  socket.on("screen-share-stop", (data: { userId: string }) => {
-    socket.to(roomId).emit("screen-share-stopped", { userId: data.userId });
+  socket.on("screen-share-stop", (data: { userId: string; roomId: string }) => {
+    console.log(`[screen-share-stop] ${data.userId} in ${data.roomId}`);
+    socket.to(data.roomId).emit("screen-share-stopped", { userId: data.userId });
   });
 
   // ── Disconnect ────────────────────────────────────────────────────────────

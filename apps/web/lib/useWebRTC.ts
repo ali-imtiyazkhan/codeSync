@@ -10,6 +10,7 @@ export type ScreenShareState = "inactive" | "sharing" | "viewing";
 export function useWebRTC(
   socket: Socket | null,
   userId: string,
+  roomId: string,
   isOwner: boolean,
 ) {
   // ── Camera state ───────────────────────────────────────────────────────
@@ -65,7 +66,7 @@ export function useWebRTC(
       cameraPeerRef.current = peer;
 
       peer.on("signal", (data) =>
-        socket.emit("webrtc-signal", { signal: data, userId, kind: "camera" }),
+        socket.emit("webrtc-signal", { signal: data, userId, roomId, kind: "camera" }),
       );
       peer.on("stream", (remote) => {
         setRemoteStream(remote);
@@ -99,7 +100,7 @@ export function useWebRTC(
       screenPeerRef.current = peer;
 
       peer.on("signal", (data) =>
-        socket.emit("webrtc-signal", { signal: data, userId, kind: "screen" }),
+        socket.emit("webrtc-signal", { signal: data, userId, roomId, kind: "screen" }),
       );
       peer.on("error", (err) => console.warn("Screen sender error:", err));
       peer.on("close", () => {
@@ -123,7 +124,7 @@ export function useWebRTC(
     screenPeerRef.current = peer;
 
     peer.on("signal", (data) =>
-      socket.emit("webrtc-signal", { signal: data, userId, kind: "screen" }),
+      socket.emit("webrtc-signal", { signal: data, userId, roomId, kind: "screen" }),
     );
     peer.on("stream", (remote) => {
       setRemoteScreenStream(remote);
@@ -156,10 +157,21 @@ export function useWebRTC(
     }
   }, [socket, isOwner, createCameraPeer]);
 
+  // ── Stop screen share ──────────────────────────────────────────────────
+  const stopScreenShare = useCallback(() => {
+    localScreenRef.current?.getTracks().forEach((t) => t.stop());
+    localScreenRef.current = null;
+    setLocalScreenStream(null);
+    setScreenShareState("inactive");
+    destroyPeer(screenPeerRef);
+    socket?.emit("screen-share-stop", { userId, roomId });
+  }, [socket, userId, roomId, destroyPeer]);
+
   // ── Start screen share ─────────────────────────────────────────────────
   const startScreenShare = useCallback(async () => {
     if (!socket || screenShareState === "viewing") return;
     try {
+      console.info(`[startScreenShare] Attempting to start screen share. Room: ${roomId}, User: ${userId}`);
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: { frameRate: 15 } as MediaTrackConstraints,
         audio: false,
@@ -170,27 +182,21 @@ export function useWebRTC(
       setScreenShareState("sharing");
 
       // Notify other peer that we're about to send a screen stream
-      socket.emit("screen-share-start", { userId });
+      console.log(`[socket] Emitting screen-share-start to room: ${roomId}`);
+      socket.emit("screen-share-start", { userId, roomId });
 
       // Create sender peer
       createScreenSenderPeer(stream);
 
       // Browser stop-sharing button handler
-      stream.getVideoTracks()[0]!.onended = () => stopScreenShare();
+      stream.getVideoTracks()[0]!.onended = () => {
+        console.log("[screen] Stream ended via browser UI");
+        stopScreenShare();
+      };
     } catch (err) {
-      console.warn("Screen share denied:", err);
+      console.error("[startScreenShare] Error or denied:", err);
     }
-  }, [socket, userId, screenShareState, createScreenSenderPeer]);
-
-  // ── Stop screen share ──────────────────────────────────────────────────
-  const stopScreenShare = useCallback(() => {
-    localScreenRef.current?.getTracks().forEach((t) => t.stop());
-    localScreenRef.current = null;
-    setLocalScreenStream(null);
-    setScreenShareState("inactive");
-    destroyPeer(screenPeerRef);
-    socket?.emit("screen-share-stop", { userId });
-  }, [socket, userId, destroyPeer]);
+  }, [socket, userId, roomId, screenShareState, createScreenSenderPeer, stopScreenShare]);
 
   // ── Toggle camera / mic ────────────────────────────────────────────────
   const toggleCamera = useCallback(() => {

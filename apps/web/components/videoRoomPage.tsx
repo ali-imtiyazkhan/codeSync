@@ -57,6 +57,8 @@ interface TileData {
   mirror: boolean;
   color: string;
   icon: string;
+  onAction?: () => void;
+  actionLabel?: string;
 }
 
 function VideoTile({
@@ -102,9 +104,28 @@ function VideoTile({
           >
             <span className="text-xl">{tile.icon}</span>
           </div>
-          <span className="text-xs font-mono text-[#484f58]">
-            {tile.sublabel}
-          </span>
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-xs font-mono text-[#484f58]">
+              {tile.sublabel}
+            </span>
+            {tile.onAction && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  tile.onAction?.();
+                }}
+                className="mt-1 px-3 py-1.5 text-[10px] font-mono font-bold rounded-md transition-all scale-110 active:scale-95"
+                style={{
+                  background: `${tile.color}20`,
+                  border: `1px solid ${tile.color}50`,
+                  color: tile.color,
+                  boxShadow: `0 0 15px ${tile.color}30`,
+                }}
+              >
+                {tile.actionLabel ?? "Click to Start"}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -236,7 +257,7 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     screenShareState,
     startScreenShare,
     stopScreenShare,
-  } = useWebRTC(socket, userId, isOwner);
+  } = useWebRTC(socket, userId, roomId, isOwner);
 
   // Start WebRTC once socket is ready
   useEffect(() => {
@@ -324,12 +345,14 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     {
       id: "my-screen",
       label: "Your Screen",
-      sublabel: "Click Share Screen to start",
+      sublabel: "Ready to share",
       stream: localScreenStream,
       muted: true,
       mirror: false,
       color: "#f0883e",
       icon: "🖥️",
+      onAction: startScreenShare,
+      actionLabel: "START SCREEN SHARE",
     },
     {
       id: "friend-screen",
@@ -553,13 +576,13 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
         <div className="flex items-center gap-2">
           <CtrlBtn
             emoji={isMicOn ? "🎤" : "🔇"}
-            label={isMicOn ? "Mute" : "Unmute"}
+            label={isMicOn ? "Mute Mic" : "Unmute Mic"}
             onClick={toggleMic}
             danger={!isMicOn}
           />
           <CtrlBtn
             emoji={isCameraOn ? "📷" : "📵"}
-            label={isCameraOn ? "Cam off" : "Cam on"}
+            label={isCameraOn ? "Camera: Off" : "Camera: On"}
             onClick={toggleCamera}
             danger={!isCameraOn}
           />
@@ -568,7 +591,7 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
 
           <CtrlBtn
             emoji="🖥️"
-            label={isSharing ? "Stop" : "Share"}
+            label={isSharing ? "Stop Sharing" : "Share Screen"}
             onClick={isSharing ? stopScreenShare : startScreenShare}
             danger={isSharing}
             pulse={isSharing}
