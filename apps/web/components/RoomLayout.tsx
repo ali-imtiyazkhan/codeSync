@@ -9,7 +9,7 @@ import { useRoomStore } from "../store/roomStore";
 import { useWebSocket } from "../lib/useSocket";
 import { useWebRTC } from "../lib/useWebRTC";
 
-// ⚠️  Update this path to match wherever your CodeEditorPanel lives
+//  Update this path to match wherever your CodeEditorPanel lives
 const CodeEditorPanel = dynamic(() => import("../components/CodeEditorPanel"), {
     ssr: false,
     loading: () => (
@@ -100,8 +100,8 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
     // Owner accepts the proposed diff
     const handleAcceptChange = useCallback(() => {
         if (!pendingChange || !socket) return;
-        setMyCode(pendingChange.code);
-        socket.emit("accept-change", { roomId, newCode: pendingChange.code });
+        setMyCode(pendingChange.newCode);
+        socket.emit("accept-change", { roomId, newCode: pendingChange.newCode });
         clearPendingChange();
     }, [pendingChange, socket, roomId, setMyCode, clearPendingChange]);
 
@@ -144,7 +144,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
             {pendingChange && isOwner && (
                 <DiffPanel
                     original={myCode}
-                    modified={pendingChange.code}
+                    modified={pendingChange.newCode}
                     authorName={editorLabel}
                     onAccept={handleAcceptChange}
                     onReject={handleRejectChange}

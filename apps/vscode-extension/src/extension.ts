@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { io, Socket } from "socket.io-client";
+import * as path from "path";
 import type {
   ServerToClientEvents,
   ClientToServerEvents,
@@ -11,6 +12,8 @@ let socket: AppSocket | null = null;
 let statusBarItem: vscode.StatusBarItem;
 let isSharing = false;
 let currentRoomId = "";
+let currentUserId = "";
+let myRole: "owner" | "editor" | null = null;
 let fileWatcher: vscode.Disposable | null = null;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -39,6 +42,7 @@ async function connectToRoom() {
   const config = vscode.workspace.getConfiguration("codesync");
   const serverUrl = config.get<string>("serverUrl") || "http://localhost:3001";
   let userName = config.get<string>("userName") || "";
+  let userId = config.get<string>("userId") || "";
 
   if (!userName) {
     userName =
@@ -49,6 +53,11 @@ async function connectToRoom() {
     config.update("userName", userName, vscode.ConfigurationTarget.Global);
   }
 
+  if (!userId) {
+    userId = `vscode-${Math.random().toString(36).substring(2, 9)}`;
+    config.update("userId", userId, vscode.ConfigurationTarget.Global);
+  }
+
   const roomId = await vscode.window.showInputBox({
     prompt: "Enter the CodeSync Room ID",
     placeHolder: "e.g. a1b2c3d4",
@@ -57,16 +66,20 @@ async function connectToRoom() {
   if (!roomId) return;
 
   currentRoomId = roomId;
-  connectSocket(serverUrl, roomId, userName);
+  currentUserId = userId;
+  connectSocket(serverUrl, roomId, userId, userName);
 }
 
-function connectSocket(serverUrl: string, roomId: string, userName: string) {
+function connectSocket(serverUrl: string, roomId: string, userId: string, userName: string) {
   if (socket) socket.disconnect();
 
-  socket = io(serverUrl, { transports: ["websocket"] });
+  socket = io(serverUrl, { 
+    query: { roomId, userId, userName },
+    transports: ["websocket"] 
+  });
 
   socket.on("connect", () => {
-    socket!.emit("room:join", { roomId, userName });
+    socket!.emit("join-room", { roomId, userId, userName });
     statusBarItem.text = `$(broadcast) CodeSync: ${roomId}`;
     statusBarItem.backgroundColor = new vscode.ThemeColor(
       "statusBarItem.warningBackground",
@@ -77,9 +90,15 @@ function connectSocket(serverUrl: string, roomId: string, userName: string) {
     setupListeners(roomId);
   });
 
+  socket.on("role-assigned", (data) => {
+    myRole = data.role;
+    vscode.window.showInformationMessage(`👤 You are now the ${data.role.toUpperCase()} of this room`);
+  });
+
   socket.on("disconnect", () => {
     statusBarItem.text = "$(broadcast) CodeSync (disconnected)";
     statusBarItem.backgroundColor = undefined;
+    myRole = null;
   });
 
   socket.on("connect_error", (err) => {
@@ -93,9 +112,12 @@ function setupListeners(roomId: string) {
   if (!socket) return;
 
   // ── Browser user made changes → apply to VS Code ─────────────────────────
-  socket.on("code:pending-change", async (change) => {
+  socket.on("change-proposed", async (change) => {
+    // Only the owner handles proposed changes
+    if (myRole !== "owner") return;
+
     const choice = await vscode.window.showInformationMessage(
-      `💡 ${change.fromName} wants to make changes to the code`,
+      `💡 Someone wants to make changes to the code`,
       { modal: false },
       "✅ Accept",
       "❌ Reject",
@@ -103,34 +125,46 @@ function setupListeners(roomId: string) {
     );
 
     if (choice === "✅ Accept") {
-      await applyCodeToEditor(change.code);
-      socket!.emit("code:accept-change", {
+      await applyCodeToEditor(change.newCode);
+      socket!.emit("accept-change", {
         roomId,
-        changeId: change.id,
-        code: change.code,
+        newCode: change.newCode,
       });
       vscode.window.showInformationMessage("✅ Changes applied to VS Code!");
     } else if (choice === "❌ Reject") {
-      socket!.emit("code:reject-change", { roomId, changeId: change.id });
+      socket!.emit("reject-change", { roomId });
       vscode.window.showInformationMessage("❌ Changes rejected");
     } else if (choice === "👁 Preview") {
-      await showDiff(change.code, change.fromName);
+      await showDiff(change.newCode, "Proposed Changes");
     }
   });
 
-  socket.on("code:change-accepted", ({ code }) => {
-    // Already accepted by this instance - no-op
+  socket.on("change-accepted", async ({ newCode }) => {
+    // If we are the editor, our proposed change was accepted, or someone else's was.
+    // Sync the editor content.
+    await applyCodeToEditor(newCode);
+  });
+
+  socket.on("owner-code-update", async ({ code }) => {
+    // Sync if we are not the owner (owner is authoritative)
+    if (myRole !== "owner") {
+      await applyCodeToEditor(code);
+    }
+  });
+
+  socket.on("vscode-push", async ({ code }) => {
+    // Sync everywhere when pushed from VS Code
+    await applyCodeToEditor(code);
   });
 }
 
 async function applyCodeToEditor(code: string) {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    vscode.window.showWarningMessage("No active editor to apply changes to");
-    return;
-  }
+  if (!editor) return;
 
   const doc = editor.document;
+  if (doc.getText() === code) return; // Prevent infinite loops
+
   const fullRange = new vscode.Range(
     doc.positionAt(0),
     doc.positionAt(doc.getText().length),
@@ -155,7 +189,7 @@ async function showDiff(newCode: string, fromName: string) {
     "vscode.diff",
     editor.document.uri,
     proposedDoc.uri,
-    `Current ↔ ${fromName}'s Proposal`,
+    `Current ↔ ${fromName}`,
   );
 }
 
@@ -188,7 +222,9 @@ async function startSharing() {
     // Debounce to avoid spamming
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      sendCurrentFile(vscode.window.activeTextEditor!);
+      if (vscode.window.activeTextEditor) {
+        sendCurrentFile(vscode.window.activeTextEditor);
+      }
     }, 300);
   });
 
@@ -206,14 +242,14 @@ function sendCurrentFile(editor: vscode.TextEditor) {
   if (!socket || !isSharing) return;
 
   const code = editor.document.getText();
-  const fileName = editor.document.fileName.split("/").pop() || "file";
+  
+  // Use path.basename for cross-platform filename extraction
+  const fileName = path.basename(editor.document.fileName) || "file";
   const language = editor.document.languageId;
 
-  socket.emit("code:vscode-update", {
+  socket.emit("vscode-push", {
     roomId: currentRoomId,
     code,
-    fileName,
-    language,
   });
 }
 
@@ -231,6 +267,7 @@ function disconnect() {
   socket?.disconnect();
   socket = null;
   currentRoomId = "";
+  myRole = null;
   statusBarItem.text = "$(broadcast) CodeSync";
   statusBarItem.backgroundColor = undefined;
   vscode.window.showInformationMessage("Disconnected from CodeSync");
@@ -240,3 +277,4 @@ export function deactivate() {
   disconnect();
   statusBarItem.dispose();
 }
+
