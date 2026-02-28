@@ -68,7 +68,7 @@ export default function CodeEditorPanel({
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[var(--bg-surface)]">
+    <div className="cs-editor-panel shadow-2xl">
       {/* Editor header */}
       <div className="cs-editor-header">
         {/* Left Section: File & Control */}
@@ -121,8 +121,8 @@ export default function CodeEditorPanel({
       </div>
 
       {/* Monaco Editor Container */}
-      <div className="flex-1 relative">
-        <div className="absolute inset-0">
+      <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
+        <div style={{ position: 'absolute', inset: 0 }}>
           <MonacoEditor
             height="100%"
             language={language}
@@ -147,14 +147,25 @@ export default function CodeEditorPanel({
               wordWrap: "on",
               automaticLayout: true,
               readOnly,
+              suggestOnTriggerCharacters: true,
+              quickSuggestions: {
+                other: true,
+                comments: true,
+                strings: true
+              },
+              parameterHints: {
+                enabled: true
+              },
+              formatOnType: true,
+              formatOnPaste: true,
               padding: { top: 20, bottom: 20 },
               bracketPairColorization: { enabled: true },
               scrollbar: {
                 vertical: 'visible',
                 horizontal: 'visible',
                 useShadows: false,
-                verticalScrollbarSize: 8,
-                horizontalScrollbarSize: 8
+                verticalScrollbarSize: 10,
+                horizontalScrollbarSize: 10
               }
             }}
           />
@@ -162,16 +173,19 @@ export default function CodeEditorPanel({
       </div>
 
       {/* Footer: keyboard shortcut hint */}
-      <div className="px-6 py-2 border-t border-[var(--border)] flex items-center justify-between bg-[hsla(215,25%,5%,0.35)] backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[var(--blue)] opacity-40 animate-pulse" />
-          <span className="text-[10px] font-bold text-[var(--text-dim)] tracking-wide uppercase">
-            Sync Active ↔ {readOnly ? "Watching owner" : "Streaming changes"}
+      <div className="cs-editor-footer">
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-[var(--blue)] opacity-60 animate-pulse shadow-[0_0_8px_var(--blue-glow)]" />
+          <span className="text-[10px] font-bold text-[var(--text-dim)] tracking-widest uppercase">
+            {readOnly ? "Live Monitoring" : "Sync Active ↔ Streaming"}
           </span>
         </div>
         <div className="flex items-center gap-4 text-[10px] font-mono text-[var(--text-dim)]">
-          <span className="px-2 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-light)]">CTRL+Z UNDO</span>
-          <span className="px-2 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-light)]">LN {code.split('\n').length}</span>
+          <div className="flex gap-2">
+            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 uppercase">CTRL+Z</span>
+            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 uppercase">CMD+S</span>
+          </div>
+          <span className="text-[var(--blue-soft)] font-bold">LN {code.split('\n').length}</span>
         </div>
       </div>
     </div>
