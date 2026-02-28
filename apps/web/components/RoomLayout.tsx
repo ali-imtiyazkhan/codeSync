@@ -61,7 +61,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
         screenShareState,
         startScreenShare,
         stopScreenShare,
-    } = useWebRTC(socket, userId, isOwner);
+    } = useWebRTC(socket, userId, roomId, isOwner);
 
     // Start WebRTC once socket is ready and role is assigned
     useEffect(() => {

@@ -48,9 +48,9 @@ export interface ClientToServerEvents {
   "vscode-push": (data: { roomId: string; code: string }) => void;
 
   // WebRTC
-  "webrtc-signal": (data: { signal: any; userId: string; kind: "camera" | "screen" }) => void;
-  "screen-share-start": (data: { userId: string }) => void;
-  "screen-share-stop": (data: { userId: string }) => void;
+  "webrtc-signal": (data: { signal: any; userId: string; roomId: string; kind: "camera" | "screen" }) => void;
+  "screen-share-start": (data: { userId: string; roomId: string }) => void;
+  "screen-share-stop": (data: { userId: string; roomId: string }) => void;
 }
 
 export interface InterServerEvents {
