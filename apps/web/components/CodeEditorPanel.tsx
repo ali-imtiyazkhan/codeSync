@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import type { Socket } from "socket.io-client";
 import type {
@@ -52,8 +52,20 @@ export default function CodeEditorPanel({
   roomId,
   pendingChanges,
 }: CodeEditorPanelProps) {
-  const editorRef = useRef<unknown>(null);
+  const editorRef = useRef<any>(null);
   const isRemoteUpdate = useRef(false);
+
+  // Sync remote changes without losing focus
+  useEffect(() => {
+    if (editorRef.current) {
+      const currentModelValue = editorRef.current.getValue();
+      if (code !== currentModelValue) {
+        isRemoteUpdate.current = true;
+        editorRef.current.setValue(code);
+        isRemoteUpdate.current = false;
+      }
+    }
+  }, [code]);
 
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
@@ -126,7 +138,7 @@ export default function CodeEditorPanel({
           <MonacoEditor
             height="100%"
             language={language}
-            value={code}
+            defaultValue={code}
             onChange={handleEditorChange}
             onMount={handleEditorMount}
             theme="vs-dark"

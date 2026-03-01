@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { TopBar } from "../components/ui/TopBar";
 import { DiffPanel } from "../components/diff/DiffPanel";
@@ -71,13 +71,17 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
     }, [socket, myRole]);
 
     // ── Code sync ──────────────────────────────────────────────────────────
+    const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Owner typing → broadcast live to friend's read-only editor
     const handleOwnerCodeChange = useCallback(
         (code: string) => {
             setMyCode(code);
             if (socket && isOwner) {
-                socket.emit("owner-code-change", { roomId, code });
+                if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+                debounceTimerRef.current = setTimeout(() => {
+                    socket.emit("owner-code-change", { roomId, code });
+                }, 100);
             }
         },
         [socket, roomId, isOwner, setMyCode]
@@ -88,13 +92,17 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
         (code: string) => {
             setFriendCode(code);
             if (socket && !isOwner) {
-                socket.emit("propose-change", {
-                    roomId,
-                    newCode: code,
-                });
+                if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+                debounceTimerRef.current = setTimeout(() => {
+                    socket.emit("propose-change", {
+                        roomId,
+                        original: friendCode,
+                        newCode: code,
+                    });
+                }, 100);
             }
         },
-        [socket, roomId, isOwner, setFriendCode]
+        [socket, roomId, isOwner, setFriendCode, friendCode]
     );
 
     // Owner accepts the proposed diff
