@@ -285,6 +285,8 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
   } = useWebRTC(socket, userId, roomId, isOwner);
 
   // Start WebRTC once socket is ready
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     if (socket && myRole !== null) startCall();
   }, [socket, myRole]);
@@ -300,7 +302,10 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     (code: string) => {
       setMyCode(code);
       if (socket && isOwner) {
-        socket.emit("owner-code-change", { roomId, code });
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+          socket.emit("owner-code-change", { roomId, code });
+        }, 100);
       }
     },
     [socket, roomId, isOwner, setMyCode]
@@ -310,10 +315,17 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     (code: string) => {
       setFriendCode(code);
       if (socket && !isOwner) {
-        socket.emit("propose-change", { roomId, newCode: code });
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+          socket.emit("propose-change", {
+            roomId,
+            original: friendCode,
+            newCode: code,
+          });
+        }, 100);
       }
     },
-    [socket, roomId, isOwner, setFriendCode]
+    [socket, roomId, isOwner, setFriendCode, friendCode]
   );
 
   const handleAcceptChange = useCallback(() => {
