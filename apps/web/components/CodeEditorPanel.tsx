@@ -185,7 +185,7 @@ export default function CodeEditorPanel({
       </div>
 
       {/* Footer: keyboard shortcut hint */}
-      <div className="cs-editor-footer">
+      {/* <div className="cs-editor-footer">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-[var(--blue)] opacity-60 animate-pulse shadow-[0_0_8px_var(--blue-glow)]" />
           <span className="text-[10px] font-bold text-[var(--text-dim)] tracking-widest uppercase">
@@ -199,7 +199,7 @@ export default function CodeEditorPanel({
           </div>
           <span className="text-[var(--blue-soft)] font-bold">LN {code.split('\n').length}</span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

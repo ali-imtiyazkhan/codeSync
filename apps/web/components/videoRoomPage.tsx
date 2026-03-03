@@ -10,7 +10,7 @@ import { DiffPanel } from "./diff/DiffPanel";
 const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
   ssr: false,
   loading: () => (
-    <div className="flex-1 flex items-center justify-center bg-[#0a0c10]">
+    <div className="flex-1 flex items-center justify-center" style={{ background: '#262624' }}>
       <span className="text-[#8b949e] font-mono text-sm animate-pulse">
         Loading editor...
       </span>
@@ -46,8 +46,6 @@ function VideoEl({
   );
 }
 
-// ─── Single video tile ────────────────────────────────────────────────────────
-
 interface TileData {
   id: string;
   label: string;
@@ -74,27 +72,22 @@ function VideoTile({
 
   return (
     <div
-      className={`
-        video-tile group relative rounded-lg overflow-hidden border border-[var(--border)]
-        ${expanded ? "video-tile-expanded" : ""}
-      `}
-      onDoubleClick={onToggleExpand}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className={`video-tile group relative rounded-lg overflow-hidden ${expanded ? "video-tile-expanded" : ""}`}
       style={{
+        border: '1px solid #333330',
         gridColumn: expanded ? "1 / 3" : undefined,
         gridRow: expanded ? "1 / 3" : undefined,
       }}
+      onDoubleClick={onToggleExpand}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       {/* Background Glow */}
       <div
         className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"
-        style={{
-          background: `radial-gradient(circle at center, ${tile.color}44 0%, transparent 70%)`
-        }}
+        style={{ background: `radial-gradient(circle at center, ${tile.color}44 0%, transparent 70%)` }}
       />
 
-      {/* Main content */}
       {tile.stream ? (
         <div className="relative w-full h-full">
           <VideoEl
@@ -103,18 +96,13 @@ function VideoTile({
             mirror={tile.mirror}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
           />
-          {/* Glass overlay on hover */}
           <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
         </div>
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-[var(--bg-surface)]">
-          {/* Avatar Container */}
+        <div className="w-full h-full flex flex-col items-center justify-center gap-4" style={{ background: '#2e2e2b' }}>
           <div className="relative">
             <div
-              className={`
-                tile-avatar relative z-10 w-16 h-16 rounded-[22px] flex items-center justify-center text-2xl
-                transition-all duration-500 group-hover:rounded-[18px]
-              `}
+              className="relative z-10 w-16 h-16 rounded-[22px] flex items-center justify-center text-2xl transition-all duration-500 group-hover:rounded-[18px]"
               style={{
                 background: `linear-gradient(135deg, ${tile.color}22, ${tile.color}11)`,
                 border: `1px solid ${tile.color}33`,
@@ -124,29 +112,33 @@ function VideoTile({
             >
               {tile.icon}
             </div>
-            {/* Animated Ring */}
             <div
-              className="absolute inset-0 rounded-[22px] border border-[var(--blue)] opacity-20 animate-ping"
+              className="absolute inset-0 rounded-[22px] border opacity-20 animate-ping"
               style={{ borderColor: tile.color, animationDuration: '3s' }}
             />
           </div>
 
           <div className="flex flex-col items-center gap-3">
-            <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--text-dim)] uppercase">
+            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase" style={{ color: '#6b6b68' }}>
               {tile.sublabel}
             </span>
             {tile.onAction && (
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  tile.onAction?.();
+                onClick={(e) => { e.stopPropagation(); tile.onAction?.(); }}
+                className="mt-1 px-4 py-2 text-[10px] font-bold tracking-widest rounded-xl transition-all duration-300 active:scale-95"
+                style={{
+                  background: '#333330',
+                  border: '1px solid #444441',
+                  color: '#c9c9c6',
                 }}
-                className={`
-                  mt-1 px-4 py-2 text-[10px] font-bold tracking-widest rounded-xl transition-all duration-300
-                  bg-[var(--bg-elevated)] border border-[var(--border-light)] text-[var(--text)]
-                  hover:border-[var(--blue-soft)] hover:shadow-[0_0_15px_var(--blue-glow)]
-                  active:scale-95
-                `}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = '#58a6ff55';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 0 15px #58a6ff22';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = '#444441';
+                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                }}
               >
                 {tile.actionLabel ?? "START SESSION"}
               </button>
@@ -155,58 +147,60 @@ function VideoTile({
         </div>
       )}
 
-      {/* Bottom Information Layer */}
+      {/* Bottom Label */}
       <div className="absolute bottom-4 left-4 right-4 z-20">
-        <div className="flex items-center gap-3 p-1.5 pr-4 rounded-xl cs-glass">
+        <div
+          className="flex items-center gap-3 p-1.5 pr-4 rounded-xl"
+          style={{ background: 'rgba(38,38,36,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #3a3a37' }}
+        >
           <div
             className="w-2.5 h-2.5 rounded-full flex-shrink-0 ml-1.5"
             style={{
-              backgroundColor: tile.stream ? tile.color : "var(--text-dim)",
-              boxShadow: tile.stream ? `0 0 10px ${tile.color}` : "none",
+              backgroundColor: tile.stream ? tile.color : '#6b6b68',
+              boxShadow: tile.stream ? `0 0 10px ${tile.color}` : 'none',
             }}
           />
           <span
             className="text-[11px] font-bold tracking-tight truncate"
-            style={{ color: tile.stream ? "var(--text)" : "var(--text-muted)" }}
+            style={{ color: tile.stream ? '#e0e0dd' : '#8b8b88' }}
           >
             {tile.label}
           </span>
 
           {tile.stream && tile.id.includes("screen") && (
-            <div className="ml-auto flex items-center gap-2 px-2 py-0.5 rounded-md bg-[hsla(var(--red-h),92%,63%,0.15)] border border-[hsla(var(--red-h),92%,63%,0.3)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] animate-pulse" />
-              <span className="text-[9px] font-black text-[var(--red)] tracking-widest">LIVE</span>
+            <div className="ml-auto flex items-center gap-2 px-2 py-0.5 rounded-md" style={{ background: 'rgba(255,80,80,0.12)', border: '1px solid rgba(255,80,80,0.25)' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+              <span className="text-[9px] font-black text-red-400 tracking-widest">LIVE</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Action Badges */}
+      {/* Type badge */}
       <div className="absolute top-4 left-4 flex gap-2">
-        <div className="cs-glass w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-lg leading-none">
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-lg leading-none"
+          style={{ background: 'rgba(38,38,36,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #3a3a37' }}
+        >
           {tile.id.includes("cam") ? "👤" : "🖥️"}
         </div>
       </div>
 
-      {/* Expand/Restore Hint */}
-      <div
-        className={`
-          absolute top-4 right-4 transition-all duration-300
-          ${hovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}
-        `}
-      >
-        <div className="cs-glass px-3 py-1.5 rounded-lg flex items-center gap-2">
-          <span className="text-[10px] font-bold tracking-wide text-[var(--text-muted)]">
+      {/* Expand hint */}
+      <div className={`absolute top-4 right-4 transition-all duration-300 ${hovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
+        <div
+          className="px-3 py-1.5 rounded-lg flex items-center gap-2"
+          style={{ background: 'rgba(38,38,36,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #3a3a37' }}
+        >
+          <span className="text-[10px] font-bold tracking-wide" style={{ color: '#8b8b88' }}>
             {expanded ? "RESTORE" : "EXPAND"}
           </span>
-          <div className="w-2 h-2 rounded-[2px] border border-[var(--text-dim)]" />
+          <div className="w-2 h-2 rounded-[2px]" style={{ border: '1px solid #6b6b68' }} />
         </div>
       </div>
     </div>
   );
 }
-
-// ─── Control button ───────────────────────────────────────────────────────────
 
 function CtrlBtn({
   emoji,
@@ -226,18 +220,25 @@ function CtrlBtn({
   return (
     <button
       onClick={onClick}
-      className={`ctrl-btn ${danger ? "ctrl-btn-danger" : ""} ${pulse ? "animate-pulse" : ""}`}
       title={label}
+      className={`flex flex-col items-center justify-center gap-1 w-14 h-12 rounded-xl transition-all duration-200 active:scale-95 ${pulse ? "animate-pulse" : ""}`}
+      style={{
+        background: danger ? 'rgba(255,80,80,0.12)' : 'rgba(60,60,57,0.6)',
+        border: danger ? '1px solid rgba(255,80,80,0.3)' : '1px solid #3a3a37',
+        color: danger ? '#ff6b6b' : '#c9c9c6',
+      }}
+      onMouseEnter={e => {
+        if (!danger) (e.currentTarget as HTMLElement).style.background = 'rgba(80,80,77,0.8)';
+      }}
+      onMouseLeave={e => {
+        if (!danger) (e.currentTarget as HTMLElement).style.background = 'rgba(60,60,57,0.6)';
+      }}
     >
       <span className="text-base leading-none">{emoji}</span>
-      <span className="text-[9px] font-mono leading-none text-[#8b949e]">
-        {label}
-      </span>
+      <span className="text-[9px] font-mono leading-none" style={{ color: '#8b8b88' }}>{label}</span>
     </button>
   );
 }
-
-// ─── Main component ───────────────────────────────────────────────────────────
 
 interface VideoRoomPageProps {
   roomId: string;
@@ -251,7 +252,6 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
   const [copied, setCopied] = useState(false);
   const [language] = useState("javascript");
 
-  // ── Store ──
   const {
     myCode,
     friendCode,
@@ -264,7 +264,6 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     clearPendingChange,
   } = useRoomStore();
 
-  // ── Socket & WebRTC ──
   const { socket, connected } = useWebSocket(roomId, userId, userName);
   const isOwner = myRole === "owner";
 
@@ -284,20 +283,17 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     stopScreenShare,
   } = useWebRTC(socket, userId, roomId, isOwner);
 
-  // Start WebRTC once socket is ready
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (socket && myRole !== null) startCall();
   }, [socket, myRole]);
 
-  // Auto-promote screen share to Main Stage
   useEffect(() => {
     if (screenShareState === "viewing") setActiveMainId("friend-screen");
     else if (screenShareState === "sharing") setActiveMainId("my-screen");
   }, [screenShareState]);
 
-  // ── Code sync handlers ──
   const handleOwnerCodeChange = useCallback(
     (code: string) => {
       setMyCode(code);
@@ -317,11 +313,7 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
       if (socket && !isOwner) {
         if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
         debounceTimerRef.current = setTimeout(() => {
-          socket.emit("propose-change", {
-            roomId,
-            original: friendCode,
-            newCode: code,
-          });
+          socket.emit("propose-change", { roomId, original: friendCode, newCode: code });
         }, 100);
       }
     },
@@ -340,7 +332,6 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     clearPendingChange();
   }, [socket, roomId, clearPendingChange]);
 
-  // ── Derived values ──
   const myName = myUser?.name ?? userName;
   const friendName = friendUser?.name ?? "Friend";
   const friendConnected = !!friendUser;
@@ -357,7 +348,6 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
 
   const isSharing = screenShareState === "sharing";
 
-  // ── 4 video tiles ──
   const tiles: TileData[] = [
     {
       id: "my-cam",
@@ -403,7 +393,6 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     },
   ];
 
-  // Virtual "Editor" Tile Data
   const editorTile: TileData = {
     id: "editor",
     label: "Code Editor",
@@ -419,75 +408,33 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
   const activeMainElement = allLayoutElements.find(e => e.id === activeMainId) || editorTile;
   const sidebarElements = allLayoutElements.filter(e => e.id !== activeMainId);
 
-  // Styles for thumbnails
   const thumbStyle = { height: '160px', flexShrink: 0 };
 
   return (
-    <div className="cs-root">
-      {/* ═══ TOP BAR ═══ */}
-      <header className="cs-topbar">
-        <div className="cs-topbar-accent" />
+    <div
+      className="cs-root"
+      style={{
+        '--bg': '#262624',
+        '--bg-surface': '#2e2e2b',
+        '--bg-elevated': '#333330',
+        '--border': '#333330',
+        '--border-light': '#444441',
+        '--text': '#e0e0dd',
+        '--text-muted': '#a8a8a5',
+        '--text-dim': '#6b6b68',
+        '--blue': '#58a6ff',
+        '--blue-soft': '#58a6ff88',
+        '--blue-glow': 'rgba(88,166,255,0.12)',
+        '--green': '#3fb950',
+        '--green-glow': 'rgba(63,185,80,0.25)',
+        '--red': '#ff6b6b',
+        '--orange': '#f0883e',
+        background: '#262624',
+      } as React.CSSProperties}
+    >
 
-        <div className="cs-logo-container">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--blue)] to-[var(--green)] flex items-center justify-center text-[#0d1117] shadow-lg shadow-[var(--blue-glow)] flex-shrink-0">
-            <span className="font-black text-sm tracking-tighter">CS</span>
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-[11px] font-black tracking-[0.15em] text-[var(--text)] uppercase">CodeSync</span>
-            <span className="text-[8px] font-mono text-[var(--text-dim)] tracking-widest uppercase">EST. 2024 v2.0</span>
-          </div>
-        </div>
 
-        {/* Connection status */}
-        <div className="flex items-center gap-4 px-4 h-full">
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${connected ? "bg-[var(--green)] shadow-[0_0_8px_var(--green-glow)] animate-pulse" : "bg-[var(--red)] shadow-[0_0_8px_var(--red)]"}`} />
-            <span className={`text-[10px] font-bold tracking-tight ${connected ? "text-[var(--green)]" : "text-[var(--red)]"}`}>
-              {connected ? "LIVE" : "OFFLINE"}
-            </span>
-          </div>
-          {myRole && (
-            <div className="px-2.5 py-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)] shadow-sm">
-              <span className={`text-[10px] font-bold tracking-widest uppercase ${isOwner ? "text-[var(--blue)]" : "text-[var(--green)]"}`}>
-                {myRole}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex-1" />
-
-        {/* Room & Invite */}
-        <div className="flex items-center gap-3 pr-4">
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)]">
-            <span className="text-[10px] font-mono text-[var(--text-dim)] uppercase">Room:</span>
-            <span className="text-[11px] font-mono font-bold text-[var(--blue)] tracking-wider">
-              {roomId.slice(0, 12)}...
-            </span>
-          </div>
-
-          <button
-            onClick={copyInvite}
-            className="flex items-center gap-2 px-4 py-1.5 text-[11px] font-bold rounded-xl border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--blue-soft)] hover:text-[var(--text)] transition-all hover:bg-[var(--blue-glow)] active:scale-95"
-          >
-            {copied ? "✓ COPIED" : "⎘ INVITE"}
-          </button>
-
-          <div className="w-px h-6 bg-[var(--border)] mx-1" />
-
-          {/* User Badge */}
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[var(--bg-surface)] to-transparent border border-[var(--border)] group hover:border-[var(--blue-glow)] transition-all">
-            <div className="w-6 h-6 rounded-lg bg-[var(--blue)] flex items-center justify-center text-[10px] font-bold text-[var(--bg)] shadow-md group-hover:scale-110 transition-transform">
-              {userName[0]?.toUpperCase()}
-            </div>
-            <span className="text-[11px] font-bold text-[var(--text)] tracking-tight">
-              {userName}
-            </span>
-          </div>
-        </div>
-      </header>
-
-      {/* ═══ DIFF BANNER (owner only) ═══ */}
+      {/* ═══ DIFF BANNER ═══ */}
       {pendingChange && isOwner && (
         <DiffPanel
           original={myCode}
@@ -500,8 +447,24 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
 
       {/* ═══ MAIN STAGE + SIDEBAR ═══ */}
       <div className="cs-main-grid">
-        {/* ── CENTRAL MAIN STAGE ── */}
-        <main className="cs-main-stage">
+        {/* CENTRAL MAIN STAGE */}
+        <main className="cs-main-stage" style={{ background: '#262624', display: 'flex', flexDirection: 'column' }}>
+          {/* Role indicator */}
+          <div
+            className="flex items-center gap-2 px-4 py-1.5 flex-shrink-0"
+            style={{ background: '#1e1e1c', borderBottom: '1px solid #333330' }}
+          >
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ background: isOwner ? '#58a6ff' : '#3fb950', boxShadow: isOwner ? '0 0 6px rgba(88,166,255,0.5)' : '0 0 6px rgba(63,185,80,0.5)' }}
+            />
+            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: isOwner ? '#58a6ff' : '#3fb950' }}>
+              {isOwner ? "Owner" : "Editor"}
+            </span>
+            <span className="text-[10px] font-mono" style={{ color: '#6b6b68' }}>
+              — {myName}
+            </span>
+          </div>
           {activeMainId === "editor" ? (
             <CodeEditorPanel
               code={isOwner ? myCode : (friendCode || myCode)}
@@ -514,7 +477,7 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
               pendingChanges={pendingChange ? [pendingChange] : []}
             />
           ) : (
-            <div className="w-full h-full bg-[#070a0f]">
+            <div className="w-full h-full" style={{ background: '#262624' }}>
               {activeMainElement.stream ? (
                 <VideoEl
                   stream={activeMainElement.stream}
@@ -524,12 +487,24 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center gap-6">
-                  <div className="w-32 h-32 rounded-[40px] flex items-center justify-center text-4xl cs-glass" style={{ color: activeMainElement.color, border: `2px solid ${activeMainElement.color}44` }}>
+                  <div
+                    className="w-32 h-32 rounded-[40px] flex items-center justify-center text-4xl"
+                    style={{
+                      background: 'rgba(38,38,36,0.85)',
+                      backdropFilter: 'blur(8px)',
+                      border: `2px solid ${activeMainElement.color}44`,
+                      color: activeMainElement.color,
+                    }}
+                  >
                     {activeMainElement.icon}
                   </div>
                   <div className="text-center">
-                    <h2 className="text-xl font-bold tracking-tight">{activeMainElement.label}</h2>
-                    <p className="text-[11px] font-mono text-[var(--text-dim)] uppercase tracking-widest mt-2">{activeMainElement.sublabel}</p>
+                    <h2 className="text-xl font-bold tracking-tight" style={{ color: '#e0e0dd' }}>
+                      {activeMainElement.label}
+                    </h2>
+                    <p className="text-[11px] font-mono uppercase tracking-widest mt-2" style={{ color: '#6b6b68' }}>
+                      {activeMainElement.sublabel}
+                    </p>
                   </div>
                 </div>
               )}
@@ -537,10 +512,13 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
           )}
         </main>
 
-        {/* ── SIDEBAR THUMBNAILS ── */}
-        <aside className="cs-sidebar-thumbnails">
+        {/* SIDEBAR */}
+        <aside
+          className="cs-sidebar-thumbnails"
+          style={{ background: '#1e1e1c', borderLeft: '1px solid #333330' }}
+        >
           <div className="px-2 mb-1">
-            <h3 className="text-[10px] font-black text-[var(--text-dim)] uppercase tracking-[0.2em]">Live Peeks</h3>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: '#6b6b68' }}>Live Peeks</h3>
           </div>
 
           <div className="cs-video-grid">
@@ -562,70 +540,18 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
       </div>
 
       {/* ═══ BOTTOM CONTROLS BAR ═══ */}
-      <footer className="cs-controls-bar">
-        {/* Left: Status info with glows */}
-        <div className="cs-controls-left">
-          <div className="flex items-center gap-3">
-            <div className={`w-2 h-2 rounded-full ${connected ? "bg-[var(--green)] shadow-[0_0_10px_var(--green-glow)] animate-pulse" : "bg-[var(--red)] shadow-[0_0_10px_var(--red)]"}`} />
-            <span className="text-[10px] font-bold tracking-widest hidden sm:inline">SECURE CHANNEL</span>
-          </div>
-
-          <div className="h-4 w-px bg-white/10" />
-
-          <div className="flex items-center gap-4">
-            {callStatus === "connected" && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs">🎥</span>
-                <span className="text-[9px] font-bold text-[var(--blue-soft)] uppercase tracking-tight hidden md:inline">AV ACTIVE</span>
-              </div>
-            )}
-            {isSharing && (
-              <div className="flex items-center gap-2 px-2 py-0.5 rounded-lg bg-orange-500/10 border border-orange-500/20 animate-pulse">
-                <span className="text-[8px] font-black text-[var(--orange)] uppercase">Streaming</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Center: media controls */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3 p-1 rounded-2xl cs-glass border border-white/5 shadow-2xl">
-          <CtrlBtn
-            emoji={isMicOn ? "🎤" : "🔇"}
-            label={isMicOn ? "MUTE" : "UNMUTE"}
-            onClick={toggleMic}
-            danger={!isMicOn}
-          />
-          <CtrlBtn
-            emoji={isCameraOn ? "📷" : "📵"}
-            label={isCameraOn ? "CAM: OFF" : "CAM: ON"}
-            onClick={toggleCamera}
-            danger={!isCameraOn}
-          />
-
-          <div className="w-px h-8 bg-white/10 mx-1" />
-
-          <CtrlBtn
-            emoji="🖥️"
-            label={isSharing ? "STOP" : "SHARE"}
-            onClick={isSharing ? stopScreenShare : startScreenShare}
-            danger={isSharing}
-            pulse={isSharing}
-          />
-        </div>
-
-        {/* Right: session info */}
-        <div className="cs-controls-right">
-          <div className="hidden sm:flex flex-col items-end leading-tight">
-            <span className="text-[8px] font-bold text-[var(--text-dim)] uppercase tracking-wider">Access Level</span>
-            <span className={`text-[10px] font-black ${isOwner ? "text-[var(--blue)]" : "text-[var(--green)]"} tracking-tighter`}>
-              {isOwner ? "ROOT_AUTH" : "EDITOR_SYNC"}
-            </span>
-          </div>
-          <div className="h-4 w-px bg-white/10 mx-2" />
-          <div className="flex flex-col items-end leading-tight">
-            <span className="text-[9px] font-black text-[var(--text)] italic tracking-tighter">CodeSync</span>
-            <span className="text-[7px] font-mono text-[var(--text-dim)] uppercase tracking-tighter">SYST_V2.0</span>
-          </div>
+      <footer
+        className="cs-controls-bar"
+        style={{ background: '#1e1e1c', borderTop: '1px solid #333330', justifyContent: 'center' }}
+      >
+        <div
+          className="flex items-center gap-3 p-1 rounded-2xl shadow-2xl"
+          style={{ background: 'rgba(30,30,28,0.95)', backdropFilter: 'blur(12px)', border: '1px solid #333330' }}
+        >
+          <CtrlBtn emoji={isMicOn ? "🎤" : "🔇"} label={isMicOn ? "MUTE" : "UNMUTE"} onClick={toggleMic} danger={!isMicOn} />
+          <CtrlBtn emoji={isCameraOn ? "📷" : "📵"} label={isCameraOn ? "CAM: OFF" : "CAM: ON"} onClick={toggleCamera} danger={!isCameraOn} />
+          <div className="w-px h-8 mx-1" style={{ background: '#333330' }} />
+          <CtrlBtn emoji="🖥️" label={isSharing ? "STOP" : "SHARE"} onClick={isSharing ? stopScreenShare : startScreenShare} danger={isSharing} pulse={isSharing} />
         </div>
       </footer>
     </div>

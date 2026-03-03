@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
-import { TopBar } from "../components/ui/TopBar";
+
 import { DiffPanel } from "../components/diff/DiffPanel";
 import { VideoPanel } from "../components/video/VideoPanel";
 import { useRoomStore } from "../store/roomStore";
@@ -141,12 +141,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
     return (
         <div className="flex flex-col h-screen bg-[#0d1117] text-white overflow-hidden">
 
-            {/* ── Top Bar ── */}
-            <TopBar
-                roomId={roomId}
-                connected={connected}
-                user={myUser ?? { id: userId, name: userName }}
-            />
+
 
             {/* Diff Banner only owner sees this */}
             {pendingChange && isOwner && (

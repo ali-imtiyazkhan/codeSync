@@ -38,10 +38,13 @@ export default function RoomPage({ params }: PageProps) {
 
   if (!userId || !userName) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#070a0f]">
+      <div className="flex items-center justify-center h-screen" style={{ background: '#262624' }}>
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-[#30363d] border-t-[#58a6ff] animate-spin" />
-          <span className="text-[#8b949e] font-mono text-sm">Joining room...</span>
+          <div
+            className="w-8 h-8 rounded-full border-2 animate-spin"
+            style={{ borderColor: '#333330', borderTopColor: '#58a6ff' }}
+          />
+          <span className="font-mono text-sm" style={{ color: '#6b6b68' }}>Joining room...</span>
         </div>
       </div>
     );
