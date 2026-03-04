@@ -170,7 +170,7 @@ io.on("connection", (socket: Socket) => {
     },
   );
 
-  // ── Owner accepts change ──────────────────────────────────────────────────
+  // Owner accepts change
   socket.on("accept-change", (data: { roomId: string; newCode: string }) => {
     const room = rooms.get(data.roomId);
     if (!room) return;
@@ -179,12 +179,12 @@ io.on("connection", (socket: Socket) => {
     io.to(data.roomId).emit("change-accepted", { newCode: data.newCode });
   });
 
-  // ── Owner rejects change ─────────────────────────────────────────────────
+  // Owner rejects change
   socket.on("reject-change", (data: { roomId: string }) => {
     socket.to(data.roomId).emit("change-rejected", {});
   });
 
-  // ── VS Code push ──────────────────────────────────────────────────────────
+  // VS Code push
   socket.on("vscode-push", (data: { roomId: string; code: string }) => {
     const room = rooms.get(data.roomId);
     if (!room) return;
@@ -193,7 +193,7 @@ io.on("connection", (socket: Socket) => {
   });
 
 
-  // ── WebRTC signaling passthrough (camera + screen, identified by kind) ──
+  // WebRTC signaling passthrough (camera + screen, identified by kind)
   socket.on(
     "webrtc-signal",
     (data: { signal: unknown; userId: string; roomId: string; kind: "camera" | "screen" }) => {
@@ -206,7 +206,7 @@ io.on("connection", (socket: Socket) => {
     }
   );
 
-  // ── Screen share events ───────────────────────────────────────────────
+  // Screen share events 
   socket.on("screen-share-start", (data: { userId: string; roomId: string }) => {
     console.log(`[screen-share-start] ${data.userId} in ${data.roomId}`);
     // Notify everyone else that this user started sharing
@@ -218,7 +218,7 @@ io.on("connection", (socket: Socket) => {
     socket.to(data.roomId).emit("screen-share-stopped", { userId: data.userId });
   });
 
-  // ── Disconnect ────────────────────────────────────────────────────────────
+  // Disconnect
   socket.on("disconnect", () => {
     console.log(`[disconnect] socket=${socket.id}`);
 
