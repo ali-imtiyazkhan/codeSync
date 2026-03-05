@@ -10,7 +10,7 @@ const io = new Server(httpServer, {
   },
 });
 
-// Types
+// Types of room user
 interface RoomUser {
   id: string;
   name: string;
@@ -19,8 +19,9 @@ interface RoomUser {
   socketId: string;
 }
 
+// Room interface
 interface Room {
-  users: Map<string, RoomUser>; // userId → RoomUser
+  users: Map<string, RoomUser>; //mapping of userId → RoomUser
   ownerCode: string;
 }
 
