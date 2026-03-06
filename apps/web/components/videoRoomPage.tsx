@@ -539,7 +539,7 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
         </aside>
       </div>
 
-      {/* ═══ BOTTOM CONTROLS BAR ═══ */}
+    {/* control bar at bottom */}
       <footer
         className="cs-controls-bar"
         style={{ background: '#1e1e1c', borderTop: '1px solid #333330', justifyContent: 'center' }}
