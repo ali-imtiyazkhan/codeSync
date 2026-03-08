@@ -4,9 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   DESIGN TOKENS (HSL for flexibility)
-   ═══════════════════════════════════════════════════════════════════════════ */
 :root {
   /* Core brand */
   --blue-h: 213;
@@ -52,9 +49,6 @@
   --radius-xl: 24px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   GLOBAL RESETS
-   ═══════════════════════════════════════════════════════════════════════════ */
 * {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
@@ -68,14 +62,9 @@ body {
     radial-gradient(at 100% 100%, hsla(var(--purple-h), 30%, 15%, 0.1) 0px, transparent 50%);
   color: var(--text);
   font-family: "Inter", system-ui, -apple-system, sans-serif;
-  overflow: hidden;
-  height: 100vh;
   margin: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   GLASS UTILITIES
-   ═══════════════════════════════════════════════════════════════════════════ */
 .cs-glass {
   background: var(--glass);
   backdrop-filter: blur(12px) saturate(180%);
@@ -90,9 +79,6 @@ body {
   border: 1px solid var(--glass-border);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ROOT LAYOUT
-   ═══════════════════════════════════════════════════════════════════════════ */
 .cs-root {
   display: flex;
   flex-direction: column;
@@ -102,9 +88,6 @@ body {
   overflow: hidden;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   TOP BAR
-   ═══════════════════════════════════════════════════════════════════════════ */
 .cs-topbar {
   display: flex;
   align-items: center;
@@ -139,12 +122,6 @@ body {
   flex-shrink: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MAIN GRID
-   ═══════════════════════════════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════════════════════════════
-   MAIN STAGE LAYOUT
-   ═══════════════════════════════════════════════════════════════════════════ */
 .cs-main-grid {
   display: flex;
   flex: 1;
@@ -156,17 +133,17 @@ body {
 
 .cs-main-stage {
   flex: 1;
-  height: 100%;
   min-width: 0;
   overflow: hidden;
   position: relative;
   background: #070a0f;
-  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
 }
 
 .cs-sidebar-thumbnails {
   width: 280px;
-  max-width: 30%;
+  max-width: 300px;
   height: 100%;
   overflow-y: auto;
   background: var(--bg-surface);
@@ -175,6 +152,7 @@ body {
   gap: 12px;
   padding: 12px;
   flex-shrink: 0;
+  border-left: 1px solid var(--border);
 }
 
 /* Video grid inside sidebar */
@@ -435,13 +413,35 @@ video {
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 900px) {
   .cs-main-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    flex-direction: column;
+  }
+
+  .cs-main-stage {
+    flex: 1;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cs-sidebar-thumbnails {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-left: none;
+    border-top: 1px solid var(--border);
   }
 
   .cs-video-grid {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    max-height: 35vh;
+    flex-direction: row;
+    height: 100%;
+  }
+
+  .video-tile {
+    width: 200px;
+    height: 100%;
+    flex-shrink: 0;
   }
 }

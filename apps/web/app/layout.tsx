@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
 import "./globals.css";
+
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "CodeSync — Collaborative Dev Space",
@@ -13,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-bg h-screen overflow-hidden">{children}</body>
+      <body className={`${outfit.className} bg-bg`}>{children}</body>
     </html>
   );
 }
