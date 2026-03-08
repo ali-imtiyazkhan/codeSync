@@ -27,12 +27,22 @@ export function DiffPanel({
         const diffEditor = monaco.editor.createDiffEditor(containerRef.current, {
             theme: "vs-dark",
             readOnly: true,
-            renderSideBySide: true,
-            fontSize: 12,
-            fontFamily: "'JetBrains Mono', monospace",
+            renderSideBySide: false,
+            fontSize: 13,
+            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
-            padding: { top: 8 },
+            padding: { top: 12, bottom: 12 },
+            lineNumbers: "on",
+            diffWordWrap: "on",
+            automaticLayout: true,
+            scrollbar: {
+                vertical: 'visible',
+                horizontal: 'visible',
+                useShadows: false,
+                verticalScrollbarSize: 8,
+                horizontalScrollbarSize: 8
+            }
         });
 
         const originalModel = monaco.editor.createModel(original, "javascript");
@@ -77,7 +87,7 @@ export function DiffPanel({
             </div>
 
             {/* Diff Editor */}
-            <div ref={containerRef} className="h-52" />
+            <div ref={containerRef} className="h-[400px] border-t border-[#d2992222]" />
         </div>
     );
 }

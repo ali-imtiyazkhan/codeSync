@@ -12,12 +12,21 @@ import type {
 // Monaco must be loaded client-side only
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
-  loading: () => (
-    <div className="flex-1 flex items-center justify-center bg-slate-950">
-      <span className="text-slate-500 font-mono text-sm animate-pulse">Loading editor...</span>
-    </div>
-  ),
+  loading: () => <EditorLoading />,
 });
+
+const DiffEditor = dynamic(() => import("@monaco-editor/react").then(mod => mod.DiffEditor), {
+  ssr: false,
+  loading: () => <EditorLoading />,
+});
+
+function EditorLoading() {
+  return (
+    <div className="flex-1 flex items-center justify-center bg-[#262624]">
+      <span className="text-[#8b949e] font-mono text-sm animate-pulse">Loading editor...</span>
+    </div>
+  );
+}
 
 type AppSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -40,6 +49,8 @@ interface CodeEditorPanelProps {
   socket: AppSocket | null;
   roomId: string;
   pendingChanges: PendingChange[];
+  onAccept?: (change: PendingChange) => void;
+  onReject?: (change: PendingChange) => void;
 }
 
 export default function CodeEditorPanel({
@@ -51,36 +62,52 @@ export default function CodeEditorPanel({
   socket,
   roomId,
   pendingChanges,
+  onAccept,
+  onReject,
 }: CodeEditorPanelProps) {
   const editorRef = useRef<any>(null);
-  const isRemoteUpdate = useRef(false);
 
-  // Sync remote changes without losing focus
-  useEffect(() => {
-    if (editorRef.current) {
-      const currentModelValue = editorRef.current.getValue();
-      if (code !== currentModelValue) {
-        isRemoteUpdate.current = true;
-        editorRef.current.setValue(code);
-        isRemoteUpdate.current = false;
-      }
-    }
-  }, [code]);
+  const isReviewMode = pendingChanges.length > 0 && !!onAccept;
+  const currentPending = pendingChanges[0];
 
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
-      if (isRemoteUpdate.current) return;
+      if (isReviewMode) return;
       onChange(value || "");
     },
-    [onChange]
+    [onChange, isReviewMode]
   );
 
   const handleEditorMount = (editor: unknown) => {
     editorRef.current = editor;
   };
 
+  const editorOptions = {
+    fontSize: 14,
+    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+    fontLigatures: true,
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    lineNumbers: "on" as const,
+    renderingIndentGuides: true,
+    cursorBlinking: "smooth" as const,
+    smoothScrolling: true,
+    wordWrap: "on" as const,
+    automaticLayout: true,
+    readOnly: readOnly || isReviewMode,
+    padding: { top: 20, bottom: 20 },
+    bracketPairColorization: { enabled: true },
+    scrollbar: {
+      vertical: 'visible' as const,
+      horizontal: 'visible' as const,
+      useShadows: false,
+      verticalScrollbarSize: 10,
+      horizontalScrollbarSize: 10
+    }
+  };
+
   return (
-    <div className="cs-editor-panel shadow-2xl">
+    <div className={`cs-editor-panel shadow-2xl ${isReviewMode ? 'ring-1 ring-[var(--blue)]' : ''}`}>
       {/* Editor header */}
       <div className="cs-editor-header">
         {/* Left Section: File & Control */}
@@ -102,10 +129,38 @@ export default function CodeEditorPanel({
           </div>
         </div>
 
+        {/* Center Section: Review Tools (only in review mode) */}
+        {isReviewMode && currentPending && (
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[var(--bg-surface)] border border-[var(--blue-soft)] p-0.5 rounded-xl shadow-2xl animate-slide-down">
+            <div className="px-3 py-1.5 flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--blue)] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--blue)]"></span>
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-[var(--blue)]">
+                Reviewing Suggestion
+              </span>
+            </div>
+            <div className="h-6 w-px bg-[var(--border)] mx-1" />
+            <button
+              onClick={() => onReject?.(currentPending)}
+              className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--red)] hover:bg-[var(--red)]/10 rounded-lg transition-all"
+            >
+              Reject
+            </button>
+            <button
+              onClick={() => onAccept?.(currentPending)}
+              className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-[var(--blue)] text-white hover:bg-[var(--blue)]/80 rounded-lg transition-all shadow-[0_0_15px_var(--blue-soft)]"
+            >
+              Accept Change
+            </button>
+          </div>
+        )}
+
         {/* Right Section: Status & Meta */}
         <div className="flex items-center gap-3">
-          {/* Pending indicator */}
-          {pendingChanges.length > 0 && (
+          {/* Pending indicator (if not in direct review mode) */}
+          {!isReviewMode && pendingChanges.length > 0 && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[hsla(var(--blue-h),100%,68%,0.1)] border border-[hsla(var(--blue-h),100%,68%,0.2)] text-[var(--blue)] animate-pulse">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--blue)]" />
               <span className="text-[10px] font-bold tracking-tight">{pendingChanges.length} PENDING</span>
@@ -135,71 +190,33 @@ export default function CodeEditorPanel({
       {/* Monaco Editor Container */}
       <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
         <div style={{ position: 'absolute', inset: 0 }}>
-          <MonacoEditor
-            height="100%"
-            language={language}
-            defaultValue={code}
-            onChange={handleEditorChange}
-            onMount={handleEditorMount}
-            theme="vs-dark"
-            options={{
-              fontSize: 14,
-              fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-              fontLigatures: true,
-              minimap: { enabled: false },
-              scrollBeyondLastLine: false,
-              lineNumbers: "on",
-              glyphMargin: false,
-              folding: true,
-              lineDecorationsWidth: 10,
-              lineNumbersMinChars: 3,
-              renderLineHighlight: "gutter",
-              cursorBlinking: "smooth",
-              smoothScrolling: true,
-              wordWrap: "on",
-              automaticLayout: true,
-              readOnly,
-              suggestOnTriggerCharacters: true,
-              quickSuggestions: {
-                other: true,
-                comments: true,
-                strings: true
-              },
-              parameterHints: {
-                enabled: true
-              },
-              formatOnType: true,
-              formatOnPaste: true,
-              padding: { top: 20, bottom: 20 },
-              bracketPairColorization: { enabled: true },
-              scrollbar: {
-                vertical: 'visible',
-                horizontal: 'visible',
-                useShadows: false,
-                verticalScrollbarSize: 10,
-                horizontalScrollbarSize: 10
-              }
-            }}
-          />
+          {isReviewMode && currentPending ? (
+            <DiffEditor
+              height="100%"
+              language={language}
+              original={code}
+              modified={currentPending.newCode}
+              theme="vs-dark"
+              options={{
+                ...editorOptions,
+                renderSideBySide: false,
+                readOnly: true,
+                originalEditable: false,
+              }}
+            />
+          ) : (
+            <MonacoEditor
+              height="100%"
+              language={language}
+              value={code}
+              onChange={handleEditorChange}
+              onMount={handleEditorMount}
+              theme="vs-dark"
+              options={editorOptions}
+            />
+          )}
         </div>
       </div>
-
-      {/* Footer: keyboard shortcut hint */}
-      {/* <div className="cs-editor-footer">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-[var(--blue)] opacity-60 animate-pulse shadow-[0_0_8px_var(--blue-glow)]" />
-          <span className="text-[10px] font-bold text-[var(--text-dim)] tracking-widest uppercase">
-            {readOnly ? "Live Monitoring" : "Sync Active ↔ Streaming"}
-          </span>
-        </div>
-        <div className="flex items-center gap-4 text-[10px] font-mono text-[var(--text-dim)]">
-          <div className="flex gap-2">
-            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 uppercase">CTRL+Z</span>
-            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 uppercase">CMD+S</span>
-          </div>
-          <span className="text-[var(--blue-soft)] font-bold">LN {code.split('\n').length}</span>
-        </div>
-      </div> */}
     </div>
   );
 }
