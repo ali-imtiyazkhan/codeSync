@@ -77,6 +77,12 @@ export function useWebSocket(roomId: string, userId: string, userName: string) {
     // Owner accepted → sync code everywhere
     sock.on("change-accepted", (data: { newCode: string }) => {
       setMyCode(data.newCode);
+      setFriendCode(""); // Clear local editor proposal
+    });
+
+    // Owner rejected → clear local proposal
+    sock.on("change-rejected", () => {
+      setFriendCode("");
     });
 
     // Owner's code changed (VS Code push or owner typed) → update owner editor

@@ -189,8 +189,30 @@ io.on("connection", (socket: Socket) => {
   socket.on("vscode-push", (data: { roomId: string; code: string }) => {
     const room = rooms.get(data.roomId);
     if (!room) return;
-    room.ownerCode = data.code;
-    io.to(data.roomId).emit("vscode-push", { code: data.code });
+
+    // Find the user who pushed
+    const user = Array.from(room.users.values()).find(
+      (u) => u.socketId === socket.id
+    );
+
+    if (!user) return;
+
+    if (user.role === "owner") {
+      room.ownerCode = data.code;
+      io.to(data.roomId).emit("vscode-push", { code: data.code });
+    } else {
+      // Editor pushed from VS Code → treat as a proposal
+      const owner = Array.from(room.users.values()).find(
+        (u) => u.role === "owner"
+      );
+      if (owner) {
+        io.to(owner.socketId).emit("change-proposed", {
+          original: room.ownerCode,
+          newCode: data.code,
+          authorId: user.id,
+        });
+      }
+    }
   });
 
 

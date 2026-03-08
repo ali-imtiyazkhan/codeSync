@@ -434,17 +434,6 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
     >
 
 
-      {/* ═══ DIFF BANNER ═══ */}
-      {pendingChange && isOwner && (
-        <DiffPanel
-          original={myCode}
-          modified={pendingChange.newCode}
-          authorName={editorLabel}
-          onAccept={handleAcceptChange}
-          onReject={handleRejectChange}
-        />
-      )}
-
       {/* ═══ MAIN STAGE + SIDEBAR ═══ */}
       <div className="cs-main-grid">
         {/* CENTRAL MAIN STAGE */}
@@ -475,6 +464,8 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
               socket={socket}
               roomId={roomId}
               pendingChanges={pendingChange ? [pendingChange] : []}
+              onAccept={isOwner ? handleAcceptChange : undefined}
+              onReject={isOwner ? handleRejectChange : undefined}
             />
           ) : (
             <div className="w-full h-full" style={{ background: '#262624' }}>
@@ -539,7 +530,7 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
         </aside>
       </div>
 
-    {/* control bar at bottom */}
+      {/* control bar at bottom */}
       <footer
         className="cs-controls-bar"
         style={{ background: '#1e1e1c', borderTop: '1px solid #333330', justifyContent: 'center' }}
