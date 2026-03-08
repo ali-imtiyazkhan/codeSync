@@ -1,383 +1,322 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import dynamic from "next/dynamic";
 import { useWebSocket } from "../lib/useSocket";
 import { useWebRTC } from "../lib/useWebRTC";
 import { useRoomStore } from "../store/roomStore";
-import { DiffPanel } from "./diff/DiffPanel";
+import dynamic from "next/dynamic";
+import type { PendingChange } from "@codesync/socket-types";
 
+// Dynamically import the real Monaco editor
 const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
   ssr: false,
   loading: () => (
-    <div className="flex-1 flex items-center justify-center" style={{ background: '#262624' }}>
-      <span className="text-[#8b949e] font-mono text-sm animate-pulse">
-        Loading editor...
-      </span>
+    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#0d1117" }}>
+      <span style={{ fontSize: "14px", color: "#8b949e", fontFamily: "monospace" }}>Loading editor...</span>
     </div>
   ),
 });
 
-function VideoEl({
-  stream,
-  muted,
-  mirror,
-  className = "",
-}: {
-  stream: MediaStream | null;
-  muted: boolean;
-  mirror: boolean;
-  className?: string;
-}) {
-  const ref = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    if (ref.current) ref.current.srcObject = stream ?? null;
-  }, [stream]);
-
+function VideoEl({ stream, muted, mirror, style = {} }) {
+  const ref = useRef(null);
+  useEffect(() => { if (ref.current) ref.current.srcObject = stream ?? null; }, [stream]);
   return (
-    <video
-      ref={ref}
-      autoPlay
-      playsInline
-      muted={muted}
-      className={className}
-      style={{ transform: mirror ? "scaleX(-1)" : "none" }}
-    />
+    <video ref={ref} autoPlay playsInline muted={muted}
+      style={{ transform: mirror ? "scaleX(-1)" : "none", ...style }} />
   );
 }
 
-interface TileData {
-  id: string;
-  label: string;
-  sublabel: string;
-  stream: MediaStream | null;
-  muted: boolean;
-  mirror: boolean;
-  color: string;
-  icon: string;
-  onAction?: () => void;
-  actionLabel?: string;
-}
+// Removed the internal CodeEditorPanel as we now use the real one imported above.
 
-function VideoTile({
-  tile,
-  expanded,
-  onToggleExpand,
-}: {
-  tile: TileData;
-  expanded: boolean;
-  onToggleExpand: () => void;
-}) {
+// ─── Tile thumbnail component ─────────────────────────────────────────────────
+function TileThumbnail({ tile, isActive, onClick }) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
-      className={`video-tile group relative rounded-lg overflow-hidden ${expanded ? "video-tile-expanded" : ""}`}
-      style={{
-        border: '1px solid #333330',
-        gridColumn: expanded ? "1 / 3" : undefined,
-        gridRow: expanded ? "1 / 3" : undefined,
-      }}
-      onDoubleClick={onToggleExpand}
+      onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative", borderRadius: "10px", overflow: "hidden",
+        cursor: "pointer", flexShrink: 0,
+        border: isActive ? `2px solid ${tile.color}` : "2px solid #21262d",
+        transition: "border-color 0.2s, transform 0.15s, box-shadow 0.2s",
+        transform: hovered && !isActive ? "scale(1.02)" : "scale(1)",
+        boxShadow: isActive ? `0 0 16px ${tile.color}44` : hovered ? "0 4px 16px rgba(0,0,0,0.4)" : "none",
+        aspectRatio: "16/9",
+        background: "#161b22",
+      }}
     >
-      {/* Background Glow */}
-      <div
-        className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"
-        style={{ background: `radial-gradient(circle at center, ${tile.color}44 0%, transparent 70%)` }}
-      />
-
       {tile.stream ? (
-        <div className="relative w-full h-full">
-          <VideoEl
-            stream={tile.stream}
-            muted={tile.muted}
-            mirror={tile.mirror}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-          />
-          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        <VideoEl stream={tile.stream} muted={tile.muted} mirror={tile.mirror}
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      ) : tile.id === "editor" ? (
+        // Mini editor preview
+        <div style={{ width: "100%", height: "100%", background: "#0d1117", padding: "8px", overflow: "hidden" }}>
+          <div style={{ display: "flex", gap: "3px", marginBottom: "6px" }}>
+            {["#ff5f57", "#febc2e", "#28c840"].map(c => <div key={c} style={{ width: "5px", height: "5px", borderRadius: "50%", background: c }} />)}
+          </div>
+          {["// code...", "console.log(", "  'Hello'", ");", "", "function fn() {", "  return 42;", "}"].map((l, i) => (
+            <div key={i} style={{ height: "8px", marginBottom: "2px", borderRadius: "2px", background: l ? `${tile.color}22` : "transparent", width: l ? `${40 + (i * 17) % 45}%` : "0" }} />
+          ))}
         </div>
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-4" style={{ background: '#2e2e2b' }}>
-          <div className="relative">
-            <div
-              className="relative z-10 w-16 h-16 rounded-[22px] flex items-center justify-center text-2xl transition-all duration-500 group-hover:rounded-[18px]"
+        <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", background: `linear-gradient(135deg, #161b22 0%, #0d1117 100%)` }}>
+          <div style={{
+            width: "32px", height: "32px", borderRadius: "8px",
+            background: `${tile.color}15`, border: `1px solid ${tile.color}30`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "14px",
+          }}>{tile.icon}</div>
+          <span style={{ fontSize: "9px", color: "#8b949e", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{tile.sublabel}</span>
+          {tile.onAction && (
+            <button
+              onClick={e => { e.stopPropagation(); tile.onAction(); }}
               style={{
-                background: `linear-gradient(135deg, ${tile.color}22, ${tile.color}11)`,
-                border: `1px solid ${tile.color}33`,
-                color: tile.color,
-                boxShadow: hovered ? `0 10px 25px ${tile.color}22` : "none",
+                fontSize: "8px", padding: "3px 8px", borderRadius: "4px",
+                background: `${tile.color}20`, border: `1px solid ${tile.color}40`,
+                color: tile.color, cursor: "pointer", fontFamily: "monospace",
+                letterSpacing: "0.05em",
               }}
-            >
-              {tile.icon}
-            </div>
-            <div
-              className="absolute inset-0 rounded-[22px] border opacity-20 animate-ping"
-              style={{ borderColor: tile.color, animationDuration: '3s' }}
-            />
-          </div>
-
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase" style={{ color: '#6b6b68' }}>
-              {tile.sublabel}
-            </span>
-            {tile.onAction && (
-              <button
-                onClick={(e) => { e.stopPropagation(); tile.onAction?.(); }}
-                className="mt-1 px-4 py-2 text-[10px] font-bold tracking-widest rounded-xl transition-all duration-300 active:scale-95"
-                style={{
-                  background: '#333330',
-                  border: '1px solid #444441',
-                  color: '#c9c9c6',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = '#58a6ff55';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 0 15px #58a6ff22';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = '#444441';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                }}
-              >
-                {tile.actionLabel ?? "START SESSION"}
-              </button>
-            )}
-          </div>
+            >SHARE</button>
+          )}
         </div>
       )}
 
-      {/* Bottom Label */}
-      <div className="absolute bottom-4 left-4 right-4 z-20">
-        <div
-          className="flex items-center gap-3 p-1.5 pr-4 rounded-xl"
-          style={{ background: 'rgba(38,38,36,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #3a3a37' }}
-        >
-          <div
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0 ml-1.5"
-            style={{
-              backgroundColor: tile.stream ? tile.color : '#6b6b68',
-              boxShadow: tile.stream ? `0 0 10px ${tile.color}` : 'none',
-            }}
-          />
-          <span
-            className="text-[11px] font-bold tracking-tight truncate"
-            style={{ color: tile.stream ? '#e0e0dd' : '#8b8b88' }}
-          >
-            {tile.label}
-          </span>
-
-          {tile.stream && tile.id.includes("screen") && (
-            <div className="ml-auto flex items-center gap-2 px-2 py-0.5 rounded-md" style={{ background: 'rgba(255,80,80,0.12)', border: '1px solid rgba(255,80,80,0.25)' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-              <span className="text-[9px] font-black text-red-400 tracking-widest">LIVE</span>
-            </div>
-          )}
-        </div>
+      {/* Bottom label */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, right: 0,
+        padding: "16px 8px 6px",
+        background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
+        display: "flex", alignItems: "center", gap: "5px",
+      }}>
+        <div style={{
+          width: "5px", height: "5px", borderRadius: "50%",
+          background: tile.stream ? tile.color : "#3d444d",
+          boxShadow: tile.stream ? `0 0 6px ${tile.color}` : "none",
+          flexShrink: 0,
+        }} />
+        <span style={{ fontSize: "10px", color: "#c9d1d9", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {tile.label}
+        </span>
+        {isActive && (
+          <span style={{
+            marginLeft: "auto", fontSize: "8px", color: tile.color,
+            padding: "1px 5px", border: `1px solid ${tile.color}50`, borderRadius: "3px",
+            fontFamily: "monospace", flexShrink: 0,
+          }}>LIVE</span>
+        )}
       </div>
 
-      {/* Type badge */}
-      <div className="absolute top-4 left-4 flex gap-2">
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-lg leading-none"
-          style={{ background: 'rgba(38,38,36,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #3a3a37' }}
-        >
-          {tile.id.includes("cam") ? "👤" : "🖥️"}
+      {/* Hover overlay */}
+      {hovered && !isActive && (
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "rgba(0,0,0,0.25)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <div style={{
+            padding: "4px 10px", borderRadius: "4px",
+            background: "rgba(0,0,0,0.7)", border: "1px solid #30363d",
+            fontSize: "9px", color: "#c9d1d9", fontFamily: "monospace", letterSpacing: "0.1em",
+          }}>FOCUS →</div>
         </div>
-      </div>
-
-      {/* Expand hint */}
-      <div className={`absolute top-4 right-4 transition-all duration-300 ${hovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
-        <div
-          className="px-3 py-1.5 rounded-lg flex items-center gap-2"
-          style={{ background: 'rgba(38,38,36,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #3a3a37' }}
-        >
-          <span className="text-[10px] font-bold tracking-wide" style={{ color: '#8b8b88' }}>
-            {expanded ? "RESTORE" : "EXPAND"}
-          </span>
-          <div className="w-2 h-2 rounded-[2px]" style={{ border: '1px solid #6b6b68' }} />
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
-function CtrlBtn({
-  emoji,
-  label,
-  onClick,
-  active = true,
-  danger = false,
-  pulse = false,
-}: {
-  emoji: string;
-  label: string;
-  onClick: () => void;
-  active?: boolean;
-  danger?: boolean;
-  pulse?: boolean;
-}) {
+// ─── Main stage: renders whichever tile is active in full ─────────────────────
+function MainStage({ tile, myCode, onCodeChange, isOwner, socket, roomId, pendingChanges, onAccept, onReject }) {
+  if (tile.id === "editor") {
+    return (
+      <CodeEditorPanel
+        code={myCode}
+        language="javascript"
+        fileName="main.js"
+        onChange={onCodeChange}
+        readOnly={false}
+        socket={socket as any}
+        roomId={roomId}
+        pendingChanges={pendingChanges}
+        onAccept={onAccept}
+        onReject={onReject}
+        hideHeader={true}
+      />
+    );
+  }
+  if (tile.stream) {
+    return (
+      <div style={{ flex: 1, position: "relative", background: "#000", overflow: "hidden" }}>
+        <VideoEl stream={tile.stream} muted={tile.muted} mirror={tile.mirror}
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        {/* Overlay info */}
+        <div style={{
+          position: "absolute", top: "16px", left: "16px",
+          display: "flex", alignItems: "center", gap: "8px",
+          padding: "6px 12px", borderRadius: "8px",
+          background: "rgba(13,17,23,0.8)", backdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}>
+          <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: tile.color, boxShadow: `0 0 8px ${tile.color}` }} />
+          <span style={{ fontSize: "12px", color: "#c9d1d9", fontFamily: "monospace" }}>{tile.label}</span>
+          {tile.id.includes("screen") && (
+            <span style={{ fontSize: "9px", color: "#ff6b6b", padding: "1px 6px", border: "1px solid rgba(255,107,107,0.3)", borderRadius: "3px", fontFamily: "monospace" }}>● REC</span>
+          )}
+        </div>
+      </div>
+    );
+  }
+  // No stream — placeholder
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0d1117", gap: "16px" }}>
+      <div style={{
+        width: "80px", height: "80px", borderRadius: "20px",
+        background: `${tile.color}10`, border: `2px solid ${tile.color}30`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: "32px",
+      }}>{tile.icon}</div>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: "18px", fontWeight: 700, color: "#c9d1d9", fontFamily: "monospace", marginBottom: "6px" }}>{tile.label}</div>
+        <div style={{ fontSize: "12px", color: "#8b949e", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{tile.sublabel}</div>
+      </div>
+      {tile.onAction && (
+        <button onClick={tile.onAction} style={{
+          padding: "10px 24px", borderRadius: "8px",
+          background: `${tile.color}15`, border: `1px solid ${tile.color}40`,
+          color: tile.color, cursor: "pointer", fontFamily: "monospace",
+          fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em",
+          transition: "all 0.2s",
+        }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = `${tile.color}25`; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 20px ${tile.color}30`; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = `${tile.color}15`; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+        >{tile.actionLabel}</button>
+      )}
+    </div>
+  );
+}
+
+// ─── Control button ───────────────────────────────────────────────────────────
+function CtrlBtn({ emoji, label, onClick, active = true, danger = false, pulse = false }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
       title={label}
-      className={`flex flex-col items-center justify-center gap-1 w-14 h-12 rounded-xl transition-all duration-200 active:scale-95 ${pulse ? "animate-pulse" : ""}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        background: danger ? 'rgba(255,80,80,0.12)' : 'rgba(60,60,57,0.6)',
-        border: danger ? '1px solid rgba(255,80,80,0.3)' : '1px solid #3a3a37',
-        color: danger ? '#ff6b6b' : '#c9c9c6',
-      }}
-      onMouseEnter={e => {
-        if (!danger) (e.currentTarget as HTMLElement).style.background = 'rgba(80,80,77,0.8)';
-      }}
-      onMouseLeave={e => {
-        if (!danger) (e.currentTarget as HTMLElement).style.background = 'rgba(60,60,57,0.6)';
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        gap: "4px", width: "56px", height: "48px", borderRadius: "10px",
+        transition: "all 0.15s", transform: hovered ? "scale(1.05)" : "scale(1)",
+        background: danger
+          ? hovered ? "rgba(255,107,107,0.25)" : "rgba(255,107,107,0.12)"
+          : hovered ? "rgba(88,166,255,0.12)" : "rgba(33,38,45,0.8)",
+        border: danger ? "1px solid rgba(255,107,107,0.35)" : hovered ? "1px solid rgba(88,166,255,0.3)" : "1px solid #30363d",
+        color: danger ? "#ff6b6b" : hovered ? "#58a6ff" : "#c9d1d9",
+        cursor: "pointer",
+        animation: pulse ? "ctrlPulse 1.5s ease infinite" : "none",
       }}
     >
-      <span className="text-base leading-none">{emoji}</span>
-      <span className="text-[9px] font-mono leading-none" style={{ color: '#8b8b88' }}>{label}</span>
+      <span style={{ fontSize: "15px", lineHeight: 1 }}>{emoji}</span>
+      <span style={{ fontSize: "8px", fontFamily: "monospace", color: danger ? "#ff6b6b88" : "#8b949e", letterSpacing: "0.05em" }}>{label}</span>
     </button>
   );
 }
 
-interface VideoRoomPageProps {
-  roomId: string;
-  userId: string;
-  userName: string;
-}
-
-export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) {
-  const [activeMainId, setActiveMainId] = useState<string>("editor");
-  const [expandedTile, setExpandedTile] = useState<string | null>(null);
+// ─── Main export ──────────────────────────────────────────────────────────────
+export function VideoRoomPage({ roomId = "abc123", userId = "u1", userName = "BrightHacker" }) {
+  const [activeMainId, setActiveMainId] = useState("editor");
   const [copied, setCopied] = useState(false);
-  const [language] = useState("javascript");
 
   const {
-    myCode,
-    friendCode,
-    pendingChange,
-    myRole,
-    myUser,
-    friendUser,
-    setMyCode,
-    setFriendCode,
-    clearPendingChange,
+    myCode, friendCode, pendingChange, myRole, myUser, friendUser,
+    setMyCode, setFriendCode, clearPendingChange
   } = useRoomStore();
 
   const { socket, connected } = useWebSocket(roomId, userId, userName);
   const isOwner = myRole === "owner";
 
   const {
-    localStream,
-    remoteStream,
-    callStatus,
-    startCall,
-    toggleCamera,
-    toggleMic,
-    isCameraOn,
-    isMicOn,
-    localScreenStream,
-    remoteScreenStream,
-    screenShareState,
-    startScreenShare,
-    stopScreenShare,
+    localStream, remoteStream, callStatus,
+    startCall, toggleCamera, toggleMic, isCameraOn, isMicOn,
+    localScreenStream, remoteScreenStream, screenShareState,
+    startScreenShare, stopScreenShare,
   } = useWebRTC(socket, userId, roomId, isOwner);
 
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  // AUTO-START CAMERA
   useEffect(() => {
-    if (socket && myRole !== null) startCall();
-  }, [socket, myRole]);
+    if (connected) startCall();
+  }, [connected, startCall]);
 
+  const myName = myUser?.name ?? userName;
+  const friendName = friendUser?.name ?? "SwiftCoder";
+  const friendConnected = !!friendUser;
+  const isSharing = screenShareState === "sharing";
+
+  // When screen share activates, auto-focus it
   useEffect(() => {
     if (screenShareState === "viewing") setActiveMainId("friend-screen");
     else if (screenShareState === "sharing") setActiveMainId("my-screen");
   }, [screenShareState]);
 
-  const handleOwnerCodeChange = useCallback(
-    (code: string) => {
-      setMyCode(code);
-      if (socket && isOwner) {
-        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-        debounceTimerRef.current = setTimeout(() => {
-          socket.emit("owner-code-change", { roomId, code });
-        }, 100);
-      }
-    },
-    [socket, roomId, isOwner, setMyCode]
-  );
+  const copyInvite = () => {
+    navigator.clipboard?.writeText(`${window.location.origin}/room/${roomId}`).catch(() => { });
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-  const handleEditorCodeChange = useCallback(
-    (code: string) => {
+  const handleCodeChange = useCallback((code) => {
+    if (isOwner) {
+      setMyCode(code);
+      if (socket) socket.emit?.("owner-code-change", { roomId, code });
+    } else {
       setFriendCode(code);
-      if (socket && !isOwner) {
-        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-        debounceTimerRef.current = setTimeout(() => {
-          socket.emit("propose-change", { roomId, original: friendCode, newCode: code });
-        }, 100);
+      if (socket) {
+        socket.emit?.("editor-code-change", { roomId, code });
+        socket.emit?.("propose-change", { roomId, original: myCode, newCode: code });
       }
-    },
-    [socket, roomId, isOwner, setFriendCode, friendCode]
-  );
+    }
+  }, [socket, roomId, isOwner, setMyCode, setFriendCode, myCode]);
 
   const handleAcceptChange = useCallback(() => {
-    if (!pendingChange || !socket) return;
+    if (!pendingChange) return;
     setMyCode(pendingChange.newCode);
-    socket.emit("accept-change", { roomId, newCode: pendingChange.newCode });
+    socket?.emit("accept-change", { roomId, newCode: pendingChange.newCode });
     clearPendingChange();
-  }, [pendingChange, socket, roomId, setMyCode, clearPendingChange]);
+  }, [socket, roomId, setMyCode, clearPendingChange, pendingChange]);
 
   const handleRejectChange = useCallback(() => {
     socket?.emit("reject-change", { roomId });
     clearPendingChange();
   }, [socket, roomId, clearPendingChange]);
 
-  const myName = myUser?.name ?? userName;
-  const friendName = friendUser?.name ?? "Friend";
-  const friendConnected = !!friendUser;
-
-  const ownerUser = isOwner ? myUser : friendUser;
-  const editorUser = isOwner ? friendUser : myUser;
-  const editorLabel = editorUser?.name ?? "Waiting...";
-
-  const copyInvite = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const isSharing = screenShareState === "sharing";
-
-  const tiles: TileData[] = [
+  // All tiles definition
+  const tiles = [
     {
       id: "my-cam",
       label: `${myName} (You)`,
-      sublabel: callStatus === "calling" ? "Connecting..." : "Camera off",
+      sublabel: callStatus === "calling" ? "Connecting..." : "Camera",
       stream: localStream,
-      muted: true,
-      mirror: true,
-      color: "#58a6ff",
-      icon: "📷",
+      muted: true, mirror: true,
+      color: "#58a6ff", icon: "👤",
     },
     {
       id: "friend-cam",
-      label: friendConnected ? friendName : "Waiting for friend...",
-      sublabel: friendConnected ? "Camera off" : "Share the invite link",
+      label: friendConnected ? friendName : "Waiting...",
+      sublabel: friendConnected ? "Remote camera" : "Share invite link",
       stream: remoteStream,
-      muted: false,
-      mirror: false,
-      color: "#3fb950",
-      icon: friendConnected ? "📷" : "⏳",
+      muted: false, mirror: false,
+      color: "#3fb950", icon: friendConnected ? "👤" : "⏳",
     },
     {
       id: "my-screen",
       label: "Your Screen",
-      sublabel: "Ready to share",
+      sublabel: isSharing ? "Sharing live" : "Ready to share",
       stream: localScreenStream,
-      muted: true,
-      mirror: false,
-      color: "#f0883e",
-      icon: "🖥️",
+      muted: true, mirror: false,
+      color: "#f0883e", icon: "🖥️",
       onAction: startScreenShare,
       actionLabel: "START SCREEN SHARE",
     },
@@ -386,165 +325,234 @@ export function VideoRoomPage({ roomId, userId, userName }: VideoRoomPageProps) 
       label: `${friendName}'s Screen`,
       sublabel: "Not sharing yet",
       stream: remoteScreenStream,
-      muted: true,
-      mirror: false,
-      color: "#d2a8ff",
-      icon: "🖥️",
+      muted: true, mirror: false,
+      color: "#d2a8ff", icon: "🖥️",
+    },
+    {
+      id: "editor",
+      label: "Code Editor",
+      sublabel: isOwner ? "Authoritative" : "Collaborative",
+      stream: null,
+      muted: true, mirror: false,
+      color: "#a371f7", icon: "💻",
     },
   ];
 
-  const editorTile: TileData = {
-    id: "editor",
-    label: "Code Editor",
-    sublabel: isOwner ? "Authoritative" : "Collaborative",
-    stream: null,
-    muted: true,
-    mirror: false,
-    color: "#a371f7",
-    icon: "💻",
-  };
-
-  const allLayoutElements = [...tiles, editorTile];
-  const activeMainElement = allLayoutElements.find(e => e.id === activeMainId) || editorTile;
-  const sidebarElements = allLayoutElements.filter(e => e.id !== activeMainId);
-
-  const thumbStyle = { height: '160px', flexShrink: 0 };
+  const activeTile = tiles.find(t => t.id === activeMainId) || tiles[tiles.length - 1];
+  const sidebarTiles = tiles.filter(t => t.id !== activeMainId);
 
   return (
-    <div
-      className="cs-root"
-      style={{
-        '--bg': '#262624',
-        '--bg-surface': '#2e2e2b',
-        '--bg-elevated': '#333330',
-        '--border': '#333330',
-        '--border-light': '#444441',
-        '--text': '#e0e0dd',
-        '--text-muted': '#a8a8a5',
-        '--text-dim': '#6b6b68',
-        '--blue': '#58a6ff',
-        '--blue-soft': '#58a6ff88',
-        '--blue-glow': 'rgba(88,166,255,0.12)',
-        '--green': '#3fb950',
-        '--green-glow': 'rgba(63,185,80,0.25)',
-        '--red': '#ff6b6b',
-        '--orange': '#f0883e',
-        background: '#262624',
-      } as React.CSSProperties}
-    >
+    <div style={{
+      width: "100vw", height: "100vh", display: "flex", flexDirection: "column",
+      background: "#010409", fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+      overflow: "hidden",
+    }}>
 
+      {/* ── TOPBAR ── */}
+      <div style={{
+        height: "44px", flexShrink: 0,
+        display: "flex", alignItems: "center",
+        padding: "0 16px", gap: "12px",
+        background: "#0d1117",
+        borderBottom: "1px solid #21262d",
+      }}>
+        {/* Brand */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "13px", fontWeight: 800, color: "#58a6ff", letterSpacing: "0.04em" }}>Editor</span>
+          <span style={{ fontSize: "12px", color: "#30363d" }}>—</span>
+          <span style={{ fontSize: "12px", color: "#8b949e" }}>{myName}</span>
+        </div>
 
-      {/* ═══ MAIN STAGE + SIDEBAR ═══ */}
-      <div className="cs-main-grid">
-        {/* CENTRAL MAIN STAGE */}
-        <main className="cs-main-stage" style={{ background: '#262624', display: 'flex', flexDirection: 'column' }}>
-          {/* Role indicator */}
-          <div
-            className="flex items-center gap-2 px-4 py-1.5 flex-shrink-0"
-            style={{ background: '#1e1e1c', borderBottom: '1px solid #333330' }}
+        {/* Connection pill */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: "5px",
+          padding: "3px 8px", borderRadius: "12px",
+          background: connected ? "rgba(63,185,80,0.08)" : "rgba(255,107,107,0.08)",
+          border: connected ? "1px solid rgba(63,185,80,0.25)" : "1px solid rgba(255,107,107,0.25)",
+        }}>
+          <div style={{
+            width: "5px", height: "5px", borderRadius: "50%",
+            background: connected ? "#3fb950" : "#ff6b6b",
+            boxShadow: connected ? "0 0 6px #3fb950" : "none",
+            animation: connected ? "connPulse 2s ease infinite" : "none",
+          }} />
+          <span style={{ fontSize: "9px", color: connected ? "#3fb950" : "#ff6b6b", letterSpacing: "0.1em" }}>
+            {connected ? "CONNECTED" : "OFFLINE"}
+          </span>
+        </div>
+
+        {/* Role badge */}
+        <div style={{
+          padding: "3px 8px", borderRadius: "12px",
+          background: isOwner ? "rgba(88,166,255,0.08)" : "rgba(63,185,80,0.08)",
+          border: isOwner ? "1px solid rgba(88,166,255,0.25)" : "1px solid rgba(63,185,80,0.25)",
+          fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em",
+          color: isOwner ? "#58a6ff" : "#3fb950",
+        }}>
+          {isOwner ? "OWNER" : "EDITOR"}
+        </div>
+
+        {/* Room ID */}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "10px", color: "#8b949e" }}>Room:</span>
+          <code style={{ fontSize: "11px", color: "#c9d1d9", background: "#161b22", padding: "2px 8px", borderRadius: "4px", border: "1px solid #21262d" }}>
+            {roomId}
+          </code>
+          <button
+            onClick={copyInvite}
+            style={{
+              padding: "4px 10px", borderRadius: "6px", cursor: "pointer",
+              background: copied ? "rgba(63,185,80,0.12)" : "#161b22",
+              border: copied ? "1px solid rgba(63,185,80,0.4)" : "1px solid #21262d",
+              color: copied ? "#3fb950" : "#8b949e", fontSize: "10px",
+              fontFamily: "monospace", transition: "all 0.2s", letterSpacing: "0.05em",
+            }}
           >
-            <div
-              className="w-2 h-2 rounded-full"
-              style={{ background: isOwner ? '#58a6ff' : '#3fb950', boxShadow: isOwner ? '0 0 6px rgba(88,166,255,0.5)' : '0 0 6px rgba(63,185,80,0.5)' }}
-            />
-            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: isOwner ? '#58a6ff' : '#3fb950' }}>
-              {isOwner ? "Owner" : "Editor"}
-            </span>
-            <span className="text-[10px] font-mono" style={{ color: '#6b6b68' }}>
-              — {myName}
-            </span>
-          </div>
-          {activeMainId === "editor" ? (
-            <CodeEditorPanel
-              code={isOwner ? myCode : (friendCode || myCode)}
-              language={language}
-              fileName="main.js"
-              onChange={isOwner ? handleOwnerCodeChange : handleEditorCodeChange}
-              readOnly={false}
-              socket={socket}
-              roomId={roomId}
-              pendingChanges={pendingChange ? [pendingChange] : []}
-              onAccept={isOwner ? handleAcceptChange : undefined}
-              onReject={isOwner ? handleRejectChange : undefined}
-            />
-          ) : (
-            <div className="w-full h-full" style={{ background: '#262624' }}>
-              {activeMainElement.stream ? (
-                <VideoEl
-                  stream={activeMainElement.stream}
-                  muted={activeMainElement.muted}
-                  mirror={activeMainElement.mirror}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-6">
-                  <div
-                    className="w-32 h-32 rounded-[40px] flex items-center justify-center text-4xl"
-                    style={{
-                      background: 'rgba(38,38,36,0.85)',
-                      backdropFilter: 'blur(8px)',
-                      border: `2px solid ${activeMainElement.color}44`,
-                      color: activeMainElement.color,
-                    }}
-                  >
-                    {activeMainElement.icon}
-                  </div>
-                  <div className="text-center">
-                    <h2 className="text-xl font-bold tracking-tight" style={{ color: '#e0e0dd' }}>
-                      {activeMainElement.label}
-                    </h2>
-                    <p className="text-[11px] font-mono uppercase tracking-widest mt-2" style={{ color: '#6b6b68' }}>
-                      {activeMainElement.sublabel}
-                    </p>
-                  </div>
-                </div>
-              )}
+            {copied ? "✓ COPIED" : "COPY INVITE"}
+          </button>
+
+          {/* Propose change button for editor - Removed as requested */}
+
+          {/* Pending change indicator for owner - Removed manual TopBar buttons as they are in CodeEditorPanel */}
+        </div>
+      </div>
+
+      {/* ── BODY: MAIN STAGE + SIDEBAR ── */}
+      <div style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
+
+        {/* MAIN STAGE */}
+        <div style={{
+          flex: 1, display: "flex", flexDirection: "column",
+          background: "#0d1117", minWidth: 0, overflow: "hidden",
+          position: "relative",
+        }}>
+          <MainStage
+            tile={activeTile}
+            myCode={isOwner ? myCode : (friendCode || myCode)}
+            onCodeChange={handleCodeChange}
+            isOwner={isOwner}
+            socket={socket}
+            roomId={roomId}
+            pendingChanges={pendingChange ? [pendingChange] : []}
+            onAccept={isOwner ? handleAcceptChange : undefined}
+            onReject={isOwner ? handleRejectChange : undefined}
+          />
+
+          {/* Active tile label badge (non-editor) */}
+          {activeMainId !== "editor" && (
+            <div style={{
+              position: "absolute", bottom: "16px", left: "50%",
+              transform: "translateX(-50%)",
+              display: "flex", alignItems: "center", gap: "8px",
+              padding: "6px 16px", borderRadius: "20px",
+              background: "rgba(13,17,23,0.85)", backdropFilter: "blur(8px)",
+              border: "1px solid #21262d",
+            }}>
+              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: activeTile.color, boxShadow: `0 0 8px ${activeTile.color}` }} />
+              <span style={{ fontSize: "11px", color: "#c9d1d9", fontFamily: "monospace" }}>{activeTile.label}</span>
             </div>
           )}
-        </main>
+        </div>
 
         {/* SIDEBAR */}
-        <aside
-          className="cs-sidebar-thumbnails"
-          style={{ background: '#1e1e1c', borderLeft: '1px solid #333330' }}
-        >
-          <div className="px-2 mb-1">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: '#6b6b68' }}>Live Peeks</h3>
+        <div style={{
+          width: "230px", flexShrink: 0,
+          background: "#0d1117",
+          borderLeft: "1px solid #21262d",
+          display: "flex", flexDirection: "column",
+          overflow: "hidden",
+        }}>
+          {/* Sidebar header */}
+          <div style={{
+            padding: "12px 14px 8px",
+            borderBottom: "1px solid #21262d",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.18em", color: "#8b949e", textTransform: "uppercase" }}>Live Peeks</span>
+            <span style={{ fontSize: "9px", color: "#3d444d", fontFamily: "monospace" }}>{sidebarTiles.length} panels</span>
           </div>
 
-          <div className="cs-video-grid">
-            {sidebarElements.map((el) => (
-              <div
-                key={el.id}
-                onClick={() => setActiveMainId(el.id)}
-                style={thumbStyle}
-              >
-                <VideoTile
-                  tile={el}
-                  expanded={false}
-                  onToggleExpand={() => { }}
-                />
+          {/* Thumbnails */}
+          <div style={{
+            flex: 1, overflowY: "auto", padding: "10px",
+            display: "flex", flexDirection: "column", gap: "8px",
+          }}>
+            {sidebarTiles.map(tile => (
+              <TileThumbnail
+                key={tile.id}
+                tile={tile}
+                isActive={tile.id === activeMainId}
+                onClick={() => setActiveMainId(tile.id)}
+              />
+            ))}
+          </div>
+
+          {/* Sidebar footer: participant status */}
+          <div style={{
+            padding: "10px 14px",
+            borderTop: "1px solid #21262d",
+            display: "flex", flexDirection: "column", gap: "6px",
+          }}>
+            <div style={{ fontSize: "9px", color: "#3d444d", letterSpacing: "0.1em", marginBottom: "2px" }}>PARTICIPANTS</div>
+            {[
+              { name: myName, color: "#58a6ff", you: true },
+              { name: friendName, color: "#3fb950", you: false },
+            ].map(p => (
+              <div key={p.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{
+                  width: "22px", height: "22px", borderRadius: "6px",
+                  background: `${p.color}15`, border: `1px solid ${p.color}30`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "10px",
+                }}>👤</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: "11px", color: "#c9d1d9", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {p.name}{p.you ? <span style={{ color: "#3d444d", marginLeft: "4px" }}>(you)</span> : ""}
+                  </div>
+                </div>
+                <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: p.color, flexShrink: 0 }} />
               </div>
             ))}
           </div>
-        </aside>
+        </div>
       </div>
 
-      {/* control bar at bottom */}
-      <footer
-        className="cs-controls-bar"
-        style={{ background: '#1e1e1c', borderTop: '1px solid #333330', justifyContent: 'center' }}
-      >
-        <div
-          className="flex items-center gap-3 p-1 rounded-2xl shadow-2xl"
-          style={{ background: 'rgba(30,30,28,0.95)', backdropFilter: 'blur(12px)', border: '1px solid #333330' }}
-        >
+      {/* ── CONTROL BAR ── */}
+      <div style={{
+        height: "64px", flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        gap: "8px",
+        background: "#0d1117",
+        borderTop: "1px solid #21262d",
+        padding: "0 20px",
+      }}>
+        <div style={{
+          display: "flex", alignItems: "center", gap: "6px",
+          padding: "8px 16px", borderRadius: "14px",
+          background: "rgba(22,27,34,0.95)", backdropFilter: "blur(12px)",
+          border: "1px solid #21262d",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+        }}>
           <CtrlBtn emoji={isMicOn ? "🎤" : "🔇"} label={isMicOn ? "MUTE" : "UNMUTE"} onClick={toggleMic} danger={!isMicOn} />
-          <CtrlBtn emoji={isCameraOn ? "📷" : "📵"} label={isCameraOn ? "CAM: OFF" : "CAM: ON"} onClick={toggleCamera} danger={!isCameraOn} />
-          <div className="w-px h-8 mx-1" style={{ background: '#333330' }} />
+          <CtrlBtn emoji={isCameraOn ? "📷" : "📵"} label={isCameraOn ? "CAM OFF" : "CAM ON"} onClick={toggleCamera} danger={!isCameraOn} />
+          <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
           <CtrlBtn emoji="🖥️" label={isSharing ? "STOP" : "SHARE"} onClick={isSharing ? stopScreenShare : startScreenShare} danger={isSharing} pulse={isSharing} />
+          <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
+          <CtrlBtn emoji="💻" label="EDITOR" onClick={() => setActiveMainId("editor")} active={activeMainId === "editor"} />
         </div>
-      </footer>
+      </div>
+
+      <style>{`
+        @keyframes connPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes ctrlPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #21262d; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #30363d; }
+      `}</style>
     </div>
   );
 }
+
+export default VideoRoomPage;
