@@ -16,6 +16,8 @@ let currentUserId = "";
 let myRole: "owner" | "editor" | null = null;
 let fileWatcher: vscode.Disposable | null = null;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+let isApplyingRemoteChange = false;
+let lastReceivedCode = "";
 
 export function activate(context: vscode.ExtensionContext) {
   // Status bar
@@ -73,9 +75,9 @@ async function connectToRoom() {
 function connectSocket(serverUrl: string, roomId: string, userId: string, userName: string) {
   if (socket) socket.disconnect();
 
-  socket = io(serverUrl, { 
+  socket = io(serverUrl, {
     query: { roomId, userId, userName },
-    transports: ["websocket"] 
+    transports: ["websocket"]
   });
 
   socket.on("connect", () => {
@@ -165,14 +167,20 @@ async function applyCodeToEditor(code: string) {
   const doc = editor.document;
   if (doc.getText() === code) return; // Prevent infinite loops
 
-  const fullRange = new vscode.Range(
-    doc.positionAt(0),
-    doc.positionAt(doc.getText().length),
-  );
+  lastReceivedCode = code; // Update last received
+  isApplyingRemoteChange = true;
+  try {
+    const fullRange = new vscode.Range(
+      doc.positionAt(0),
+      doc.positionAt(doc.getText().length),
+    );
 
-  await editor.edit((editBuilder) => {
-    editBuilder.replace(fullRange, code);
-  });
+    await editor.edit((editBuilder) => {
+      editBuilder.replace(fullRange, code);
+    });
+  } finally {
+    isApplyingRemoteChange = false;
+  }
 }
 
 async function showDiff(newCode: string, fromName: string) {
@@ -215,6 +223,7 @@ async function startSharing() {
   fileWatcher = vscode.workspace.onDidChangeTextDocument((event) => {
     if (
       !isSharing ||
+      isApplyingRemoteChange ||
       event.document !== vscode.window.activeTextEditor?.document
     )
       return;
@@ -242,7 +251,12 @@ function sendCurrentFile(editor: vscode.TextEditor) {
   if (!socket || !isSharing) return;
 
   const code = editor.document.getText();
-  
+
+  // IGNORE if it matches what we last received from server
+  if (code === lastReceivedCode) {
+    return;
+  }
+
   // Use path.basename for cross-platform filename extraction
   const fileName = path.basename(editor.document.fileName) || "file";
   const language = editor.document.languageId;
