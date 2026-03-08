@@ -51,6 +51,7 @@ interface CodeEditorPanelProps {
   pendingChanges: PendingChange[];
   onAccept?: (change: PendingChange) => void;
   onReject?: (change: PendingChange) => void;
+  hideHeader?: boolean;
 }
 
 export default function CodeEditorPanel({
