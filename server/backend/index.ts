@@ -198,10 +198,21 @@ io.on("connection", (socket: Socket) => {
     if (!user) return;
 
     if (user.role === "owner") {
+      // IGNORE if the code is identical to current owner code
+      if (room.ownerCode === data.code) {
+        console.log(`[VSCodePush] Ignoring redundant push from owner ${user.id}`);
+        return;
+      }
       room.ownerCode = data.code;
       io.to(data.roomId).emit("vscode-push", { code: data.code });
     } else {
       // Editor pushed from VS Code → treat as a proposal
+      // IGNORE if the code is identical to current owner code
+      if (room.ownerCode === data.code) {
+        console.log(`[VSCodePush] Ignoring redundant push from editor ${user.id}`);
+        return;
+      }
+
       const owner = Array.from(room.users.values()).find(
         (u) => u.role === "owner"
       );
