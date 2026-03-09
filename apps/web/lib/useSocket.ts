@@ -78,11 +78,13 @@ export function useWebSocket(roomId: string, userId: string, userName: string) {
     sock.on("change-accepted", (data: { newCode: string }) => {
       setMyCode(data.newCode);
       setFriendCode(""); // Clear local editor proposal
+      setPendingChange(null); // Clear banner if it was showing
     });
 
     // Owner rejected → clear local proposal
     sock.on("change-rejected", () => {
       setFriendCode("");
+      setPendingChange(null); // Clear banner if it was showing
     });
 
     // Owner's code changed (VS Code push or owner typed) → update owner editor

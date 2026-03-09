@@ -161,6 +161,12 @@ io.on("connection", (socket: Socket) => {
         (u) => u.role === "owner",
       );
 
+      // GUARD: If proposed code is same as current owner code, skip it
+      if (data.newCode === room.ownerCode) {
+        console.log(`[propose-change] Ignoring identical proposal from ${proposer.id}`);
+        return;
+      }
+
       if (owner) {
         io.to(owner.socketId).emit("change-proposed", {
           original: data.original,

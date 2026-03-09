@@ -68,7 +68,7 @@ export default function CodeEditorPanel({
 }: CodeEditorPanelProps) {
   const editorRef = useRef<any>(null);
 
-  const isReviewMode = pendingChanges.length > 0 && !!onAccept;
+  const isReviewMode = pendingChanges.length > 0 && !!onAccept && pendingChanges[0]?.newCode !== code;
   const currentPending = pendingChanges[0];
 
   const handleEditorChange = useCallback(

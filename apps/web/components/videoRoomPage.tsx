@@ -267,6 +267,8 @@ export function VideoRoomPage({ roomId = "abc123", userId = "u1", userName = "Br
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const proposalTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleCodeChange = useCallback((code) => {
     if (isOwner) {
       setMyCode(code);
@@ -275,19 +277,39 @@ export function VideoRoomPage({ roomId = "abc123", userId = "u1", userName = "Br
       setFriendCode(code);
       if (socket) {
         socket.emit?.("editor-code-change", { roomId, code });
-        socket.emit?.("propose-change", { roomId, original: myCode, newCode: code });
+
+        // Debounce proposals to avoid flooding the owner
+        if (proposalTimeoutRef.current) clearTimeout(proposalTimeoutRef.current);
+
+        // GUARD: Don't propose if it's same as current remote code
+        if (code === myCode) return;
+
+        proposalTimeoutRef.current = setTimeout(() => {
+          if (code === myCode) return; // Final check before emit
+          socket.emit?.("propose-change", { roomId, original: myCode, newCode: code });
+        }, 1000); // 1 second debounce
       }
     }
   }, [socket, roomId, isOwner, setMyCode, setFriendCode, myCode]);
 
+  // If external sync happens (myCode updates), clear the pending proposal
+  useEffect(() => {
+    if (!isOwner && friendCode === myCode && proposalTimeoutRef.current) {
+      clearTimeout(proposalTimeoutRef.current);
+      proposalTimeoutRef.current = null;
+    }
+  }, [myCode, friendCode, isOwner]);
+
   const handleAcceptChange = useCallback(() => {
     if (!pendingChange) return;
+    if (proposalTimeoutRef.current) clearTimeout(proposalTimeoutRef.current);
     setMyCode(pendingChange.newCode);
     socket?.emit("accept-change", { roomId, newCode: pendingChange.newCode });
     clearPendingChange();
   }, [socket, roomId, setMyCode, clearPendingChange, pendingChange]);
 
   const handleRejectChange = useCallback(() => {
+    if (proposalTimeoutRef.current) clearTimeout(proposalTimeoutRef.current);
     socket?.emit("reject-change", { roomId });
     clearPendingChange();
   }, [socket, roomId, clearPendingChange]);
