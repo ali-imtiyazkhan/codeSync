@@ -19,6 +19,13 @@ export interface PendingChange {
   authorId: string;
 }
 
+export interface AIAnalysisResult {
+  type: "critical" | "warning" | "info";
+  line: number;
+  message: string;
+  suggestion: string;
+}
+
 // ── Server → Client Events ────────────────────────────────────────────────────
 export interface ServerToClientEvents {
   "room-users": (data: { users: User[] }) => void;
@@ -31,6 +38,7 @@ export interface ServerToClientEvents {
   "change-rejected": (data: {}) => void;
   "vscode-push": (data: { code: string }) => void;
   "editor-code-update": (data: { code: string }) => void;
+  "ai-analysis-result": (data: { results: AIAnalysisResult[] }) => void;
 
   // WebRTC
   "webrtc-signal": (data: { signal: any; userId: string; kind: "camera" | "screen" }) => void;
@@ -46,6 +54,7 @@ export interface ClientToServerEvents {
   "accept-change": (data: { roomId: string; newCode: string }) => void;
   "reject-change": (data: { roomId: string }) => void;
   "vscode-push": (data: { roomId: string; code: string }) => void;
+  "ai-request-analysis": (data: { roomId: string; code: string; fileName: string }) => void;
 
   // WebRTC
   "webrtc-signal": (data: { signal: any; userId: string; roomId: string; kind: "camera" | "screen" }) => void;

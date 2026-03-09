@@ -80,6 +80,8 @@ function connectSocket(serverUrl: string, roomId: string, userId: string, userNa
     transports: ["websocket"]
   });
 
+  // 'connect' fires on EVERY connection (including reconnects).
+  // Only do one-time actions here (join-room and status bar update).
   socket.on("connect", () => {
     socket!.emit("join-room", { roomId, userId, userName });
     statusBarItem.text = `$(broadcast) CodeSync: ${roomId}`;
@@ -89,7 +91,6 @@ function connectSocket(serverUrl: string, roomId: string, userId: string, userNa
     vscode.window.showInformationMessage(
       `✅ Connected to CodeSync room: ${roomId}`,
     );
-    setupListeners(roomId);
   });
 
   socket.on("role-assigned", (data) => {
@@ -108,35 +109,28 @@ function connectSocket(serverUrl: string, roomId: string, userId: string, userNa
       `CodeSync: Connection failed — ${err.message}`,
     );
   });
+
+  // Register event listeners ONCE here (NOT inside 'connect' which fires on every reconnect)
+  setupListeners(roomId);
 }
 
 function setupListeners(roomId: string) {
   if (!socket) return;
 
-  //Browser user made changes → sync to VS Code (once accepted)
-  socket.on("change-proposed", async (change) => {
-    // We no longer show a prompt in VS Code to avoid double-triggers.
-    // The user handles the "Accept/Reject" in the Browser UI.
-    // Once they click "Accept" in the browser, the server emits "change-accepted"
-    // which this extension already listens to below.
-    console.log(`[CodeSync] Change proposed by ${change.authorId}. Awaiting action in browser...`);
-  });
+  // change-proposed is handled in the browser UI — do NOT add any VS Code dialog here.
+  // (No listener needed; the browser handles accept/reject.)
 
   socket.on("change-accepted", async ({ newCode }) => {
-    // If we are the editor, our proposed change was accepted, or someone else's was.
-    // Sync the editor content.
     await applyCodeToEditor(newCode);
   });
 
   socket.on("owner-code-update", async ({ code }) => {
-    // Sync if we are not the owner (owner is authoritative)
     if (myRole !== "owner") {
       await applyCodeToEditor(code);
     }
   });
 
   socket.on("vscode-push", async ({ code }) => {
-    // Sync everywhere when pushed from VS Code
     await applyCodeToEditor(code);
   });
 }

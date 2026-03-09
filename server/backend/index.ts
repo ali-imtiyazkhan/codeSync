@@ -1,3 +1,17 @@
+import dotenv from "dotenv";
+import path from "path";
+
+// Load environment variables from the root .env file
+const envPath = path.resolve(__dirname, "../../.env");
+const result = dotenv.config({ path: envPath });
+
+console.log(`[Server] Loading .env from: ${envPath}`);
+if (result.error) {
+  console.error(`[Server] Error loading .env:`, result.error);
+} else {
+  console.log(`[Server] .env loaded successfully`);
+}
+
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 
@@ -232,6 +246,13 @@ io.on("connection", (socket: Socket) => {
     }
   });
 
+  // AI analysis request
+  socket.on("ai-request-analysis", async (data: { roomId: string; code: string; fileName: string }) => {
+    console.log(`[AI] Requesting analysis for ${data.fileName} in room ${data.roomId}`);
+    const { analyzeCode } = await import("./aiService");
+    const results = await analyzeCode(data.code, data.fileName);
+    socket.emit("ai-analysis-result", { results });
+  });
 
   // WebRTC signaling passthrough (camera + screen, identified by kind)
   socket.on(

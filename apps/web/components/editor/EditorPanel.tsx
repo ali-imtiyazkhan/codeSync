@@ -7,7 +7,6 @@ import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
 import { Socket } from "socket.io-client";
 import { useRoomStore } from "../../store/roomStore";
-import type { PendingChange } from "@codesync/socket-types"
 
 interface EditorPanelProps {
     roomId?: string;
@@ -87,22 +86,7 @@ export function EditorPanel({
         };
     }, [roomId, isFriendPanel]);
 
-    // Owner receives accepted changes back from friend
-    useEffect(() => {
-        if (!socket) return;
-
-        const handleChangeProposed = (data: PendingChange) => {
-            if (!isFriendPanel) {
-                setPendingChange(data);
-            }
-        };
-
-        socket.on("change-proposed", handleChangeProposed);
-
-        return () => {
-            socket.off("change-proposed", handleChangeProposed);
-        };
-    }, [socket, isFriendPanel, setPendingChange]);
+    // change-proposed is handled centrally in useSocket.ts — do not add a duplicate listener here.
 
     const handleProposeChange = () => {
         if (!socket || !editorRef.current || !roomId) return;

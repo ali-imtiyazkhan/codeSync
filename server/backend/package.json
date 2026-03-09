@@ -9,8 +9,10 @@
   "dependencies": {
     "@codesync/db": "workspace:*",
     "@codesync/socket-types": "workspace:*",
+    "@google/generative-ai": "^0.24.1",
     "@types/ws": "^8.18.1",
     "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "https": "^1.0.0",
     "nodemon": "^3.1.14",
