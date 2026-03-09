@@ -5,9 +5,10 @@ import { useWebSocket } from "../lib/useSocket";
 import { useWebRTC } from "../lib/useWebRTC";
 import { useRoomStore } from "../store/roomStore";
 import dynamic from "next/dynamic";
-import type { PendingChange } from "@codesync/socket-types";
+import { Navbar } from "./landing/Navbar";
+import type { PendingChange, AIAnalysisResult } from "@codesync/socket-types";
 
-// Dynamically import the real Monaco editor
+// Dynamically import components
 const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
   ssr: false,
   loading: () => (
@@ -16,6 +17,8 @@ const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
     </div>
   ),
 });
+
+const AIAssistantPanel = dynamic(() => import("./ai/AIAssistantPanel"), { ssr: false });
 
 function VideoEl({ stream, muted, mirror, style = {} }) {
   const ref = useRef(null);
@@ -128,21 +131,24 @@ function TileThumbnail({ tile, isActive, onClick }) {
 }
 
 // ─── Main stage: renders whichever tile is active in full ─────────────────────
-function MainStage({ tile, myCode, onCodeChange, isOwner, socket, roomId, pendingChanges, onAccept, onReject }) {
+function MainStage({
+  tile, myCode, onCodeChange, isOwner, socket, roomId,
+  pendingChanges, onAccept, onReject, onAIScan
+}) {
   if (tile.id === "editor") {
     return (
       <CodeEditorPanel
         code={myCode}
-        language="javascript"
-        fileName="main.js"
+        language="typescript"
+        fileName="shared-file.tsx"
         onChange={onCodeChange}
         readOnly={false}
         socket={socket as any}
         roomId={roomId}
-        pendingChanges={pendingChanges}
-        onAccept={onAccept}
-        onReject={onReject}
-        hideHeader={true}
+        pendingChanges={isOwner ? pendingChanges : []}
+        onAccept={isOwner ? onAccept : undefined}
+        onReject={isOwner ? onReject : undefined}
+        onAIScan={onAIScan}
       />
     );
   }
@@ -225,15 +231,27 @@ function CtrlBtn({ emoji, label, onClick, active = true, danger = false, pulse =
   );
 }
 
-// ─── Main export ──────────────────────────────────────────────────────────────
-export function VideoRoomPage({ roomId = "abc123", userId = "u1", userName = "BrightHacker" }) {
+
+export function VideoRoomPage({ roomId, userId, userName }: { roomId: string; userId: string; userName: string }) {
   const [activeMainId, setActiveMainId] = useState("editor");
   const [copied, setCopied] = useState(false);
 
   const {
-    myCode, friendCode, pendingChange, myRole, myUser, friendUser,
-    setMyCode, setFriendCode, clearPendingChange
+    myCode,
+    setMyCode,
+    friendCode,
+    setFriendCode,
+    pendingChange,
+    setPendingChange,
+    clearPendingChange,
+    myRole,
+    myUser,
+    friendUser,
   } = useRoomStore();
+
+  const [aiResults, setAiResults] = useState<AIAnalysisResult[]>([]);
+  const [isAIScanning, setIsAIScanning] = useState(false);
+  const [isAiPanelOpen, setIsAiPanelOpen] = useState(false);
 
   const { socket, connected } = useWebSocket(roomId, userId, userName);
   const isOwner = myRole === "owner";
@@ -269,6 +287,27 @@ export function VideoRoomPage({ roomId = "abc123", userId = "u1", userName = "Br
 
   const proposalTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("ai-analysis-result", (data: { results: AIAnalysisResult[] }) => {
+        setAiResults(data.results);
+        setIsAIScanning(false);
+        setIsAiPanelOpen(true);
+      });
+    }
+  }, [socket]);
+
+  const handleAIScan = useCallback(() => {
+    if (!socket || !roomId) return;
+    setIsAIScanning(true);
+    setIsAiPanelOpen(true);
+    socket.emit("ai-request-analysis", {
+      roomId,
+      code: isOwner ? myCode : friendCode,
+      fileName: "shared-file.tsx" // In a real app, this would be dynamic
+    });
+  }, [socket, roomId, isOwner, myCode, friendCode]);
+
   const handleCodeChange = useCallback((code) => {
     if (isOwner) {
       setMyCode(code);
@@ -299,6 +338,17 @@ export function VideoRoomPage({ roomId = "abc123", userId = "u1", userName = "Br
       proposalTimeoutRef.current = null;
     }
   }, [myCode, friendCode, isOwner]);
+
+  // ✅ FIX: When myCode changes (e.g., after change-accepted), kill any queued
+  // debounce timer. The timer's closure holds stale myCode so it would
+  // incorrectly emit a second propose-change even though the proposal was
+  // already accepted/rejected.
+  useEffect(() => {
+    if (!isOwner && proposalTimeoutRef.current) {
+      clearTimeout(proposalTimeoutRef.current);
+      proposalTimeoutRef.current = null;
+    }
+  }, [myCode, isOwner]);
 
   const handleAcceptChange = useCallback(() => {
     if (!pendingChange) return;
@@ -458,6 +508,16 @@ export function VideoRoomPage({ roomId = "abc123", userId = "u1", userName = "Br
             pendingChanges={pendingChange ? [pendingChange] : []}
             onAccept={isOwner ? handleAcceptChange : undefined}
             onReject={isOwner ? handleRejectChange : undefined}
+            onAIScan={handleAIScan}
+          />
+
+
+          {/* AI Assistant Panel */}
+          <AIAssistantPanel
+            isOpen={isAiPanelOpen}
+            onClose={() => setIsAiPanelOpen(false)}
+            results={aiResults}
+            isScanning={isAIScanning}
           />
 
           {/* Active tile label badge (non-editor) */}

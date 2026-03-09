@@ -51,6 +51,7 @@ interface CodeEditorPanelProps {
   pendingChanges: PendingChange[];
   onAccept?: (change: PendingChange) => void;
   onReject?: (change: PendingChange) => void;
+  onAIScan?: () => void;
   hideHeader?: boolean;
 }
 
@@ -65,6 +66,7 @@ export default function CodeEditorPanel({
   pendingChanges,
   onAccept,
   onReject,
+  onAIScan,
 }: CodeEditorPanelProps) {
   const editorRef = useRef<any>(null);
 
@@ -168,10 +170,25 @@ export default function CodeEditorPanel({
             </div>
           )}
 
+          {/* AI Scan button */}
+          <button
+            onClick={() => onAIScan?.()}
+            className="relative px-4 py-1.5 rounded-full bg-black/40 border border-[var(--ai-cyan)]/40 text-[var(--ai-cyan)] font-black text-[10px] uppercase tracking-[0.2em] overflow-hidden group hover:bg-[var(--ai-cyan)] hover:text-black transition-all duration-500 shadow-[0_0_10px_var(--ai-glow)] hover:shadow-[0_0_25px_var(--ai-glow)] scale-100 hover:scale-105 active:scale-95"
+            style={{ textShadow: '0 0 8px var(--ai-glow)' }}
+          >
+            {/* Shimmer effect overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-ai-shimmer pointer-events-none" />
+
+            <span className="relative flex items-center gap-2">
+              <span className="text-[12px] animate-pulse">✨</span>
+              AI SCAN
+            </span>
+          </button>
+
           {/* Visibility badge */}
-          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)]">
+          <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)] hidden sm:flex">
             <div className={`w-1 h-1 rounded-full ${readOnly ? "bg-[var(--text-dim)]" : "bg-[var(--green)]"}`} />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               {readOnly ? "ReadOnly" : "Editable"}
             </span>
           </div>
@@ -218,6 +235,6 @@ export default function CodeEditorPanel({
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
