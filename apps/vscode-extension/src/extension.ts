@@ -113,32 +113,13 @@ function connectSocket(serverUrl: string, roomId: string, userId: string, userNa
 function setupListeners(roomId: string) {
   if (!socket) return;
 
-  // ── Browser user made changes → apply to VS Code ─────────────────────────
+  //Browser user made changes → sync to VS Code (once accepted)
   socket.on("change-proposed", async (change) => {
-    // Only the owner handles proposed changes
-    if (myRole !== "owner") return;
-
-    const choice = await vscode.window.showInformationMessage(
-      `💡 Someone wants to make changes to the code`,
-      { modal: false },
-      "✅ Accept",
-      "❌ Reject",
-      "👁 Preview",
-    );
-
-    if (choice === "✅ Accept") {
-      await applyCodeToEditor(change.newCode);
-      socket!.emit("accept-change", {
-        roomId,
-        newCode: change.newCode,
-      });
-      vscode.window.showInformationMessage("✅ Changes applied to VS Code!");
-    } else if (choice === "❌ Reject") {
-      socket!.emit("reject-change", { roomId });
-      vscode.window.showInformationMessage("❌ Changes rejected");
-    } else if (choice === "👁 Preview") {
-      await showDiff(change.newCode, "Proposed Changes");
-    }
+    // We no longer show a prompt in VS Code to avoid double-triggers.
+    // The user handles the "Accept/Reject" in the Browser UI.
+    // Once they click "Accept" in the browser, the server emits "change-accepted"
+    // which this extension already listens to below.
+    console.log(`[CodeSync] Change proposed by ${change.authorId}. Awaiting action in browser...`);
   });
 
   socket.on("change-accepted", async ({ newCode }) => {
@@ -247,12 +228,12 @@ async function startSharing() {
   );
 }
 
+// send current file
 function sendCurrentFile(editor: vscode.TextEditor) {
   if (!socket || !isSharing) return;
 
   const code = editor.document.getText();
 
-  // IGNORE if it matches what we last received from server
   if (code === lastReceivedCode) {
     return;
   }
@@ -267,6 +248,7 @@ function sendCurrentFile(editor: vscode.TextEditor) {
   });
 }
 
+// stop sharing
 function stopSharing() {
   isSharing = false;
   fileWatcher?.dispose();
@@ -276,6 +258,7 @@ function stopSharing() {
   vscode.window.showInformationMessage("⏹ Stopped sharing");
 }
 
+// disconnect from room
 function disconnect() {
   stopSharing();
   socket?.disconnect();
