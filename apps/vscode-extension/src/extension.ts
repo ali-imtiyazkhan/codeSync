@@ -80,8 +80,6 @@ function connectSocket(serverUrl: string, roomId: string, userId: string, userNa
     transports: ["websocket"]
   });
 
-  // 'connect' fires on EVERY connection (including reconnects).
-  // Only do one-time actions here (join-room and status bar update).
   socket.on("connect", () => {
     socket!.emit("join-room", { roomId, userId, userName });
     statusBarItem.text = `$(broadcast) CodeSync: ${roomId}`;
@@ -110,15 +108,11 @@ function connectSocket(serverUrl: string, roomId: string, userId: string, userNa
     );
   });
 
-  // Register event listeners ONCE here (NOT inside 'connect' which fires on every reconnect)
   setupListeners(roomId);
 }
 
 function setupListeners(roomId: string) {
   if (!socket) return;
-
-  // change-proposed is handled in the browser UI — do NOT add any VS Code dialog here.
-  // (No listener needed; the browser handles accept/reject.)
 
   socket.on("change-accepted", async ({ newCode }) => {
     await applyCodeToEditor(newCode);
@@ -140,9 +134,9 @@ async function applyCodeToEditor(code: string) {
   if (!editor) return;
 
   const doc = editor.document;
-  if (doc.getText() === code) return; // Prevent infinite loops
+  if (doc.getText() === code) return;
 
-  lastReceivedCode = code; // Update last received
+  lastReceivedCode = code; 
   isApplyingRemoteChange = true;
   try {
     const fullRange = new vscode.Range(

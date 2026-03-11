@@ -12,10 +12,22 @@ if (result.error) {
   console.log(`[Server] .env loaded successfully`);
 }
 
+import express from "express";
+import cors from "cors";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
+import jwt from "jsonwebtoken";
+import authRoutes from "./authRoutes";
 
-const httpServer = createServer();
+const JWT_SECRET = process.env.JWT_SECRET || "codesync_jwt_secret_change_in_production";
+
+// ─── Express App ──────────────────────────────────────────────────────────────
+const app = express();
+app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000" }));
+app.use(express.json());
+app.use("/api/auth", authRoutes);
+
+const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
@@ -23,6 +35,28 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"],
   },
 });
+
+// ─── Socket.io JWT Middleware ─────────────────────────────────────────────────
+// Verifies token when provided. If token is valid, attaches user info to socket.
+// Sockets without tokens are still allowed (for unauthenticated/guest users).
+io.use((socket, next) => {
+  const token =   
+    (socket.handshake.auth?.token as string) ||
+    (socket.handshake.query?.token as string);
+
+  if (token) {
+    try {
+      const payload = jwt.verify(token, JWT_SECRET) as { sub: string; email: string };
+      (socket as any).userId = payload.sub;
+      (socket as any).userEmail = payload.email;
+    } catch {
+      console.warn(`[socket] Invalid JWT token from ${socket.id} — proceeding as guest`);
+    }
+  }
+
+  next();
+});
+
 
 // Types of room user
 interface RoomUser {
