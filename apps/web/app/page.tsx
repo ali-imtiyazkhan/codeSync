@@ -14,6 +14,7 @@ import { Footer } from "../components/landing/Footer";
 
 function generateRoomId() {
   return (
+    // rendom room id 
     Math.random().toString(36).substring(2, 10) +
     Math.random().toString(36).substring(2, 10)
   );
