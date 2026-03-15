@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Allow public paths through without checking session
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+  if (pathname === "/" || PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
