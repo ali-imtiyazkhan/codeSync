@@ -10,7 +10,6 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
     //  Google OAuth
@@ -25,7 +24,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_SECRET!,
     }),
 
-    //  Email + Password (manual backend auth)
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -77,4 +75,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
   },
+  debug: process.env.NODE_ENV === "development",
+  secret: process.env.NEXTAUTH_SECRET,
 };

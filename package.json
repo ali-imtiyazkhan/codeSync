@@ -12,7 +12,8 @@
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "db:push": "turbo run db:push --filter=@codesync/db",
-    "db:studio": "cd packages/db && npx prisma studio"
+    "db:studio": "cd packages/db && npx prisma studio",
+    "postinstall": "turbo run db:generate"
   },
   "devDependencies": {
     "turbo": "^1.13.3",
