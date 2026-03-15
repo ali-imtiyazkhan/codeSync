@@ -16,6 +16,9 @@
     },
     "db:push": {
       "cache": false
+    },
+    "db:generate": {
+      "cache": false
     }
   }
 }
