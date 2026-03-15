@@ -22,7 +22,7 @@ model User {
 
   // NextAuth relations
   accounts Account[]
-  sessions NextAuthSession[]
+  sessions Session[]
 
   // App relations
   rooms   RoomMember[]
@@ -50,7 +50,7 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model NextAuthSession {
+model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String

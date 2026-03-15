@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Auth/Providers";
+import { StyledJsxRegistry } from "@/lib/styled-jsx-registry";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} bg-bg`}>
-        <Providers>{children}</Providers>
+        <StyledJsxRegistry>
+          <Providers>{children}</Providers>
+        </StyledJsxRegistry>
       </body>
     </html>
   );
