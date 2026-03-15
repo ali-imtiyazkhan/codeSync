@@ -52,9 +52,12 @@ export function DiffPanel({
         diffEditorRef.current = diffEditor;
 
         return () => {
-            diffEditor.dispose();
-            originalModel.dispose();
-            modifiedModel.dispose();
+            if (diffEditorRef.current) {
+                diffEditorRef.current.setModel({ original: null as any, modified: null as any });
+                diffEditorRef.current.dispose();
+            }
+            if (originalModel && !originalModel.isDisposed()) originalModel.dispose();
+            if (modifiedModel && !modifiedModel.isDisposed()) modifiedModel.dispose();
         };
     }, [original, modified]);
 

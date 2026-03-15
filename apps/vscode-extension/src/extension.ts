@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function connectToRoom() {
   const config = vscode.workspace.getConfiguration("codesync");
-  const serverUrl = config.get<string>("serverUrl") || "http://localhost:3001";
+  const serverUrl = config.get<string>("serverUrl") || "https://codesync-1-wdum.onrender.com";
   let userName = config.get<string>("userName") || "";
   let userId = config.get<string>("userId") || "";
 
