@@ -15,7 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prisma = void 0;
-const client_1 = require("./generated/client");
+const client_1 = require("@prisma/client");
 const globalForPrisma = globalThis;
 exports.prisma = globalForPrisma.prisma ??
     new client_1.PrismaClient({
@@ -25,4 +25,4 @@ exports.prisma = globalForPrisma.prisma ??
     });
 if (process.env.NODE_ENV !== "production")
     globalForPrisma.prisma = exports.prisma;
-__exportStar(require("./generated/client"), exports);
+__exportStar(require("@prisma/client"), exports);

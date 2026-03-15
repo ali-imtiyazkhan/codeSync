@@ -1,5 +1,5 @@
 # Prisma generated client
-packages/db/src/generated/
+# Standard @prisma/client is in node_modules
 
 # Next.js
 .next/
