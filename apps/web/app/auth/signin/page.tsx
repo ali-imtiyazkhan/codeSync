@@ -2,9 +2,9 @@
 
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, Suspense } from "react";
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
@@ -361,5 +361,13 @@ export default function SignInPage() {
         .auth-switch a:hover { text-decoration: underline; }
       `}</style>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="auth-page"><div className="auth-spinner" /></div>}>
+      <SignInForm />
+    </Suspense>
   );
 }
