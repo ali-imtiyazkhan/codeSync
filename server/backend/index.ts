@@ -21,9 +21,26 @@ import authRoutes from "./authRoutes";
 
 const JWT_SECRET = process.env.JWT_SECRET || "codesync_jwt_secret_change_in_production";
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:3000",
+  "https://codesync-inky.vercel.app",
+].filter(Boolean) as string[];
+
 // Express App
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000" }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 
@@ -31,8 +48,9 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
