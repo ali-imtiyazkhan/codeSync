@@ -21,7 +21,7 @@ import authRoutes from "./authRoutes";
 
 const JWT_SECRET = process.env.JWT_SECRET || "codesync_jwt_secret_change_in_production";
 
-// ─── Express App ──────────────────────────────────────────────────────────────
+// Express App
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000" }));
 app.use(express.json());
@@ -36,11 +36,8 @@ const io = new Server(httpServer, {
   },
 });
 
-// ─── Socket.io JWT Middleware ─────────────────────────────────────────────────
-// Verifies token when provided. If token is valid, attaches user info to socket.
-// Sockets without tokens are still allowed (for unauthenticated/guest users).
 io.use((socket, next) => {
-  const token =   
+  const token =
     (socket.handshake.auth?.token as string) ||
     (socket.handshake.query?.token as string);
 
@@ -90,17 +87,18 @@ function getOrCreateRoom(roomId: string): Room {
   return rooms.get(roomId)!;
 }
 
+// getRoomUserList function
 function getRoomUserList(room: Room): RoomUser[] {
   return Array.from(room.users.values());
 }
 
+// broadcastRoomUsers function
 function broadcastRoomUsers(roomId: string, room: Room) {
   const users = getRoomUserList(room).map(({ socketId: _s, ...rest }) => rest);
   io.to(roomId).emit("room-users", { users });
 }
 
 //Connection handler
-
 io.on("connection", (socket: Socket) => {
   const { roomId, userId, userName } = socket.handshake.query as {
     roomId: string;
@@ -159,10 +157,10 @@ io.on("connection", (socket: Socket) => {
         },
       });
 
-      // Send current owner code to new joiner
+      //  Send current owner code to new joiner
       socket.emit("owner-code-update", { code: room.ownerCode });
 
-      // Notify everyone else a user joined (triggers WebRTC re-initiation)
+      //Notify everyone else a user joined (triggers WebRTC re-initiation)
       socket.to(data.roomId).emit("user-joined", {
         user: {
           id: user.id,
@@ -172,7 +170,7 @@ io.on("connection", (socket: Socket) => {
         },
       });
 
-      // Broadcast updated user list
+      //Broadcast updated user list
       broadcastRoomUsers(data.roomId, room);
 
       console.log(
@@ -181,7 +179,7 @@ io.on("connection", (socket: Socket) => {
     },
   );
 
-  // Owner code change (live sync)
+  //Owner code change (live sync)
   socket.on("owner-code-change", (data: { roomId: string; code: string }) => {
     const room = rooms.get(data.roomId);
     if (!room) return;

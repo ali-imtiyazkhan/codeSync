@@ -20,6 +20,34 @@ const DiffEditor = dynamic(() => import("@monaco-editor/react").then(mod => mod.
   loading: () => <EditorLoading />,
 });
 
+// Wrapper to prevent "TextModel got disposed before DiffEditorWidget model got reset"
+function SafeDiffEditor(props: any) {
+  const diffRef = useRef<any>(null);
+
+  useEffect(() => {
+    return () => {
+      if (diffRef.current) {
+        try {
+          // Manually reset models before unmount
+          diffRef.current.setModel({ original: null, modified: null });
+        } catch (e) {
+          // Ignore
+        }
+      }
+    };
+  }, []);
+
+  return (
+    <DiffEditor
+      {...props}
+      onMount={(editor: any, monaco: any) => {
+        diffRef.current = editor;
+        props.onMount?.(editor, monaco);
+      }}
+    />
+  );
+}
+
 function EditorLoading() {
   return (
     <div className="flex-1 flex items-center justify-center bg-[#262624]">
@@ -209,7 +237,7 @@ export default function CodeEditorPanel({
       <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
         <div style={{ position: 'absolute', inset: 0 }}>
           {isReviewMode && currentPending ? (
-            <DiffEditor
+            <SafeDiffEditor
               height="100%"
               language={language}
               original={code}
