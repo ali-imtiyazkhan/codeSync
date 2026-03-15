@@ -10,7 +10,6 @@ const db_1 = require("@codesync/db");
 const router = (0, express_1.Router)();
 const JWT_SECRET = process.env.JWT_SECRET || "codesync_jwt_secret_change_in_production";
 const JWT_EXPIRES_IN = "7d";
-// POST /api/auth/signup
 router.post("/signup", async (req, res) => {
     const { name, email, password } = req.body;
     if (!email || !password) {
@@ -50,7 +49,6 @@ router.post("/signup", async (req, res) => {
         res.status(500).json({ error: "Internal server error." });
     }
 });
-// ─── POST /api/auth/signin ────────────────────────────────────────────────────
 router.post("/signin", async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -88,8 +86,6 @@ router.post("/signin", async (req, res) => {
         res.status(500).json({ error: "Internal server error." });
     }
 });
-// ─── GET /api/auth/me ─────────────────────────────────────────────────────────
-// Returns the current user from the JWT token – useful for the VS Code extension.
 router.get("/me", async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) {
