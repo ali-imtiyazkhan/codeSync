@@ -30,9 +30,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// ../../node_modules/.bun/xmlhttprequest-ssl@2.1.2/node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js
+// ../../node_modules/.pnpm/xmlhttprequest-ssl@2.1.2/node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js
 var require_XMLHttpRequest = __commonJS({
-  "../../node_modules/.bun/xmlhttprequest-ssl@2.1.2/node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js"(exports2, module2) {
+  "../../node_modules/.pnpm/xmlhttprequest-ssl@2.1.2/node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js"(exports2, module2) {
     var fs = require("fs");
     var Url = require("url");
     var spawn = require("child_process").spawn;
@@ -432,9 +432,9 @@ var require_XMLHttpRequest = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/@socket.io+component-emitter@3.1.2/node_modules/@socket.io/component-emitter/lib/cjs/index.js
+// ../../node_modules/.pnpm/@socket.io+component-emitter@3.1.2/node_modules/@socket.io/component-emitter/lib/cjs/index.js
 var require_cjs = __commonJS({
-  "../../node_modules/.bun/@socket.io+component-emitter@3.1.2/node_modules/@socket.io/component-emitter/lib/cjs/index.js"(exports2) {
+  "../../node_modules/.pnpm/@socket.io+component-emitter@3.1.2/node_modules/@socket.io/component-emitter/lib/cjs/index.js"(exports2) {
     exports2.Emitter = Emitter7;
     function Emitter7(obj) {
       if (obj)
@@ -511,9 +511,9 @@ var require_cjs = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ms@2.1.3/node_modules/ms/index.js
+// ../../node_modules/.pnpm/ms@2.1.3/node_modules/ms/index.js
 var require_ms = __commonJS({
-  "../../node_modules/.bun/ms@2.1.3/node_modules/ms/index.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ms@2.1.3/node_modules/ms/index.js"(exports2, module2) {
     var s = 1e3;
     var m = s * 60;
     var h = m * 60;
@@ -627,9 +627,9 @@ var require_ms = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/common.js
+// ../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/common.js
 var require_common = __commonJS({
-  "../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/common.js"(exports2, module2) {
+  "../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/common.js"(exports2, module2) {
     function setup(env) {
       createDebug.debug = createDebug;
       createDebug.default = createDebug;
@@ -804,9 +804,9 @@ var require_common = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/browser.js
+// ../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/browser.js
 var require_browser = __commonJS({
-  "../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/browser.js"(exports2, module2) {
+  "../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/browser.js"(exports2, module2) {
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -974,9 +974,9 @@ var require_browser = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/has-flag@3.0.0/node_modules/has-flag/index.js
+// ../../node_modules/.pnpm/has-flag@3.0.0/node_modules/has-flag/index.js
 var require_has_flag = __commonJS({
-  "../../node_modules/.bun/has-flag@3.0.0/node_modules/has-flag/index.js"(exports2, module2) {
+  "../../node_modules/.pnpm/has-flag@3.0.0/node_modules/has-flag/index.js"(exports2, module2) {
     "use strict";
     module2.exports = (flag, argv) => {
       argv = argv || process.argv;
@@ -988,9 +988,9 @@ var require_has_flag = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/supports-color@5.5.0/node_modules/supports-color/index.js
+// ../../node_modules/.pnpm/supports-color@5.5.0/node_modules/supports-color/index.js
 var require_supports_color = __commonJS({
-  "../../node_modules/.bun/supports-color@5.5.0/node_modules/supports-color/index.js"(exports2, module2) {
+  "../../node_modules/.pnpm/supports-color@5.5.0/node_modules/supports-color/index.js"(exports2, module2) {
     "use strict";
     var os = require("os");
     var hasFlag = require_has_flag();
@@ -1083,9 +1083,9 @@ var require_supports_color = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/node.js
+// ../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/node.js
 var require_node = __commonJS({
-  "../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/node.js"(exports2, module2) {
+  "../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/node.js"(exports2, module2) {
     var tty = require("tty");
     var util = require("util");
     exports2.init = init;
@@ -1257,9 +1257,9 @@ var require_node = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/index.js
+// ../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/index.js
 var require_src = __commonJS({
-  "../../node_modules/.bun/debug@4.4.3/node_modules/debug/src/index.js"(exports2, module2) {
+  "../../node_modules/.pnpm/debug@4.4.3_supports-color@5.5.0/node_modules/debug/src/index.js"(exports2, module2) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module2.exports = require_browser();
     } else {
@@ -1268,9 +1268,9 @@ var require_src = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/constants.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/constants.js
 var require_constants = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/constants.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/constants.js"(exports2, module2) {
     "use strict";
     var BINARY_TYPES = ["nodebuffer", "arraybuffer", "fragments"];
     var hasBlob = typeof Blob !== "undefined";
@@ -1291,9 +1291,9 @@ var require_constants = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/buffer-util.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/buffer-util.js
 var require_buffer_util = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/buffer-util.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/buffer-util.js"(exports2, module2) {
     "use strict";
     var { EMPTY_BUFFER } = require_constants();
     var FastBuffer = Buffer[Symbol.species];
@@ -1373,9 +1373,9 @@ var require_buffer_util = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/limiter.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/limiter.js
 var require_limiter = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/limiter.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/limiter.js"(exports2, module2) {
     "use strict";
     var kDone = Symbol("kDone");
     var kRun = Symbol("kRun");
@@ -1424,9 +1424,9 @@ var require_limiter = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/permessage-deflate.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/permessage-deflate.js
 var require_permessage_deflate = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/permessage-deflate.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/permessage-deflate.js"(exports2, module2) {
     "use strict";
     var zlib = require("zlib");
     var bufferUtil = require_buffer_util();
@@ -1808,9 +1808,9 @@ var require_permessage_deflate = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/validation.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/validation.js
 var require_validation = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/validation.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/validation.js"(exports2, module2) {
     "use strict";
     var { isUtf8 } = require("buffer");
     var { hasBlob } = require_constants();
@@ -2009,9 +2009,9 @@ var require_validation = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/receiver.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/receiver.js
 var require_receiver = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/receiver.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/receiver.js"(exports2, module2) {
     "use strict";
     var { Writable } = require("stream");
     var PerMessageDeflate = require_permessage_deflate();
@@ -2612,9 +2612,9 @@ var require_receiver = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/sender.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/sender.js
 var require_sender = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/sender.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/sender.js"(exports2, module2) {
     "use strict";
     var { Duplex } = require("stream");
     var { randomFillSync } = require("crypto");
@@ -3106,9 +3106,9 @@ var require_sender = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/event-target.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/event-target.js
 var require_event_target = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/event-target.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/event-target.js"(exports2, module2) {
     "use strict";
     var { kForOnEventAttribute, kListener } = require_constants();
     var kCode = Symbol("kCode");
@@ -3335,9 +3335,9 @@ var require_event_target = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/extension.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/extension.js
 var require_extension = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/extension.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/extension.js"(exports2, module2) {
     "use strict";
     var { tokenChars } = require_validation();
     function push(dest, name, elem) {
@@ -3505,9 +3505,9 @@ var require_extension = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/websocket.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/websocket.js
 var require_websocket = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/websocket.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/websocket.js"(exports2, module2) {
     "use strict";
     var EventEmitter = require("events");
     var https = require("https");
@@ -4417,9 +4417,9 @@ var require_websocket = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/stream.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/stream.js
 var require_stream = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/stream.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/stream.js"(exports2, module2) {
     "use strict";
     var WebSocket2 = require_websocket();
     var { Duplex } = require("stream");
@@ -4523,9 +4523,9 @@ var require_stream = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/subprotocol.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/subprotocol.js
 var require_subprotocol = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/subprotocol.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/subprotocol.js"(exports2, module2) {
     "use strict";
     var { tokenChars } = require_validation();
     function parse3(header) {
@@ -4571,9 +4571,9 @@ var require_subprotocol = __commonJS({
   }
 });
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/websocket-server.js
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/websocket-server.js
 var require_websocket_server = __commonJS({
-  "../../node_modules/.bun/ws@8.18.3/node_modules/ws/lib/websocket-server.js"(exports2, module2) {
+  "../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/lib/websocket-server.js"(exports2, module2) {
     "use strict";
     var EventEmitter = require("events");
     var http = require("http");
@@ -4978,10 +4978,10 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 var vscode = __toESM(require("vscode"));
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.node.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.node.js
 var XMLHttpRequestModule = __toESM(require_XMLHttpRequest(), 1);
 
-// ../../node_modules/.bun/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/commons.js
+// ../../node_modules/.pnpm/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/commons.js
 var PACKET_TYPES = /* @__PURE__ */ Object.create(null);
 PACKET_TYPES["open"] = "0";
 PACKET_TYPES["close"] = "1";
@@ -4996,7 +4996,7 @@ Object.keys(PACKET_TYPES).forEach((key) => {
 });
 var ERROR_PACKET = { type: "error", data: "parser error" };
 
-// ../../node_modules/.bun/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/encodePacket.js
+// ../../node_modules/.pnpm/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/encodePacket.js
 var encodePacket = ({ type, data }, supportsBinary, callback) => {
   if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
     return callback(supportsBinary ? data : "b" + toBuffer(data, true).toString("base64"));
@@ -5025,7 +5025,7 @@ function encodePacketToBinary(packet, callback) {
   });
 }
 
-// ../../node_modules/.bun/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/decodePacket.js
+// ../../node_modules/.pnpm/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/decodePacket.js
 var decodePacket = (encodedPacket, binaryType) => {
   if (typeof encodedPacket !== "string") {
     return {
@@ -5071,7 +5071,7 @@ var mapBinary = (data, binaryType) => {
   }
 };
 
-// ../../node_modules/.bun/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/index.js
+// ../../node_modules/.pnpm/engine.io-parser@5.2.3/node_modules/engine.io-parser/build/esm/index.js
 var SEPARATOR = String.fromCharCode(30);
 var encodePayload = (packets, callback) => {
   const length = packets.length;
@@ -5213,10 +5213,10 @@ function createPacketDecoderStream(maxPayload, binaryType) {
 }
 var protocol = 4;
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transport.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transport.js
 var import_component_emitter = __toESM(require_cjs(), 1);
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/globals.node.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/globals.node.js
 var nextTick = process.nextTick;
 var globalThisShim = global;
 var defaultBinaryType = "nodebuffer";
@@ -5304,7 +5304,7 @@ var CookieJar = class {
   }
 };
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/util.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/util.js
 function pick(obj, ...attr) {
   return attr.reduce((acc, k) => {
     if (obj.hasOwnProperty(k)) {
@@ -5352,7 +5352,7 @@ function randomString() {
   return Date.now().toString(36).substring(3) + Math.random().toString(36).substring(2, 5);
 }
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/contrib/parseqs.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/contrib/parseqs.js
 function encode(obj) {
   let str = "";
   for (let i in obj) {
@@ -5374,7 +5374,7 @@ function decode(qs) {
   return qry;
 }
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transport.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transport.js
 var import_debug = __toESM(require_src(), 1);
 var debug = (0, import_debug.default)("engine.io-client:transport");
 var TransportError = class extends Error {
@@ -5508,7 +5508,7 @@ var Transport = class extends import_component_emitter.Emitter {
   }
 };
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling.js
 var import_debug2 = __toESM(require_src(), 1);
 var debug2 = (0, import_debug2.default)("engine.io-client:polling");
 var Polling = class extends Transport {
@@ -5653,10 +5653,10 @@ var Polling = class extends Transport {
   }
 };
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.js
 var import_component_emitter2 = __toESM(require_cjs(), 1);
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/contrib/has-cors.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/contrib/has-cors.js
 var value = false;
 try {
   value = typeof XMLHttpRequest !== "undefined" && "withCredentials" in new XMLHttpRequest();
@@ -5664,7 +5664,7 @@ try {
 }
 var hasCORS = value;
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.js
 var import_debug3 = __toESM(require_src(), 1);
 var debug3 = (0, import_debug3.default)("engine.io-client:polling");
 function empty() {
@@ -5899,7 +5899,7 @@ function newRequest(opts) {
   }
 }
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.node.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/polling-xhr.node.js
 var XMLHttpRequest2 = XMLHttpRequestModule.default || XMLHttpRequestModule;
 var XHR = class extends BaseXHR {
   request(opts = {}) {
@@ -5909,14 +5909,14 @@ var XHR = class extends BaseXHR {
   }
 };
 
-// ../../node_modules/.bun/ws@8.18.3/node_modules/ws/wrapper.mjs
+// ../../node_modules/.pnpm/ws@8.18.3/node_modules/ws/wrapper.mjs
 var import_stream = __toESM(require_stream(), 1);
 var import_receiver = __toESM(require_receiver(), 1);
 var import_sender = __toESM(require_sender(), 1);
 var import_websocket = __toESM(require_websocket(), 1);
 var import_websocket_server = __toESM(require_websocket_server(), 1);
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/websocket.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/websocket.js
 var import_debug4 = __toESM(require_src(), 1);
 var debug4 = (0, import_debug4.default)("engine.io-client:websocket");
 var isReactNative = typeof navigator !== "undefined" && typeof navigator.product === "string" && navigator.product.toLowerCase() === "reactnative";
@@ -6005,7 +6005,7 @@ var BaseWS = class extends Transport {
 };
 var WebSocketCtor = globalThisShim.WebSocket || globalThisShim.MozWebSocket;
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/websocket.node.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/websocket.node.js
 var WS = class extends BaseWS {
   createSocket(uri, protocols, opts) {
     var _a;
@@ -6036,7 +6036,7 @@ var WS = class extends BaseWS {
   }
 };
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/webtransport.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/webtransport.js
 var import_debug5 = __toESM(require_src(), 1);
 var debug5 = (0, import_debug5.default)("engine.io-client:webtransport");
 var WT = class extends Transport {
@@ -6106,14 +6106,14 @@ var WT = class extends Transport {
   }
 };
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/index.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/transports/index.js
 var transports = {
   websocket: WS,
   webtransport: WT,
   polling: XHR
 };
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/contrib/parseuri.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/contrib/parseuri.js
 var re = /^(?:(?![^:@\/?#]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@\/?#]*)(?::([^:@\/?#]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
 var parts = [
   "source",
@@ -6173,7 +6173,7 @@ function queryKey(uri, query) {
   return data;
 }
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/socket.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/socket.js
 var import_component_emitter3 = __toESM(require_cjs(), 1);
 var import_debug6 = __toESM(require_src(), 1);
 var debug6 = (0, import_debug6.default)("engine.io-client:socket");
@@ -6770,10 +6770,10 @@ var Socket = class extends SocketWithUpgrade {
   }
 };
 
-// ../../node_modules/.bun/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/index.js
+// ../../node_modules/.pnpm/engine.io-client@6.6.4/node_modules/engine.io-client/build/esm-debug/index.js
 var protocol2 = Socket.protocol;
 
-// ../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/url.js
+// ../../node_modules/.pnpm/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/url.js
 var import_debug7 = __toESM(require_src(), 1);
 var debug7 = (0, import_debug7.default)("socket.io-client:url");
 function url(uri, path2 = "", loc) {
@@ -6815,7 +6815,7 @@ function url(uri, path2 = "", loc) {
   return obj;
 }
 
-// ../../node_modules/.bun/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/index.js
+// ../../node_modules/.pnpm/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/index.js
 var esm_debug_exports = {};
 __export(esm_debug_exports, {
   Decoder: () => Decoder,
@@ -6826,7 +6826,7 @@ __export(esm_debug_exports, {
 });
 var import_component_emitter4 = __toESM(require_cjs(), 1);
 
-// ../../node_modules/.bun/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/is-binary.js
+// ../../node_modules/.pnpm/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/is-binary.js
 var withNativeArrayBuffer = typeof ArrayBuffer === "function";
 var isView = (obj) => {
   return typeof ArrayBuffer.isView === "function" ? ArrayBuffer.isView(obj) : obj.buffer instanceof ArrayBuffer;
@@ -6863,7 +6863,7 @@ function hasBinary(obj, toJSON) {
   return false;
 }
 
-// ../../node_modules/.bun/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/binary.js
+// ../../node_modules/.pnpm/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/binary.js
 function deconstructPacket(packet) {
   const buffers = [];
   const packetData = packet.data;
@@ -6925,7 +6925,7 @@ function _reconstructPacket(data, buffers) {
   return data;
 }
 
-// ../../node_modules/.bun/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/index.js
+// ../../node_modules/.pnpm/socket.io-parser@4.2.5/node_modules/socket.io-parser/build/esm-debug/index.js
 var import_debug8 = __toESM(require_src(), 1);
 var debug8 = (0, import_debug8.default)("socket.io-parser");
 var RESERVED_EVENTS = [
@@ -7219,7 +7219,7 @@ function isPacketValid(packet) {
   return isNamespaceValid(packet.nsp) && isAckIdValid(packet.id) && isDataValid(packet.type, packet.data);
 }
 
-// ../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/on.js
+// ../../node_modules/.pnpm/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/on.js
 function on(obj, ev, fn) {
   obj.on(ev, fn);
   return function subDestroy() {
@@ -7227,7 +7227,7 @@ function on(obj, ev, fn) {
   };
 }
 
-// ../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/socket.js
+// ../../node_modules/.pnpm/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/socket.js
 var import_component_emitter5 = __toESM(require_cjs(), 1);
 var import_debug9 = __toESM(require_src(), 1);
 var debug9 = (0, import_debug9.default)("socket.io-client:socket");
@@ -8023,7 +8023,7 @@ var Socket2 = class extends import_component_emitter5.Emitter {
   }
 };
 
-// ../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/contrib/backo2.js
+// ../../node_modules/.pnpm/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/contrib/backo2.js
 function Backoff(opts) {
   opts = opts || {};
   this.ms = opts.min || 100;
@@ -8054,7 +8054,7 @@ Backoff.prototype.setJitter = function(jitter) {
   this.jitter = jitter;
 };
 
-// ../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/manager.js
+// ../../node_modules/.pnpm/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/manager.js
 var import_component_emitter6 = __toESM(require_cjs(), 1);
 var import_debug10 = __toESM(require_src(), 1);
 var debug10 = (0, import_debug10.default)("socket.io-client:manager");
@@ -8424,7 +8424,7 @@ var Manager = class extends import_component_emitter6.Emitter {
   }
 };
 
-// ../../node_modules/.bun/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/index.js
+// ../../node_modules/.pnpm/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm-debug/index.js
 var import_debug11 = __toESM(require_src(), 1);
 var debug11 = (0, import_debug11.default)("socket.io-client");
 var cache = {};
