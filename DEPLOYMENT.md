@@ -70,3 +70,36 @@ When you are redirected back to `/auth/signin`, look at the URL. Does it contain
 - `?error=Configuration`: Likely an issue with your `NEXTAUTH_SECRET` or OAuth Client Secret.
 
 ---
+
+## 5. VS Code Extension Deployment
+
+The extension is located in `apps/vscode-extension`.
+
+### A. Local Installation (Development/Testing)
+If you want to install the extension manually without publishing to the marketplace:
+
+1.  **Locate the VSIX**: The generated file is at `apps/vscode-extension/codesync-vscode-0.0.1.vsix`.
+2.  **Command Line**:
+    ```bash
+    code --install-extension apps/vscode-extension/codesync-vscode-0.0.1.vsix
+    ```
+3.  **VS Code UI**:
+    - Open VS Code.
+    - Go to the **Extensions** view (`Ctrl+Shift+X`).
+    - Click the `...` (More Actions) menu in the top right.
+    - Select **Install from VSIX...** and choose the file.
+
+### B. Publishing to Visual Studio Marketplace
+To make the extension available to everyone:
+
+1.  **Create a Publisher**: Go to [Manage Publishers](https://marketplace.visualstudio.com/manage) and create a publisher named `codesync` (or update `package.json` with your publisher name).
+2.  **Get a Personal Access Token (PAT)**: Create a PAT on Azure DevOps with "All accessible organizations" and "Marketplace (Publish)" scope.
+3.  **Login and Publish**:
+    ```bash
+    cd apps/vscode-extension
+    npx vsce login [your-publisher-name]
+    npx vsce publish
+    ```
+
+### C. Manual Distribution
+You can also share the `.vsix` file directly with team members, and they can follow the **Local Installation** steps above.
