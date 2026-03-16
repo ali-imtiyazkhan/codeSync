@@ -103,7 +103,7 @@ function SignInForm() {
                 autoComplete="email"
               />
             </div>
-{/* password lable */}
+{/* password label */}
             <div className="auth-field">
               <label>Password</label>
               <input
