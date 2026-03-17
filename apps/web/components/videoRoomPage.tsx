@@ -232,7 +232,7 @@ function CtrlBtn({ emoji, label, onClick, active = true, danger = false, pulse =
 }
 
 
-export function VideoRoomPage({ roomId, userId, userName }: { roomId: string; userId: string; userName: string }) {
+export function VideoRoomPage({ roomId, userId, userName, backendToken }: { roomId: string; userId: string; userName: string; backendToken?: string }) {
   const [activeMainId, setActiveMainId] = useState("editor");
   const [copied, setCopied] = useState(false);
 
@@ -253,7 +253,7 @@ export function VideoRoomPage({ roomId, userId, userName }: { roomId: string; us
   const [isAIScanning, setIsAIScanning] = useState(false);
   const [isAiPanelOpen, setIsAiPanelOpen] = useState(false);
 
-  const { socket, connected } = useWebSocket(roomId, userId, userName);
+  const { socket, connected } = useWebSocket(roomId, userId, userName, backendToken);
   const isOwner = myRole === "owner";
 
   const {
@@ -261,7 +261,7 @@ export function VideoRoomPage({ roomId, userId, userName }: { roomId: string; us
     startCall, toggleCamera, toggleMic, isCameraOn, isMicOn,
     localScreenStream, remoteScreenStream, screenShareState,
     startScreenShare, stopScreenShare,
-  } = useWebRTC(socket, userId, roomId, isOwner);
+  } = useWebRTC(socket, userId, roomId, isOwner, backendToken);
 
   // AUTO-START CAMERA
   useEffect(() => {

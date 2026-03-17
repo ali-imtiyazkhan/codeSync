@@ -12,6 +12,7 @@ export function useWebRTC(
   userId: string,
   roomId: string,
   isOwner: boolean,
+  token?: string,
 ) {
   // Camera state
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
