@@ -55,10 +55,27 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     // Store the backend JWT and user id inside the NextAuth JWT token
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
         token.backendToken = (user as any).backendToken;
+
+        // If this is an OAuth login and we don't have a backendToken yet, fetch one
+        if (account?.provider && account.provider !== "credentials" && !token.backendToken) {
+          try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/oauth-token`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: user.email }),
+            });
+            if (res.ok) {
+              const data = await res.json() as { token: string };
+              token.backendToken = data.token;
+            }
+          } catch (error) {
+            console.error("Failed to fetch OAuth backend token:", error);
+          }
+        }
       }
       return token;
     },

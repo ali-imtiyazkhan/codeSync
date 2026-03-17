@@ -6,7 +6,7 @@ import { useRoomStore } from "../store/roomStore";
 import type { RoomUser } from "../store/roomStore";
 import type { PendingChange } from "@codesync/socket-types";
 
-export function useWebSocket(roomId: string, userId: string, userName: string) {
+export function useWebSocket(roomId: string, userId: string, userName: string, token?: string) {
   const socketRef = useRef<Socket | null>(null);
   const [connected, setConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -27,7 +27,8 @@ export function useWebSocket(roomId: string, userId: string, userName: string) {
     const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3001";
 
     const sock = io(WS_URL, {
-      query: { roomId, userId, userName },
+      query: { roomId, userId, userName, token },
+      auth: { token },
       transports: ["websocket"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
@@ -50,8 +51,6 @@ export function useWebSocket(roomId: string, userId: string, userName: string) {
       sock.emit("join-room", { roomId, userId, userName });
     });
 
-    // Server tells this client what role they got
-    // Payload: { role: "owner" | "editor", user: RoomUser }
     sock.on(
       "role-assigned",
       (data: { role: "owner" | "editor"; user: RoomUser }) => {
@@ -60,16 +59,12 @@ export function useWebSocket(roomId: string, userId: string, userName: string) {
       },
     );
 
-    // Full room user list update (sent when anyone joins/leaves)
     sock.on("room-users", (data: { users: RoomUser[] }) => {
       setUsers(data.users);
 
-      // Derive the friend from the users list (the one who isn't me)
       const friend = data.users.find((u) => u.id !== userId) ?? null;
       setFriendUser(friend);
     });
-
-    // Editor proposed a change → show diff to owner
     sock.on("change-proposed", (data: PendingChange) => {
       setPendingChange(data);
     });
