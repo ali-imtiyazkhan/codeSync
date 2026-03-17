@@ -186,7 +186,7 @@ export function VideoPanel({
   );
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────
+// Sub-components
 
 function NoFeedPlaceholder({
   label,

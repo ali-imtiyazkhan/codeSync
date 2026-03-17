@@ -339,10 +339,6 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
     }
   }, [myCode, friendCode, isOwner]);
 
-  // ✅ FIX: When myCode changes (e.g., after change-accepted), kill any queued
-  // debounce timer. The timer's closure holds stale myCode so it would
-  // incorrectly emit a second propose-change even though the proposal was
-  // already accepted/rejected.
   useEffect(() => {
     if (!isOwner && proposalTimeoutRef.current) {
       clearTimeout(proposalTimeoutRef.current);
@@ -483,9 +479,6 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
             {copied ? "✓ COPIED" : "COPY INVITE"}
           </button>
 
-          {/* Propose change button for editor - Removed as requested */}
-
-          {/* Pending change indicator for owner - Removed manual TopBar buttons as they are in CodeEditorPanel */}
         </div>
       </div>
 

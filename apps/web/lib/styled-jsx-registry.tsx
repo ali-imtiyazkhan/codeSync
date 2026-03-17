@@ -5,7 +5,6 @@ import { useServerInsertedHTML } from "next/navigation";
 import { StyleRegistry, createStyleRegistry } from "styled-jsx";
 
 export function StyledJsxRegistry({ children }: { children: React.ReactNode }) {
-  // Only create stylesheet once with lazy initial state
   const [jsxStyleRegistry] = useState(() => createStyleRegistry());
 
   useServerInsertedHTML(() => {

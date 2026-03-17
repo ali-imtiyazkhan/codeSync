@@ -9,7 +9,7 @@ import { useRoomStore } from "../store/roomStore";
 import { useWebSocket } from "../lib/useSocket";
 import { useWebRTC } from "../lib/useWebRTC";
 
-//  Update this path to match wherever your CodeEditorPanel lives
+// Update this path to match wherever your CodeEditorPanel lives
 const CodeEditorPanel = dynamic(() => import("../components/CodeEditorPanel"), {
     ssr: false,
     loading: () => (
@@ -70,7 +70,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
         }
     }, [socket, myRole]);
 
-    // ── Code sync ──────────────────────────────────────────────────────────
+    // Code sync
     const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Owner typing → broadcast live to friend's read-only editor
@@ -119,8 +119,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
         clearPendingChange();
     }, [socket, roomId, clearPendingChange]);
 
-    // ── Derived display values ─────────────────────────────────────────────
-
+    // Derived display values
     const ownerUser = isOwner ? myUser : friendUser;
     const editorUser = isOwner ? friendUser : myUser;
 
@@ -131,7 +130,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
 
     const friendConnected = !!friendUser;
 
-    // ── Screen share stream routing ────────────────────────────────────────
+    // Screen share stream routing
     // "sharing" = I am sending my screen  → show localScreenStream in MY panel
     // "viewing" = friend is sending       → show remoteScreenStream in FRIEND panel
     const myScreenStream = screenShareState === "sharing" ? localScreenStream : null;
@@ -202,7 +201,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
                     </div>
                 </div>
 
-                {/* ════ RIGHT: EDITOR / FRIEND PANEL ════ */}
+                {/* RIGHT: EDITOR / FRIEND PANEL  */}
                 <div className="flex flex-col w-1/2 min-h-0">
 
                     <PanelHeader
@@ -282,7 +281,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
     );
 }
 
-// ── Shared sub-components ───────────────────────────────────────────────────
+// Shared sub-components
 
 function PanelHeader({
     label,
