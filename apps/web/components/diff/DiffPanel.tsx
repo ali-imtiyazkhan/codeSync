@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor";
+import { X, Check } from "lucide-react";
 
 interface DiffPanelProps {
     original: string;
@@ -76,15 +77,15 @@ export function DiffPanel({
                 <div className="flex gap-2 ml-auto">
                     <button
                         onClick={onReject}
-                        className="px-4 py-1 text-xs font-semibold font-mono rounded border border-[#f85149] text-[#f85149] hover:bg-[#f8514922] transition-colors"
+                        className="px-4 py-1 text-xs font-semibold font-mono rounded border border-[#f85149] text-[#f85149] hover:bg-[#f8514922] transition-colors flex items-center gap-1.5"
                     >
-                        ✗ Reject
+                        <X size={12} /> Reject
                     </button>
                     <button
                         onClick={onAccept}
-                        className="px-4 py-1 text-xs font-semibold font-mono rounded bg-[#3fb950] text-[#0d1117] hover:bg-[#2ea043] transition-colors"
+                        className="px-4 py-1 text-xs font-semibold font-mono rounded bg-[#3fb950] text-[#0d1117] hover:bg-[#2ea043] transition-colors flex items-center gap-1.5"
                     >
-                        ✓ Accept
+                        <Check size={12} /> Accept
                     </button>
                 </div>
             </div>

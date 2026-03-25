@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { VideoOff, MicOff } from "lucide-react";
 
 interface VideoPanelProps {
   stream: MediaStream | null;
@@ -56,7 +57,7 @@ export function VideoPanel({
                 className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
                 style={{ backgroundColor: `${color}22` }}
               >
-                🚫
+                <VideoOff size={24} color={color} />
               </div>
               <span className="text-xs font-mono text-[#8b949e]">
                 Camera unavailable
@@ -93,8 +94,8 @@ export function VideoPanel({
           {label}
         </span>
         {muted && (
-          <span className="ml-auto text-xs font-mono text-[#8b949e]">
-            🔇
+          <span className="ml-auto text-[#8b949e]">
+            <MicOff size={12} />
           </span>
         )}
       </div>

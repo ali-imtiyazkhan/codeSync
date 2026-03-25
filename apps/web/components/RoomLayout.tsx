@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
+import { Video, Monitor } from "lucide-react";
 
 import { DiffPanel } from "../components/diff/DiffPanel";
 import { VideoPanel } from "../components/video/VideoPanel";
@@ -267,13 +268,19 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
                     </span>
                 </span>
                 {callStatus === "connected" && (
-                    <span className="text-[#3fb950]">🎥 Video live</span>
+                    <span className="text-[#3fb950] flex items-center gap-1">
+                        <Video size={10} /> Video live
+                    </span>
                 )}
                 {screenShareState === "sharing" && (
-                    <span className="text-[#f85149]">🖥️ You are sharing</span>
+                    <span className="text-[#f85149] flex items-center gap-1">
+                        <Monitor size={10} /> You are sharing
+                    </span>
                 )}
                 {screenShareState === "viewing" && (
-                    <span className="text-[#58a6ff]">🖥️ Viewing screen</span>
+                    <span className="text-[#58a6ff] flex items-center gap-1">
+                        <Monitor size={10} /> Viewing screen
+                    </span>
                 )}
                 <span className="ml-auto text-[#8b949e]">ColabCode v1.0</span>
             </div>

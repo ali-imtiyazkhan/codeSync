@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Mic, MicOff, Video, VideoOff, Monitor, MonitorOff } from "lucide-react";
 import type { CallStatus, ScreenShareState } from "../../lib/useWebRTC";
 
 interface VideoPanelProps {
