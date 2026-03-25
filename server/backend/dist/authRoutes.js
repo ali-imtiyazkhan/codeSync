@@ -10,6 +10,11 @@ const db_1 = require("@codesync/db");
 const router = (0, express_1.Router)();
 const JWT_SECRET = process.env.JWT_SECRET || "codesync_jwt_secret_change_in_production";
 const JWT_EXPIRES_IN = "7d";
+const generateToken = (userId, email) => {
+    return jsonwebtoken_1.default.sign({ sub: userId, email }, JWT_SECRET, {
+        expiresIn: JWT_EXPIRES_IN,
+    });
+};
 router.post("/signup", async (req, res) => {
     const { name, email, password } = req.body;
     if (!email || !password) {
@@ -83,6 +88,34 @@ router.post("/signin", async (req, res) => {
     }
     catch (err) {
         console.error("[signin]", err);
+        res.status(500).json({ error: "Internal server error." });
+    }
+});
+router.post("/oauth-token", async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        res.status(400).json({ error: "Email is required." });
+        return;
+    }
+    try {
+        const user = await db_1.prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
+        const token = generateToken(user.id, user.email);
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+            },
+        });
+    }
+    catch (err) {
+        console.error("[oauth-token]", err);
         res.status(500).json({ error: "Internal server error." });
     }
 });

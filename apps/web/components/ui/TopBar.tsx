@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Link2, Check, User, Code2 } from "lucide-react";
 
 interface TopBarProps {
     roomId: string;
@@ -62,7 +63,8 @@ export function TopBar({ roomId, connected, user }: TopBarProps) {
                 onClick={copyInvite}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold rounded border border-[#30363d] text-[#8b949e] hover:border-[#58a6ff] hover:text-[#58a6ff] transition-all"
             >
-                {copied ? "✓ Copied!" : "⎘ Copy Invite Link"}
+                {copied ? <Check size={14} /> : <Link2 size={14} />}
+                {copied ? "Copied!" : "Copy Invite Link"}
             </button>
 
             {/* User badge */}

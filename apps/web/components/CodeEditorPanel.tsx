@@ -8,6 +8,7 @@ import type {
   ClientToServerEvents,
   PendingChange,
 } from "@codesync/socket-types";
+import { FileCode, Sparkles, X, Check, Zap, Layers, AlertCircle } from "lucide-react";
 
 // Monaco must be loaded client-side only
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
@@ -150,8 +151,8 @@ export default function CodeEditorPanel({
           </div>
 
           <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)] flex items-center justify-center text-xs group-hover:border-[var(--blue-soft)] transition-all shadow-lg">
-              📄
+            <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)] flex items-center justify-center text-xs group-hover:border-[var(--blue-soft)] transition-all shadow-lg text-[var(--text-dim)]">
+              <FileCode size={18} />
             </div>
             <div className="flex flex-col">
               <span className="text-[11px] font-bold text-[var(--text)] tracking-tight">{fileName}</span>
@@ -208,7 +209,7 @@ export default function CodeEditorPanel({
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-ai-shimmer pointer-events-none" />
 
             <span className="relative flex items-center gap-2">
-              <span className="text-[12px] animate-pulse">✨</span>
+              <Sparkles size={14} />
               AI SCAN
             </span>
           </button>

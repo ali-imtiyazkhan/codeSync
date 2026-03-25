@@ -52,6 +52,16 @@
   --ai-cyan: hsl(180, 100%, 50%);
   --ai-purple: hsl(280, 100%, 65%);
   --ai-glow: hsla(180, 100%, 50%, 0.4);
+
+  /* Cyber/Premium Theme Tokens */
+  --neon: #00ffe1;
+  --neon3: #ff2d6b;
+  --amber: #ffb300;
+  --muted: #8b949e;
+  
+  --glow-neon: 0 0 10px rgba(0, 255, 225, 0.4);
+  --glow-red: 0 0 10px rgba(255, 45, 107, 0.4);
+  --glow-amber: 0 0 10px rgba(255, 179, 0, 0.4);
 }
 
 * {

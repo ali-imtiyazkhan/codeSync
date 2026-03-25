@@ -50,6 +50,10 @@ export interface ServerToClientEvents {
     "ai-analysis-result": (data: {
         results: AIAnalysisResult[];
     }) => void;
+    "canvas-update": (data: {
+        elements: any[];
+        appState: any;
+    }) => void;
     "webrtc-signal": (data: {
         signal: any;
         userId: string;
@@ -92,6 +96,11 @@ export interface ClientToServerEvents {
         roomId: string;
         code: string;
         fileName: string;
+    }) => void;
+    "canvas-update": (data: {
+        roomId: string;
+        elements: any[];
+        appState: any;
     }) => void;
     "webrtc-signal": (data: {
         signal: any;

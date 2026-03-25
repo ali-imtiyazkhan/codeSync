@@ -1,6 +1,7 @@
 "use client";
 
 import type { PendingChange } from "@codesync/socket-types";
+import { AlertTriangle, Layers, X, Zap, Check } from "lucide-react";
 
 interface Props {
   changes: PendingChange[];
@@ -52,7 +53,7 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
         animation: "neon-pulse 1s infinite",
         clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))",
       }}>
-        ⚠
+        <AlertTriangle size={14} />
       </div>
 
       {/* Message */}
@@ -93,19 +94,19 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
           <button
             onClick={() => changes.forEach(onAccept)}
             className="cyber-btn success-btn"
-            style={{ fontSize: "0.6rem", padding: "5px 10px", opacity: 0.7 }}
+            style={{ fontSize: "0.6rem", padding: "5px 10px", opacity: 0.7, display: "flex", alignItems: "center", gap: 4 }}
           >
-            ◈ ACCEPT ALL
+            <Layers size={12} /> ACCEPT ALL
           </button>
         )}
 
-        <button
-          onClick={() => onReject(first)}
-          className="cyber-btn danger-btn"
-          style={{ fontSize: "0.6rem", padding: "5px 12px" }}
-        >
-          ✕ REJECT
-        </button>
+          <button
+            onClick={() => onReject(first)}
+            className="cyber-btn danger-btn"
+            style={{ fontSize: "0.6rem", padding: "5px 12px", display: "flex", alignItems: "center", gap: 4 }}
+          >
+            <X size={12} /> REJECT
+          </button>
 
         <button
           onClick={() => onAccept(first)}
@@ -124,7 +125,7 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
             animation: "neon-pulse 2s infinite",
           }}
         >
-          ▶ AUTHORIZE &amp; APPLY TO VS CODE
+          <Zap size={14} /> AUTHORIZE &amp; APPLY TO VS CODE
         </button>
       </div>
 

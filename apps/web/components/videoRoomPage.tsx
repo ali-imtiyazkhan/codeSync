@@ -7,6 +7,12 @@ import { useRoomStore } from "../store/roomStore";
 import dynamic from "next/dynamic";
 import { Navbar } from "./landing/Navbar";
 import type { PendingChange, AIAnalysisResult } from "@codesync/socket-types";
+import { 
+  Video, VideoOff, Mic, MicOff, Monitor, MonitorOff, 
+  Code, Pencil, User, Users, Hourglass, Share2, 
+  Terminal, Palette, MonitorCheck,
+  Layout, Check, Link2, ScanFace, Code2
+} from "lucide-react";
 
 // Dynamically import components
 const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
@@ -71,7 +77,7 @@ function TileThumbnail({ tile, isActive, onClick }) {
             width: "32px", height: "32px", borderRadius: "8px",
             background: `${tile.color}15`, border: `1px solid ${tile.color}30`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "14px",
+            fontSize: "14px", color: tile.color,
           }}>{tile.icon}</div>
           <span style={{ fontSize: "9px", color: "#8b949e", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{tile.sublabel}</span>
           {tile.onAction && (
@@ -185,7 +191,7 @@ function MainStage({
         width: "80px", height: "80px", borderRadius: "20px",
         background: `${tile.color}10`, border: `2px solid ${tile.color}30`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: "32px",
+        fontSize: "32px", color: tile.color,
       }}>{tile.icon}</div>
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: "18px", fontWeight: 700, color: "#c9d1d9", fontFamily: "monospace", marginBottom: "6px" }}>{tile.label}</div>
@@ -208,7 +214,7 @@ function MainStage({
 }
 
 // ─── Control button ───────────────────────────────────────────────────────────
-function CtrlBtn({ emoji, label, onClick, active = true, danger = false, pulse = false }) {
+function CtrlBtn({ icon: Icon, label, onClick, active = true, danger = false, pulse = false }) {
   const [hovered, setHovered] = useState(false);
   return (
     <button
@@ -229,7 +235,7 @@ function CtrlBtn({ emoji, label, onClick, active = true, danger = false, pulse =
         animation: pulse ? "ctrlPulse 1.5s ease infinite" : "none",
       }}
     >
-      <span style={{ fontSize: "15px", lineHeight: 1 }}>{emoji}</span>
+      <Icon size={16} strokeWidth={2.5} />
       <span style={{ fontSize: "8px", fontFamily: "monospace", color: danger ? "#ff6b6b88" : "#8b949e", letterSpacing: "0.05em" }}>{label}</span>
     </button>
   );
@@ -372,7 +378,7 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       sublabel: callStatus === "calling" ? "Connecting..." : "Camera",
       stream: localStream,
       muted: true, mirror: true,
-      color: "#58a6ff", icon: "👤",
+      color: "#58a6ff", icon: <User size={18} />,
     },
     {
       id: "friend-cam",
@@ -380,7 +386,7 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       sublabel: friendConnected ? "Remote camera" : "Share invite link",
       stream: remoteStream,
       muted: false, mirror: false,
-      color: "#3fb950", icon: friendConnected ? "👤" : "⏳",
+      color: "#3fb950", icon: friendConnected ? <User size={18} /> : <Hourglass size={18} />,
     },
     {
       id: "my-screen",
@@ -388,7 +394,7 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       sublabel: isSharing ? "Sharing live" : "Ready to share",
       stream: localScreenStream,
       muted: true, mirror: false,
-      color: "#f0883e", icon: "🖥️",
+      color: "#f0883e", icon: <Monitor size={18} />,
       onAction: startScreenShare,
       actionLabel: "START SCREEN SHARE",
     },
@@ -398,7 +404,7 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       sublabel: "Not sharing yet",
       stream: remoteScreenStream,
       muted: true, mirror: false,
-      color: "#d2a8ff", icon: "🖥️",
+      color: "#d2a8ff", icon: <Monitor size={18} />,
     },
     {
       id: "editor",
@@ -406,7 +412,7 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       sublabel: isOwner ? "Authoritative" : "Collaborative",
       stream: null,
       muted: true, mirror: false,
-      color: "#a371f7", icon: "💻",
+      color: "#a371f7", icon: <Terminal size={18} />,
     },
     {
       id: "canvas",
@@ -414,7 +420,7 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       sublabel: "Brainstorming / DSA",
       stream: null,
       muted: true, mirror: false,
-      color: "#ff8c00", icon: "🎨",
+      color: "#ff8c00", icon: <Pencil size={18} />,
     },
   ];
 
@@ -438,6 +444,7 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       }}>
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Code2 size={16} color="#58a6ff" />
           <span style={{ fontSize: "13px", fontWeight: 800, color: "#58a6ff", letterSpacing: "0.04em" }}>Editor</span>
           <span style={{ fontSize: "12px", color: "#30363d" }}>—</span>
           <span style={{ fontSize: "12px", color: "#8b949e" }}>{myName}</span>
@@ -486,9 +493,11 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
               border: copied ? "1px solid rgba(63,185,80,0.4)" : "1px solid #21262d",
               color: copied ? "#3fb950" : "#8b949e", fontSize: "10px",
               fontFamily: "monospace", transition: "all 0.2s", letterSpacing: "0.05em",
+              display: "flex", alignItems: "center", gap: "6px"
             }}
           >
-            {copied ? "✓ COPIED" : "COPY INVITE"}
+            {copied ? <Check size={12} /> : <Link2 size={12} />}
+            {copied ? "COPIED" : "COPY INVITE"}
           </button>
 
         </div>
@@ -590,8 +599,10 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
                   width: "22px", height: "22px", borderRadius: "6px",
                   background: `${p.color}15`, border: `1px solid ${p.color}30`,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "10px",
-                }}>👤</div>
+                  fontSize: "10px", color: p.color,
+                }}>
+                  <User size={12} />
+                </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: "11px", color: "#c9d1d9", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.name}{p.you ? <span style={{ color: "#3d444d", marginLeft: "4px" }}>(you)</span> : ""}
@@ -620,14 +631,14 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
           border: "1px solid #21262d",
           boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         }}>
-          <CtrlBtn emoji={isMicOn ? "🎤" : "🔇"} label={isMicOn ? "MUTE" : "UNMUTE"} onClick={toggleMic} danger={!isMicOn} />
-          <CtrlBtn emoji={isCameraOn ? "📷" : "📵"} label={isCameraOn ? "CAM OFF" : "CAM ON"} onClick={toggleCamera} danger={!isCameraOn} />
+          <CtrlBtn icon={isMicOn ? Mic : MicOff} label={isMicOn ? "MUTE" : "UNMUTE"} onClick={toggleMic} danger={!isMicOn} />
+          <CtrlBtn icon={isCameraOn ? Video : VideoOff} label={isCameraOn ? "CAM OFF" : "CAM ON"} onClick={toggleCamera} danger={!isCameraOn} />
           <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
-          <CtrlBtn emoji="🖥️" label={isSharing ? "STOP" : "SHARE"} onClick={isSharing ? stopScreenShare : startScreenShare} danger={isSharing} pulse={isSharing} />
+          <CtrlBtn icon={Monitor} label={isSharing ? "STOP" : "SHARE"} onClick={isSharing ? stopScreenShare : startScreenShare} danger={isSharing} pulse={isSharing} />
           <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
-          <CtrlBtn emoji="💻" label="EDITOR" onClick={() => setActiveMainId("editor")} active={activeMainId === "editor"} />
+          <CtrlBtn icon={Terminal} label="EDITOR" onClick={() => setActiveMainId("editor")} active={activeMainId === "editor"} />
           <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
-          <CtrlBtn emoji="🎨" label="CANVAS" onClick={() => setActiveMainId("canvas")} active={activeMainId === "canvas"} />
+          <CtrlBtn icon={Pencil} label="CANVAS" onClick={() => setActiveMainId("canvas")} active={activeMainId === "canvas"} />
         </div>
       </div>
 

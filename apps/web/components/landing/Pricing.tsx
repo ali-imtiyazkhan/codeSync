@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Check } from "lucide-react";
 
 const PLANS = [
     {
@@ -165,7 +166,9 @@ export const Pricing: React.FC = () => {
                                     key={j}
                                     style={{ display: "flex", gap: "10px", fontSize: "13px", color: "#66665e" }}
                                 >
-                                    <span style={{ color: "#e94560", flexShrink: 0 }}>✓</span>
+                                    <span style={{ color: "#e94560", flexShrink: 0, marginTop: "2px" }}>
+                                        <Check size={14} strokeWidth={3} />
+                                    </span>
                                     {feat}
                                 </li>
                             ))}

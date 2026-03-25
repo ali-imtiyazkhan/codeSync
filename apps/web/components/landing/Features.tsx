@@ -1,37 +1,44 @@
 "use client";
 
 import React from "react";
+import { Zap, Globe, Palette, Users, Lock, Clipboard, Pencil } from "lucide-react";
 
-const FEATURES = [
+interface Feature {
+    icon: React.ReactNode;
+    title: string;
+    desc: string;
+}
+
+const FEATURES: Feature[] = [
     {
-        icon: "⚡",
+        icon: <Zap size={24} />,
         title: "Real-Time Sync",
         desc: "Every keystroke is broadcast instantly to all collaborators. No lag, no conflicts — just seamless live editing powered by WebSockets.",
     },
     {
-        icon: "🌐",
+        icon: <Pencil size={24} />,
+        title: "Collaborative Canvas",
+        desc: "Brainstorm workflows or solve DSA problems together on a real-time shared drawing board. Built-in Excalidraw integration.",
+    },
+    {
+        icon: <Globe size={24} />,
         title: "Shareable Rooms",
         desc: "Generate a unique room link in one click and share it with your team. No account required to join a session.",
     },
     {
-        icon: "🎨",
+        icon: <Palette size={24} />,
         title: "Syntax Highlighting",
         desc: "Full language support with rich syntax highlighting for 50+ languages including JS, Python, Go, Rust, and more.",
     },
     {
-        icon: "👥",
+        icon: <Users size={24} />,
         title: "Presence Indicators",
         desc: "See live cursors and avatar badges for every collaborator in the room. Always know who's editing what.",
     },
     {
-        icon: "🔒",
+        icon: <Lock size={24} />,
         title: "Secure by Default",
         desc: "All sessions are end-to-end encrypted. Your code never touches our servers — it's peer-to-peer when possible.",
-    },
-    {
-        icon: "📋",
-        title: "Code Snapshots",
-        desc: "Save named snapshots of your code at any point in time. Restore previous versions in a single click.",
     },
 ];
 
@@ -91,7 +98,7 @@ export const Features: React.FC = () => {
                             e.currentTarget.style.transform = "none";
                         }}
                     >
-                        <div style={{ fontSize: "28px", marginBottom: "14px" }}>{f.icon}</div>
+                        <div style={{ color: "#e94560", marginBottom: "14px" }}>{f.icon}</div>
                         <h3
                             style={{
                                 fontSize: "16px",

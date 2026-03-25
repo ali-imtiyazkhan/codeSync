@@ -267,6 +267,13 @@ io.on("connection", (socket) => {
         const results = await analyzeCode(data.code, data.fileName);
         socket.emit("ai-analysis-result", { results });
     });
+    // Canvas update (Excalidraw)
+    socket.on("canvas-update", (data) => {
+        socket.to(data.roomId).emit("canvas-update", {
+            elements: data.elements,
+            appState: data.appState
+        });
+    });
     // WebRTC signaling passthrough (camera + screen, identified by kind)
     socket.on("webrtc-signal", (data) => {
         console.log(`[webrtc-signal] ${data.kind} from ${data.userId} in ${data.roomId}`);

@@ -1,6 +1,7 @@
 "use client";
 
 import type { AIAnalysisResult } from "@codesync/socket-types";
+import { X, Sparkles, Bot, AlertCircle, Info, Flame } from "lucide-react";
 
 interface Props {
     results: AIAnalysisResult[];
@@ -46,11 +47,14 @@ export default function AIAssistantPanel({ results, isOpen, onClose, isScanning 
                     onClick={onClose}
                     style={{
                         background: "transparent", border: "none", color: "var(--muted)",
-                        cursor: "pointer", fontSize: "18px", transition: "0.2s"
+                        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                        transition: "0.2s"
                     }}
                     onMouseEnter={e => e.currentTarget.style.color = "var(--text)"}
                     onMouseLeave={e => e.currentTarget.style.color = "var(--muted)"}
-                >✕</button>
+                >
+                    <X size={20} />
+                </button>
             </div>
 
             {/* Body */}
@@ -71,7 +75,7 @@ export default function AIAssistantPanel({ results, isOpen, onClose, isScanning 
                         alignItems: "center", justifyContent: "center", gap: 12, textAlign: "center",
                         opacity: 0.5
                     }}>
-                        <span style={{ fontSize: "24px" }}>✨</span>
+                        <Sparkles size={32} color="var(--neon)" />
                         <span style={{ fontSize: "11px", color: "var(--muted)", lineHeight: 1.6 }}>
                             No critical issues found.<br />Your code looks clean!
                         </span>
