@@ -19,6 +19,7 @@ const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
 });
 
 const AIAssistantPanel = dynamic(() => import("./ai/AIAssistantPanel"), { ssr: false });
+const ExcalidrawWrapper = dynamic(() => import("./ExcalidrawWrapper"), { ssr: false });
 
 function VideoEl({ stream, muted, mirror, style = {} }) {
   const ref = useRef(null);
@@ -151,6 +152,9 @@ function MainStage({
         onAIScan={onAIScan}
       />
     );
+  }
+  if (tile.id === "canvas") {
+    return <ExcalidrawWrapper socket={socket as any} roomId={roomId} />;
   }
   if (tile.stream) {
     return (
@@ -404,6 +408,14 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
       muted: true, mirror: false,
       color: "#a371f7", icon: "💻",
     },
+    {
+      id: "canvas",
+      label: "Canvas",
+      sublabel: "Brainstorming / DSA",
+      stream: null,
+      muted: true, mirror: false,
+      color: "#ff8c00", icon: "🎨",
+    },
   ];
 
   const activeTile = tiles.find(t => t.id === activeMainId) || tiles[tiles.length - 1];
@@ -614,6 +626,8 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
           <CtrlBtn emoji="🖥️" label={isSharing ? "STOP" : "SHARE"} onClick={isSharing ? stopScreenShare : startScreenShare} danger={isSharing} pulse={isSharing} />
           <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
           <CtrlBtn emoji="💻" label="EDITOR" onClick={() => setActiveMainId("editor")} active={activeMainId === "editor"} />
+          <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
+          <CtrlBtn emoji="🎨" label="CANVAS" onClick={() => setActiveMainId("canvas")} active={activeMainId === "canvas"} />
         </div>
       </div>
 

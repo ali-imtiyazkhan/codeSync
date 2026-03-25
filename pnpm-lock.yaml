@@ -54,6 +54,9 @@ importers:
       '@codesync/socket-types':
         specifier: workspace:*
         version: link:../../packages/socket-types
+      '@excalidraw/excalidraw':
+        specifier: 0.17.6
+        version: 0.17.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.7.0(monaco-editor@0.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -406,6 +409,12 @@ packages:
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
+
+  '@excalidraw/excalidraw@0.17.6':
+    resolution: {integrity: sha512-fyCl+zG/Z5yhHDh5Fq2ZGmphcrALmuOdtITm8gN4d8w4ntnaopTXcTfnAAaU3VleDC6LhTkoLOTG6P5kgREiIg==}
+    peerDependencies:
+      react: ^17.0.2 || ^18.2.0
+      react-dom: ^17.0.2 || ^18.2.0
 
   '@google/generative-ai@0.24.1':
     resolution: {integrity: sha512-MqO+MLfM6kjxcKoy0p1wRzG3b4ZZXtPI+z2IE26UogS2Cm/XHO+7gGRBh6gcJsOiIVoH93UwKvW4HdgiOZCy9Q==}
@@ -2276,6 +2285,11 @@ snapshots:
 
   '@esbuild/win32-x64@0.20.2':
     optional: true
+
+  '@excalidraw/excalidraw@0.17.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   '@google/generative-ai@0.24.1': {}
 

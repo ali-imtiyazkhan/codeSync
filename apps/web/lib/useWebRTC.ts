@@ -29,7 +29,7 @@ export function useWebRTC(
     useState<ScreenShareState>("inactive");
 
 
-// Refs
+  // Refs
   const cameraPeerRef = useRef<SimplePeer.Instance | null>(null);
   const screenPeerRef = useRef<SimplePeer.Instance | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -138,11 +138,10 @@ export function useWebRTC(
       setRemoteScreenStream(null);
       setScreenShareState("inactive");
     });
-
+ 
     return peer;
   }, [socket, userId, destroyPeer]);
 
-  // Start camera call
   const startCall = useCallback(async () => {
     if (!socket) return;
     try {

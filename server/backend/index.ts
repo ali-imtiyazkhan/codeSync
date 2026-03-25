@@ -304,6 +304,14 @@ io.on("connection", (socket: Socket) => {
     socket.emit("ai-analysis-result", { results });
   });
 
+  // Canvas update (Excalidraw)
+  socket.on("canvas-update", (data: { roomId: string; elements: any[]; appState: any }) => {
+    socket.to(data.roomId).emit("canvas-update", {
+      elements: data.elements,
+      appState: data.appState
+    });
+  });
+
   // WebRTC signaling passthrough (camera + screen, identified by kind)
   socket.on(
     "webrtc-signal",

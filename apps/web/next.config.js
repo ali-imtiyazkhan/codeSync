@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@codesync/db", "@codesync/socket-types"],
+  transpilePackages: ["@codesync/db", "@codesync/socket-types", "@excalidraw/excalidraw"],
 
   experimental: {
     turbo: {

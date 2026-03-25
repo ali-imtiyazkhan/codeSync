@@ -39,6 +39,7 @@ export interface ServerToClientEvents {
   "vscode-push": (data: { code: string }) => void;
   "editor-code-update": (data: { code: string }) => void;
   "ai-analysis-result": (data: { results: AIAnalysisResult[] }) => void;
+  "canvas-update": (data: { elements: any[]; appState: any }) => void;
 
   // WebRTC
   "webrtc-signal": (data: { signal: any; userId: string; kind: "camera" | "screen" }) => void;
@@ -55,6 +56,7 @@ export interface ClientToServerEvents {
   "reject-change": (data: { roomId: string }) => void;
   "vscode-push": (data: { roomId: string; code: string }) => void;
   "ai-request-analysis": (data: { roomId: string; code: string; fileName: string }) => void;
+  "canvas-update": (data: { roomId: string; elements: any[]; appState: any }) => void;
 
   // WebRTC
   "webrtc-signal": (data: { signal: any; userId: string; roomId: string; kind: "camera" | "screen" }) => void;
