@@ -25,6 +25,7 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:3000",
   "https://codesync-inky.vercel.app",
+  "https://100xcodesync.vercel.app",
 ].filter(Boolean) as string[];
 
 // Express App
