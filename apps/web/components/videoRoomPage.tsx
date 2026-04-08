@@ -237,7 +237,14 @@ function CtrlBtn({ icon: Icon, label, onClick, active = true, danger = false, pu
       }}
     >
       <Icon size={16} strokeWidth={2.5} />
-      <span style={{ fontSize: "8px", fontFamily: "monospace", color: danger ? "#ff6b6b88" : "#8b949e", letterSpacing: "0.05em" }}>{label}</span>
+      <span style={{ 
+        fontSize: "11px", 
+        fontWeight: 900, 
+        fontFamily: "'Inter', sans-serif", 
+        color: danger ? "#ff6b6b" : "#FFFFFF", 
+        letterSpacing: "0.02em",
+        marginTop: "1px"
+      }}>{label}</span>
     </button>
   );
 }
