@@ -44,9 +44,9 @@ export const Footer: React.FC = () => {
                         </p>
                     </div>
                     {([
-                        ["Product", ["Features", "Pricing", "Changelog", "Roadmap"]],
-                        ["Company", ["About", "Blog", "Careers", "Press"]],
-                        ["Legal", ["Privacy", "Terms", "Security", "Status"]],
+                        ["Product", ["Features", "Pricing", "Changelog"]],
+                        ["Developer", ["GitHub", "Discord"]],
+                        ["Support", ["Security", "Status"]],
                     ] as const).map(([title, links]) => (
                         <div key={title}>
                             <div

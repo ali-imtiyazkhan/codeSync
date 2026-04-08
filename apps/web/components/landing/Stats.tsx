@@ -17,10 +17,10 @@ export const Stats: React.FC = () => {
             }}
         >
             {[
-                ["50K+", "Rooms Created"],
-                ["200ms", "Avg Sync Latency"],
-                ["99.9%", "Uptime SLA"],
-                ["50+", "Languages Supported"],
+                ["<100ms", "Sync Latency"],
+                ["E2EE", "Security"],
+                ["Real-time", "Multi-cursor"],
+                ["WebRTC", "P2P Core"],
             ].map(([num, label]) => (
                 <div key={label} style={{ textAlign: "center" }}>
                     <div

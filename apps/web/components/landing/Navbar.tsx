@@ -50,7 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({ scrolled, scrollTo, createRoom }
 
             {/* Desktop Nav */}
             <nav style={{ display: "flex", gap: "28px", alignItems: "center" }}>
-                {["features", "how-it-works", "pricing", "testimonials"].map((id) => (
+                {["features", "how-it-works", "pricing"].map((id) => (
                     <button
                         key={id}
                         onClick={() => scrollTo(id)}

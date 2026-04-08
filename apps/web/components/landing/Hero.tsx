@@ -251,24 +251,33 @@ export const Hero: React.FC<HeroProps> = ({
             <div
                 style={{
                     display: "flex",
-                    gap: "24px",
-                    marginTop: "36px",
+                    gap: "30px",
+                    marginTop: "48px",
                     alignItems: "center",
                     position: "relative",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
                 }}
             >
-                <span style={{ fontSize: "12px", color: "#44443c" }}>Trusted by engineers at</span>
-                {["Stripe", "Vercel", "Linear", "Notion"].map((co) => (
+                <span style={{ fontSize: "11px", fontWeight: 900, color: "#44443c", letterSpacing: "0.15em", textTransform: "uppercase" }}>Built With</span>
+                {[
+                    { name: "Next.js", color: "#f0f0ec" },
+                    { name: "WebRTC", color: "#f0883e" },
+                    { name: "Socket.io", color: "#FFFFFF" },
+                    { name: "Prisma", color: "#a371f7" },
+                    { name: "TypeScript", color: "#3178c6" }
+                ].map((tech) => (
                     <span
-                        key={co}
+                        key={tech.name}
                         style={{
-                            fontSize: "12px",
-                            color: "#666660",
-                            letterSpacing: "0.06em",
-                            fontWeight: 700,
+                            fontSize: "13px",
+                            color: tech.color,
+                            letterSpacing: "0.04em",
+                            fontWeight: 800,
+                            opacity: 0.85
                         }}
                     >
-                        {co}
+                        {tech.name}
                     </span>
                 ))}
             </div>
