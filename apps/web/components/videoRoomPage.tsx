@@ -7,12 +7,13 @@ import { useRoomStore } from "../store/roomStore";
 import dynamic from "next/dynamic";
 import { Navbar } from "./landing/Navbar";
 import type { PendingChange, AIAnalysisResult } from "@codesync/socket-types";
-import { 
-  Video, VideoOff, Mic, MicOff, Monitor, MonitorOff, 
-  Code, Pencil, User, Users, Hourglass, Share2, 
+import {
+  Video, VideoOff, Mic, MicOff, Monitor, MonitorOff,
+  Code, Pencil, User, Users, Hourglass, Share2,
   Terminal, Palette, MonitorCheck,
-  Layout, Check, Link2, ScanFace, Code2
+  Layout, Check, Link2, ScanFace, Code2, LogOut
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 // Dynamically import components
 const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
@@ -242,7 +243,11 @@ function CtrlBtn({ icon: Icon, label, onClick, active = true, danger = false, pu
 }
 
 
-export function VideoRoomPage({ roomId, userId, userName, backendToken }: { roomId: string; userId: string; userName: string; backendToken?: string }) {
+export function VideoRoomPage({ 
+  roomId, userId, userName, userImage, backendToken 
+}: { 
+  roomId: string; userId: string; userName: string; userImage?: string; backendToken?: string 
+}) {
   const [activeMainId, setActiveMainId] = useState("editor");
   const [copied, setCopied] = useState(false);
 
@@ -447,7 +452,40 @@ export function VideoRoomPage({ roomId, userId, userName, backendToken }: { room
           <Code2 size={16} color="#58a6ff" />
           <span style={{ fontSize: "13px", fontWeight: 800, color: "#58a6ff", letterSpacing: "0.04em" }}>Editor</span>
           <span style={{ fontSize: "12px", color: "#30363d" }}>—</span>
-          <span style={{ fontSize: "12px", color: "#8b949e" }}>{myName}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {userImage ? (
+              <img 
+                src={userImage} 
+                alt={userName} 
+                style={{ width: "22px", height: "22px", borderRadius: "50%", border: "1px solid #30363d" }} 
+              />
+            ) : (
+              <div style={{ 
+                width: "22px", height: "22px", borderRadius: "50%", 
+                background: "#58a6ff1a", border: "1px solid #58a6ff4d",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "10px", fontWeight: 700, color: "#58a6ff"
+              }}>
+                {userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+              </div>
+            )}
+            <span style={{ fontSize: "12px", color: "#8b949e" }}>{userName}</span>
+            
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              title="Logout"
+              style={{
+                background: "none", border: "none", cursor: "pointer", 
+                color: "#8b949e", padding: "4px", borderRadius: "4px",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#ff6b6b1a"; (e.currentTarget as HTMLElement).style.color = "#ff6b6b"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "none"; (e.currentTarget as HTMLElement).style.color = "#8b949e"; }}
+            >
+              <LogOut size={14} />
+            </button>
+          </div>
         </div>
 
         {/* Connection pill */}
