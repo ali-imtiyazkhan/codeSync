@@ -4,15 +4,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "postinstall": "prisma generate",
-    "build": "prisma generate && tsc",
+    "postinstall": "prisma generate --no-engine",
+    "build": "prisma generate --no-engine && tsc",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
+    "db:generate": "prisma generate --no-engine",
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^5.8.1"
+    "@prisma/client": "^5.22.0",
+    "@prisma/extension-accelerate": "^1.1.0"
   },
   "devDependencies": {
     "prisma": "^5.22.0",
