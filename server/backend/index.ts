@@ -24,7 +24,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "codesync_jwt_secret_change_in_prod
 const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:3000",
-  "https://codesync-inky.vercel.app",
   "https://100xcodesync.vercel.app",
 ].filter(Boolean) as string[];
 

@@ -22,7 +22,7 @@ The frontend is a Next.js app located in `apps/web`.
 | `NEXT_PUBLIC_WS_URL` | `https://codesync-1-wdum.onrender.com` |
 | `NEXT_PUBLIC_SOCKET_URL` | `https://codesync-1-wdum.onrender.com` |
 | `BACKEND_URL` | `https://codesync-1-wdum.onrender.com` |
-| `NEXTAUTH_URL` | `https://codesync-inky.vercel.app` |
+| `NEXTAUTH_URL` | `https://100xcodesync.vercel.app` |
 | `NEXTAUTH_SECRET` | `your_random_secret_string` |
 | `DATABASE_URL` | `your_postgresql_connection_string` |
 | `GOOGLE_CLIENT_ID` | `your_google_id` |
@@ -34,15 +34,15 @@ The frontend is a Next.js app located in `apps/web`.
 For Google and GitHub login to work, you **must** add the following callback URLs in their respective developer consoles:
 
 #### Google Cloud Console:
-- **Authorized JavaScript origins**: `https://codesync-inky.vercel.app` (and `http://localhost:3000` for local testing)
+- **Authorized JavaScript origins**: `https://100xcodesync.vercel.app` (and `http://localhost:3000` for local testing)
 - **Authorized redirect URIs**: 
-    - `https://codesync-inky.vercel.app/api/auth/callback/google`
+    - `https://100xcodesync.vercel.app/api/auth/callback/google`
     - `http://localhost:3000/api/auth/callback/google` (for local testing)
 
 #### GitHub Developer Settings:
-- **Homepage URL**: `https://codesync-inky.vercel.app`
+- **Homepage URL**: `https://100xcodesync.vercel.app`
 - **Authorization callback URL**: 
-    - `https://codesync-inky.vercel.app/api/auth/callback/github`
+    - `https://100xcodesync.vercel.app/api/auth/callback/github`
     - `http://localhost:3000/api/auth/callback/github` (for local testing)
 
 ## 3. Database
@@ -61,7 +61,7 @@ If you are redirected back to the sign-in page after a successful login:
 
 ### A. Check Environment Variables
 In Vercel, ensure these are exactly as follows:
-- `NEXTAUTH_URL`: `https://codesync-inky.vercel.app` (No trailing slash)
+- `NEXTAUTH_URL`: `https://100xcodesync.vercel.app` (No trailing slash)
 - `NEXTAUTH_SECRET`: Generate a strong secret using `openssl rand -base64 32` and paste it here.
 
 ### B. Check for URL Errors
