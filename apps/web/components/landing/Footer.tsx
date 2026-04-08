@@ -74,7 +74,9 @@ export const Footer: React.FC = () => {
                                 {links.map((l) => (
                                     <li key={l}>
                                         <a
-                                            href="#"
+                                            href={l === "GitHub" ? "https://github.com/mainkhan/codeSync" : "#"}
+                                            target={l === "GitHub" ? "_blank" : "_self"}
+                                            rel={l === "GitHub" ? "noopener noreferrer" : ""}
                                             style={{
                                                 color: "#44443c",
                                                 fontSize: "13px",
@@ -110,7 +112,9 @@ export const Footer: React.FC = () => {
                         {["Twitter", "GitHub", "Discord"].map((s) => (
                             <a
                                 key={s}
-                                href="#"
+                                href={s === "GitHub" ? "https://github.com/mainkhan/codeSync" : "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 style={{
                                     fontSize: "12px",
                                     color: "#2a2a28",

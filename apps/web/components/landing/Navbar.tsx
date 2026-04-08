@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useSession, signOut } from "next-auth/react";
-import { LogOut } from "lucide-react";
+import { LogOut, Github } from "lucide-react";
 
 interface NavbarProps {
     scrolled: boolean;
@@ -131,32 +131,49 @@ export const Navbar: React.FC<NavbarProps> = ({ scrolled, scrollTo, createRoom }
                         </button>
                     </div>
                 ) : (
-                    <button
-                        onClick={() => window.location.href = "/auth/signin"}
-                        style={{
-                            padding: "8px 18px",
-                            borderRadius: "6px",
-                            border: "1px solid #e94560",
-                            background: "transparent",
-                            color: "#e94560",
-                            fontSize: "13px",
-                            fontWeight: 700,
-                            cursor: "pointer",
-                            fontFamily: "inherit",
-                            letterSpacing: "0.06em",
-                            transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = "#e94560";
-                            e.currentTarget.style.color = "#fff";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = "transparent";
-                            e.currentTarget.style.color = "#e94560";
-                        }}
-                    >
-                        SIGN IN
-                    </button>
+                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                        <a 
+                            href="https://github.com/mainkhan/codeSync" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{
+                                display: "flex", alignItems: "center", gap: "8px", 
+                                color: "#888880", textDecoration: "none", fontSize: "13px",
+                                fontWeight: 700, transition: "color 0.2s", marginRight: "8px"
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "#e94560")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "#888880")}
+                        >
+                            <Github size={16} />
+                            <span>GITHUB</span>
+                        </a>
+                        <button
+                            onClick={() => window.location.href = "/auth/signin"}
+                            style={{
+                                padding: "8px 18px",
+                                borderRadius: "6px",
+                                border: "1px solid #e94560",
+                                background: "transparent",
+                                color: "#e94560",
+                                fontSize: "13px",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                                fontFamily: "inherit",
+                                letterSpacing: "0.06em",
+                                transition: "all 0.2s",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#e94560";
+                                e.currentTarget.style.color = "#fff";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "transparent";
+                                e.currentTarget.style.color = "#e94560";
+                            }}
+                        >
+                            SIGN IN
+                        </button>
+                    </div>
                 )}
             </nav>
         </header>

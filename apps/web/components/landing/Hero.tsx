@@ -129,35 +129,70 @@ export const Hero: React.FC<HeroProps> = ({
                     }}
                 />
 
-                <button
-                    onClick={createRoom}
-                    style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "8px",
-                        border: "none",
-                        background: "linear-gradient(135deg, #e94560 0%, #c7253e 100%)",
-                        color: "#fff",
-                        fontWeight: 800,
-                        fontSize: "14px",
-                        cursor: "pointer",
-                        marginBottom: "18px",
-                        letterSpacing: "0.08em",
-                        fontFamily: "inherit",
-                        boxShadow: "0 8px 24px rgba(233,69,96,0.3)",
-                        transition: "transform 0.15s, box-shadow 0.15s",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-1px)";
-                        e.currentTarget.style.boxShadow = "0 12px 32px rgba(233,69,96,0.45)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "none";
-                        e.currentTarget.style.boxShadow = "0 8px 24px rgba(233,69,96,0.3)";
-                    }}
-                >
-                    + CREATE NEW ROOM
-                </button>
+                <div style={{ display: "flex", gap: "12px", marginBottom: "18px" }}>
+                    <button
+                        onClick={createRoom}
+                        style={{
+                            flex: 2,
+                            padding: "14px",
+                            borderRadius: "8px",
+                            border: "none",
+                            background: "linear-gradient(135deg, #e94560 0%, #c7253e 100%)",
+                            color: "#fff",
+                            fontWeight: 800,
+                            fontSize: "14px",
+                            cursor: "pointer",
+                            letterSpacing: "0.08em",
+                            fontFamily: "inherit",
+                            boxShadow: "0 8px 24px rgba(233,69,96,0.3)",
+                            transition: "transform 0.15s, box-shadow 0.15s",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "translateY(-1px)";
+                            e.currentTarget.style.boxShadow = "0 12px 32px rgba(233,69,96,0.45)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "none";
+                            e.currentTarget.style.boxShadow = "0 8px 24px rgba(233,69,96,0.3)";
+                        }}
+                    >
+                        + CREATE NEW ROOM
+                    </button>
+                    <a 
+                        href="https://github.com/mainkhan/codeSync"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            flex: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: "8px",
+                            border: "1px solid #2a2a28",
+                            background: "#1c1c1a",
+                            color: "#d4d4cc",
+                            textDecoration: "none",
+                            fontWeight: 800,
+                            fontSize: "12px",
+                            padding: "14px",
+                            cursor: "pointer",
+                            letterSpacing: "0.08em",
+                            transition: "all 0.2s",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = "#e94560";
+                            e.currentTarget.style.color = "#e94560";
+                            e.currentTarget.style.background = "rgba(233,69,96,0.05)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#2a2a28";
+                            e.currentTarget.style.color = "#d4d4cc";
+                            e.currentTarget.style.background = "#1c1c1a";
+                        }}
+                    >
+                        GITHUB
+                    </a>
+                </div>
 
                 <div
                     style={{
