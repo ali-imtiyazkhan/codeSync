@@ -8,7 +8,7 @@ import { prisma } from "@codesync/db";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma as any),
   session: { strategy: "jwt" },
 
   providers: [
