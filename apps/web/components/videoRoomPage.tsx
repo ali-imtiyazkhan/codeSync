@@ -435,7 +435,7 @@ export function VideoRoomPage({
   return (
     <div style={{
       width: "100vw", height: "100vh", display: "flex", flexDirection: "column",
-      background: "#010409", fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+      background: "#000000", fontFamily: "'Inter', 'JetBrains Mono', sans-serif",
       overflow: "hidden",
     }}>
 
@@ -444,14 +444,14 @@ export function VideoRoomPage({
         height: "44px", flexShrink: 0,
         display: "flex", alignItems: "center",
         padding: "0 16px", gap: "12px",
-        background: "#0d1117",
-        borderBottom: "1px solid #21262d",
+        background: "#000000",
+        borderBottom: "1px solid #111111",
       }}>
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <Code2 size={16} color="#58a6ff" />
-          <span style={{ fontSize: "13px", fontWeight: 800, color: "#58a6ff", letterSpacing: "0.04em" }}>Editor</span>
-          <span style={{ fontSize: "12px", color: "#30363d" }}>—</span>
+          <span style={{ fontSize: "14px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "0.02em" }}>EDITOR</span>
+          <span style={{ fontSize: "12px", color: "#222222" }}>—</span>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             {userImage ? (
               <img 
@@ -469,7 +469,7 @@ export function VideoRoomPage({
                 {userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
               </div>
             )}
-            <span style={{ fontSize: "12px", color: "#8b949e" }}>{userName}</span>
+            <span style={{ fontSize: "12px", color: "#FFFFFF", fontWeight: 700 }}>{userName}</span>
             
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -520,7 +520,7 @@ export function VideoRoomPage({
         {/* Room ID */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ fontSize: "10px", color: "#8b949e" }}>Room:</span>
-          <code style={{ fontSize: "11px", color: "#c9d1d9", background: "#161b22", padding: "2px 8px", borderRadius: "4px", border: "1px solid #21262d" }}>
+          <code style={{ fontSize: "11px", color: "#FFFFFF", fontWeight: 800, background: "#111111", padding: "2px 8px", borderRadius: "4px", border: "1px solid #222222" }}>
             {roomId}
           </code>
           <button
@@ -529,13 +529,13 @@ export function VideoRoomPage({
               padding: "4px 10px", borderRadius: "6px", cursor: "pointer",
               background: copied ? "rgba(63,185,80,0.12)" : "#161b22",
               border: copied ? "1px solid rgba(63,185,80,0.4)" : "1px solid #21262d",
-              color: copied ? "#3fb950" : "#8b949e", fontSize: "10px",
-              fontFamily: "monospace", transition: "all 0.2s", letterSpacing: "0.05em",
+              color: copied ? "#3fb950" : "#FFFFFF", fontSize: "10px",
+              fontWeight: 900, transition: "all 0.2s", letterSpacing: "0.08em",
               display: "flex", alignItems: "center", gap: "6px"
             }}
           >
             {copied ? <Check size={12} /> : <Link2 size={12} />}
-            {copied ? "COPIED" : "COPY INVITE"}
+            {copied ? "COPIED" : "COPY LINK"}
           </button>
 
         </div>
@@ -598,12 +598,12 @@ export function VideoRoomPage({
         }}>
           {/* Sidebar header */}
           <div style={{
-            padding: "12px 14px 8px",
-            borderBottom: "1px solid #21262d",
+            padding: "16px 14px 10px",
+            borderBottom: "1px solid #111111",
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
-            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.18em", color: "#8b949e", textTransform: "uppercase" }}>Live Peeks</span>
-            <span style={{ fontSize: "9px", color: "#3d444d", fontFamily: "monospace" }}>{sidebarTiles.length} panels</span>
+            <span style={{ fontSize: "11px", fontWeight: 900, letterSpacing: "0.1em", color: "#FFFFFF", textTransform: "uppercase" }}>PANELS</span>
+            <span style={{ fontSize: "9px", color: "#444444", fontWeight: 900 }}>{sidebarTiles.length}</span>
           </div>
 
           {/* Thumbnails */}
@@ -658,8 +658,8 @@ export function VideoRoomPage({
         height: "64px", flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
         gap: "8px",
-        background: "#0d1117",
-        borderTop: "1px solid #21262d",
+        background: "#000000",
+        borderTop: "1px solid #111111",
         padding: "0 20px",
       }}>
         <div style={{
