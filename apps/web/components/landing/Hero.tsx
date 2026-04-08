@@ -1,31 +1,11 @@
-"use client";
-
 import React from "react";
-
-const CODE_LINES = [
-    { indent: 0, text: "function mergeSort(arr) {", color: "#e06c75" },
-    { indent: 1, text: "if (arr.length <= 1) return arr;", color: "#abb2bf" },
-    { indent: 1, text: "const mid = Math.floor(arr.length / 2);", color: "#61afef" },
-    { indent: 1, text: "const left  = mergeSort(arr.slice(0, mid));", color: "#98c379" },
-    { indent: 1, text: "const right = mergeSort(arr.slice(mid));", color: "#98c379" },
-    { indent: 1, text: "return merge(left, right);", color: "#c678dd" },
-    { indent: 0, text: "}", color: "#e06c75" },
-    { indent: 0, text: "", color: "transparent" },
-    { indent: 0, text: "function merge(a, b) {", color: "#e06c75" },
-    { indent: 1, text: "const result = [];", color: "#61afef" },
-    { indent: 1, text: "while (a.length && b.length) {", color: "#abb2bf" },
-    { indent: 2, text: "result.push(a[0] < b[0] ? a.shift() : b.shift());", color: "#d19a66" },
-    { indent: 1, text: "}", color: "#abb2bf" },
-    { indent: 1, text: "return [...result, ...a, ...b];", color: "#98c379" },
-    { indent: 0, text: "}", color: "#e06c75" },
-];
+import { AnimatedHeroPreview } from "./AnimatedHeroPreview";
 
 interface HeroProps {
     createRoom: () => void;
     joinRoom: () => void;
     joinId: string;
     setJoinId: (id: string) => void;
-    visibleLines: number;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -33,7 +13,6 @@ export const Hero: React.FC<HeroProps> = ({
     joinRoom,
     joinId,
     setJoinId,
-    visibleLines,
 }) => {
     return (
         <section
@@ -282,102 +261,7 @@ export const Hero: React.FC<HeroProps> = ({
                 ))}
             </div>
 
-            {/* Animated code preview */}
-            <div
-                style={{
-                    marginTop: "70px",
-                    width: "100%",
-                    maxWidth: "640px",
-                    background: "#141412",
-                    border: "1px solid #2a2a28",
-                    borderRadius: "12px",
-                    overflow: "hidden",
-                    boxShadow: "0 40px 80px rgba(0,0,0,0.6)",
-                    position: "relative",
-                }}
-            >
-                {/* Window chrome */}
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        padding: "10px 16px",
-                        background: "#1c1c1a",
-                        borderBottom: "1px solid #2a2a28",
-                    }}
-                >
-                    {["#e94560", "#f0c040", "#50c870"].map((c) => (
-                        <div
-                            key={c}
-                            style={{ width: "10px", height: "10px", borderRadius: "50%", background: c }}
-                        />
-                    ))}
-                    <span
-                        style={{
-                            marginLeft: "10px",
-                            fontSize: "11px",
-                            color: "#44443c",
-                            letterSpacing: "0.08em",
-                        }}
-                    >
-                        merge-sort.js — CodeSync
-                    </span>
-                    <div style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                        <div
-                            style={{
-                                width: "6px",
-                                height: "6px",
-                                borderRadius: "50%",
-                                background: "#e94560",
-                            }}
-                        />
-                        <span style={{ fontSize: "10px", color: "#e94560" }}>2 online</span>
-                    </div>
-                </div>
-                <div style={{ padding: "20px 24px", minHeight: "220px" }}>
-                    {CODE_LINES.slice(0, visibleLines).map((line, i) => (
-                        <div
-                            key={i}
-                            style={{
-                                display: "flex",
-                                alignItems: "baseline",
-                                paddingLeft: `${line.indent * 20}px`,
-                                lineHeight: "1.7",
-                                fontSize: "13px",
-                                animation: "fadeIn 0.2s ease",
-                            }}
-                        >
-                            <span
-                                style={{
-                                    color: "#333330",
-                                    minWidth: "28px",
-                                    textAlign: "right",
-                                    marginRight: "16px",
-                                    userSelect: "none",
-                                    fontSize: "11px",
-                                }}
-                            >
-                                {i + 1}
-                            </span>
-                            <span style={{ color: line.color }}>{line.text || "\u00a0"}</span>
-                            {i === visibleLines - 1 && (
-                                <span
-                                    style={{
-                                        display: "inline-block",
-                                        width: "2px",
-                                        height: "14px",
-                                        background: "#e94560",
-                                        marginLeft: "1px",
-                                        verticalAlign: "middle",
-                                        animation: "blink 1s step-end infinite",
-                                    }}
-                                />
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <AnimatedHeroPreview />
 
             {/* Scroll cue */}
             <div

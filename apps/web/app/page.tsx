@@ -19,25 +19,17 @@ function generateRoomId() {
   );
 }
 
-const CODE_LINES_COUNT = 15;
 
 export default function CodeSyncLanding() {
   const router = useRouter();
   const [joinId, setJoinId] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const [visibleLines, setVisibleLines] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    if (visibleLines >= CODE_LINES_COUNT) return;
-    const t = setTimeout(() => setVisibleLines((v) => v + 1), 120);
-    return () => clearTimeout(t);
-  }, [visibleLines]);
 
   const createRoom = () => {
     const id = generateRoomId();
@@ -69,7 +61,6 @@ export default function CodeSyncLanding() {
           joinRoom={joinRoom}
           joinId={joinId}
           setJoinId={setJoinId}
-          visibleLines={visibleLines}
         />
 
         <Stats />

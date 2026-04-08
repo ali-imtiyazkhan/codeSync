@@ -1,0 +1,204 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .wrap { font-family: var(--font-mono); padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+  .editor-shell { width: 100%; max-width: 680px; border-radius: 12px; border: 0.5px solid var(--color-border-secondary); overflow: hidden; background: #0d0d0d; }
+  .titlebar { background: #1a1a1a; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 0.5px solid #2a2a2a; }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+  .tab-name { font-size: 12px; color: #888; margin-left: 6px; }
+  .presence { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .avatar { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; font-family: var(--font-sans); }
+  .av1 { background: #7F77DD; color: #fff; }
+  .av2 { background: #1D9E75; color: #fff; }
+  .av3 { background: #D85A30; color: #fff; }
+  .online-dot { width: 8px; height: 8px; border-radius: 50%; background: #28c840; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .code-area { padding: 20px 0; min-height: 260px; position: relative; }
+  .line { display: flex; gap: 0; align-items: flex-start; height: 24px; }
+  .ln { width: 44px; text-align: right; padding-right: 16px; font-size: 12px; color: #555; user-select: none; line-height: 24px; flex-shrink: 0; }
+  .code-line { font-size: 13px; line-height: 24px; white-space: pre; }
+  .cursor { display: inline-block; width: 2px; height: 15px; vertical-align: middle; border-radius: 1px; animation: blink 1s step-end infinite; position: relative; top: -1px; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .c1 { background: #7F77DD; }
+  .c2 { background: #1D9E75; }
+  .remote-cursor { position: absolute; pointer-events: none; display: flex; flex-direction: column; align-items: flex-start; }
+  .rc-line { width: 2px; height: 18px; border-radius: 1px; }
+  .rc-label { font-size: 9px; font-family: var(--font-sans); padding: 1px 5px; border-radius: 3px; color: #fff; white-space: nowrap; margin-top: 1px; }
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .num { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .cm { color: #546e7a; font-style: italic; }
+  .pl { color: #ffcb6b; }
+  .ty { color: #80cbc4; }
+  .badge-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .badge { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; padding: 8px 16px; font-family: var(--font-sans); font-size: 12px; color: var(--color-text-secondary); display: flex; align-items: center; gap: 6px; }
+  .badge-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .typing-dot { width: 6px; height: 6px; border-radius: 50%; animation: bounce 1.2s infinite; }
+  .td1 { animation-delay: 0s; }
+  .td2 { animation-delay: 0.15s; }
+  .td3 { animation-delay: 0.3s; }
+  @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+  .status-bar { background: #111; border-top: 0.5px solid #222; padding: 5px 16px; display: flex; gap: 16px; font-size: 11px; color: #555; }
+  .status-green { color: #28c840; }
+</style>
+
+<div class="wrap">
+  <div class="editor-shell">
+    <div class="titlebar">
+      <div class="dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <span class="tab-name">room-7f3a.js — CodeSync</span>
+      <div class="presence">
+        <div class="avatar av1">AK</div>
+        <div class="avatar av2">SR</div>
+        <div class="avatar av3">MJ</div>
+        <div class="online-dot"></div>
+        <span style="font-size:11px;color:#888;font-family:var(--font-sans)">3 online</span>
+      </div>
+    </div>
+
+    <div class="code-area" id="codeArea">
+      <div id="lines"></div>
+      <div id="remoteCursors"></div>
+    </div>
+
+    <div class="status-bar">
+      <span class="status-green">● connected</span>
+      <span>WebSocket</span>
+      <span id="latency">~12ms</span>
+      <span style="margin-left:auto" id="syncMsg">synced</span>
+    </div>
+  </div>
+
+  <div class="badge-row">
+    <div class="badge"><div class="badge-dot" style="background:#7F77DD"></div>AK is typing<div class="typing-indicator"><div class="typing-dot td1" style="background:#7F77DD"></div><div class="typing-dot td2" style="background:#7F77DD"></div><div class="typing-dot td3" style="background:#7F77DD"></div></div></div>
+    <div class="badge"><div class="badge-dot" style="background:#1D9E75"></div>SR viewing line 8</div>
+    <div class="badge"><div class="badge-dot" style="background:#D85A30"></div>MJ on canvas</div>
+  </div>
+</div>
+
+<script>
+const colors = { AK: '#7F77DD', SR: '#1D9E75', MJ: '#D85A30' };
+
+const finalLines = [
+  [['kw','async '],['kw','function '],['fn','syncRoom'],['op','('],['pl','roomId'],['op',', '],['pl','socket'],['op',') {']],
+  [['cm','  // broadcast delta to all peers']],
+  [['kw','  const '],['fn','delta '],['op','= '],['fn','computeDiff'],['op','('],['pl','prev'],['op',', '],['pl','next'],['op',');']],
+  [['kw','  if '],['op','('],['fn','delta'],['op','.'],['pl','length '],['op','=== '],['num','0'],['op',') '],['kw','return'],['op',';']],
+  [['']],
+  [['kw','  const '],['fn','payload '],['op','= '],['op','{']],
+  [['pl','    room'],['op',': '],['fn','roomId'],['op',',']],
+  [['pl','    changes'],['op',': '],['fn','delta'],['op',',']],
+  [['pl','    ts'],['op',': '],['fn','Date'],['op','.'],['fn','now'],['op','(),']],
+  [['op','  };']],
+  [['']],
+  [['fn','  socket'],['op','.'],['fn','emit'],['op','('],['str','"sync"'],['op',', '],['fn','payload'],['op',');']],
+  [['op','}']],
+];
+
+function renderSpans(parts) {
+  return parts.map(([cls, txt]) => cls ? `<span class="${cls}">${txt}</span>` : (txt || '')).join('');
+}
+
+let visibleLines = [];
+let charProgress = [];
+const linesEl = document.getElementById('lines');
+
+function renderLines() {
+  linesEl.innerHTML = visibleLines.map((line, i) => {
+    const full = renderSpans(line.parts || []);
+    const partial = line.partial || '';
+    const content = line.done ? full : partial;
+    const cur = !line.done ? `<span class="cursor c1"></span>` : '';
+    return `<div class="line"><span class="ln">${i+1}</span><span class="code-line">${content}${cur}</span></div>`;
+  }).join('');
+}
+
+let lineIdx = 0;
+let charIdx = 0;
+
+function buildPartial(lineIdx, charIdx) {
+  const parts = finalLines[lineIdx];
+  let out = '';
+  let count = 0;
+  for (let [cls, txt] of parts) {
+    if (!txt) continue;
+    if (count + txt.length <= charIdx) {
+      out += cls ? `<span class="${cls}">${txt}</span>` : txt;
+      count += txt.length;
+    } else {
+      const slice = txt.slice(0, charIdx - count);
+      out += cls ? `<span class="${cls}">${slice}</span>` : slice;
+      break;
+    }
+  }
+  return out;
+}
+
+function fullText(lineIdx) {
+  return finalLines[lineIdx].map(([,t])=>t||'').join('');
+}
+
+function typeNext() {
+  if (lineIdx >= finalLines.length) {
+    setTimeout(resetAnimation, 3000);
+    return;
+  }
+  const lineLen = fullText(lineIdx).length;
+  if (visibleLines.length <= lineIdx) {
+    visibleLines.push({ parts: finalLines[lineIdx], partial: '', done: false });
+    charIdx = 0;
+  }
+  if (charIdx <= lineLen) {
+    visibleLines[lineIdx].partial = buildPartial(lineIdx, charIdx);
+    visibleLines[lineIdx].done = false;
+    charIdx++;
+    renderLines();
+    document.getElementById('syncMsg').textContent = 'syncing…';
+    setTimeout(typeNext, 28 + Math.random() * 30);
+  } else {
+    visibleLines[lineIdx].done = true;
+    renderLines();
+    document.getElementById('syncMsg').textContent = 'synced';
+    lineIdx++;
+    charIdx = 0;
+    setTimeout(typeNext, lineIdx % 3 === 0 ? 220 : 60);
+  }
+}
+
+function resetAnimation() {
+  visibleLines = [];
+  lineIdx = 0;
+  charIdx = 0;
+  renderLines();
+  setTimeout(typeNext, 600);
+}
+
+// Remote cursors (SR)
+const rcContainer = document.getElementById('remoteCursors');
+let srLine = 1;
+function animateSR() {
+  srLine = Math.min(srLine + 1, visibleLines.length - 1);
+  if (srLine < 1) { setTimeout(animateSR, 1200); return; }
+  const top = 20 + srLine * 24;
+  const col = 120 + Math.random() * 80;
+  rcContainer.innerHTML = `<div class="remote-cursor" style="top:${top}px;left:${col}px;"><div class="rc-line" style="background:${colors.SR}"></div><div class="rc-label" style="background:${colors.SR}">SR</div></div>`;
+  setTimeout(animateSR, 1800 + Math.random() * 1000);
+}
+
+// Latency flicker
+setInterval(() => {
+  document.getElementById('latency').textContent = `~${8 + Math.floor(Math.random()*18)}ms`;
+}, 2000);
+
+typeNext();
+setTimeout(animateSR, 2000);
+</script>
