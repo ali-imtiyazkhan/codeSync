@@ -74,7 +74,7 @@ export const Footer: React.FC = () => {
                                 {links.map((l) => (
                                     <li key={l}>
                                         <a
-                                            href={l === "GitHub" ? "https://github.com/mainkhan/codeSync" : "#"}
+                                            href={l === "GitHub" ? "https://github.com/ali-imtiyazkhan/codeSync" : "#"}
                                             target={l === "GitHub" ? "_blank" : "_self"}
                                             rel={l === "GitHub" ? "noopener noreferrer" : ""}
                                             style={{

@@ -72,6 +72,22 @@ export const Navbar: React.FC<NavbarProps> = ({ scrolled, scrollTo, createRoom }
                     </button>
                 ))}
 
+                <a 
+                    href="https://github.com/ali-imtiyazkhan/codeSync" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                        display: "flex", alignItems: "center", gap: "8px", 
+                        color: "#888880", textDecoration: "none", fontSize: "13px",
+                        fontWeight: 700, transition: "color 0.2s", marginLeft: "10px"
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#e94560")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#888880")}
+                >
+                    <Github size={16} />
+                    <span>GITHUB</span>
+                </a>
+
                 {user ? (
                     <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "4px 12px", background: "rgba(255,255,255,0.03)", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.05)" }}>
@@ -132,21 +148,6 @@ export const Navbar: React.FC<NavbarProps> = ({ scrolled, scrollTo, createRoom }
                     </div>
                 ) : (
                     <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                        <a 
-                            href="https://github.com/mainkhan/codeSync" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            style={{
-                                display: "flex", alignItems: "center", gap: "8px", 
-                                color: "#888880", textDecoration: "none", fontSize: "13px",
-                                fontWeight: 700, transition: "color 0.2s", marginRight: "8px"
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.color = "#e94560")}
-                            onMouseLeave={(e) => (e.currentTarget.style.color = "#888880")}
-                        >
-                            <Github size={16} />
-                            <span>GITHUB</span>
-                        </a>
                         <button
                             onClick={() => window.location.href = "/auth/signin"}
                             style={{
