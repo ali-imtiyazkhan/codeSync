@@ -442,7 +442,7 @@ export function VideoRoomPage({
   return (
     <div style={{
       width: "100vw", height: "100vh", display: "flex", flexDirection: "column",
-      background: "#000000", fontFamily: "'Inter', 'JetBrains Mono', sans-serif",
+      background: "#010409", fontFamily: "'Inter', 'JetBrains Mono', sans-serif",
       overflow: "hidden",
     }}>
 
@@ -451,8 +451,8 @@ export function VideoRoomPage({
         height: "44px", flexShrink: 0,
         display: "flex", alignItems: "center",
         padding: "0 16px", gap: "12px",
-        background: "#000000",
-        borderBottom: "1px solid #111111",
+        background: "#0d1117",
+        borderBottom: "1px solid #21262d",
       }}>
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -665,8 +665,8 @@ export function VideoRoomPage({
         height: "64px", flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
         gap: "8px",
-        background: "#000000",
-        borderTop: "1px solid #111111",
+        background: "#0d1117",
+        borderTop: "1px solid #21262d",
         padding: "0 20px",
       }}>
         <div style={{
