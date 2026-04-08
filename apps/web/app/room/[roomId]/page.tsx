@@ -61,5 +61,5 @@ export default function RoomPage({ params }: PageProps) {
     );
   }
 
-  return <VideoRoomPage roomId={roomId} userId={userId} userName={userName} backendToken={backendToken} />;
+  return <VideoRoomPage roomId={roomId} userId={userId} userName={userName} userImage={session?.user?.image || undefined} backendToken={backendToken} />;
 }
