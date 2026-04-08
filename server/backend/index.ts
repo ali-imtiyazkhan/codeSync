@@ -362,6 +362,6 @@ io.on("connection", (socket: Socket) => {
 
 //Start
 const PORT = parseInt(process.env.PORT || "3001", 10);
-httpServer.listen(PORT, () => {
-  console.log(`[server] Socket.io running on :${PORT}`);
+httpServer.listen(PORT, "0.0.0.0", () => {
+  console.log(`[server] Socket.io running on 0.0.0.0:${PORT}`);
 });
