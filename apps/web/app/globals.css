@@ -257,7 +257,7 @@ body {
   justify-content: space-between;
   padding: 0 20px;
   height: 52px;
-  background: hsla(215, 21%, 11%, 0.5);
+  background: #000000;
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
@@ -351,12 +351,12 @@ body {
    MONACO EDITOR OVERRIDES
    ═══════════════════════════════════════════════════════════════════════════ */
 .monaco-editor .margin {
-  background: #0a0c12 !important;
+  background: #000000 !important;
 }
 
 .monaco-editor,
 .monaco-editor-background {
-  background: #0a0c12 !important;
+  background: #000000 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

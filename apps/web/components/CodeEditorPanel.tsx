@@ -51,7 +51,7 @@ function SafeDiffEditor(props: any) {
 
 function EditorLoading() {
   return (
-    <div className="flex-1 flex items-center justify-center bg-[#262624]">
+    <div className="flex-1 flex items-center justify-center bg-black">
       <span className="text-[#8b949e] font-mono text-sm animate-pulse">Loading editor...</span>
     </div>
   );
@@ -148,16 +148,6 @@ export default function CodeEditorPanel({
             <div className="w-2.5 h-2.5 rounded-full bg-[var(--red)] opacity-70" />
             <div className="w-2.5 h-2.5 rounded-full bg-[var(--orange)] opacity-70" />
             <div className="w-2.5 h-2.5 rounded-full bg-[var(--green)] opacity-70" />
-          </div>
-
-          <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-light)] flex items-center justify-center text-xs group-hover:border-[var(--blue-soft)] transition-all shadow-lg text-[var(--text-dim)]">
-              <FileCode size={18} />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[11px] font-bold text-[var(--text)] tracking-tight">{fileName}</span>
-              <span className="text-[9px] font-mono text-[var(--text-dim)] uppercase tracking-widest">{language} active</span>
-            </div>
           </div>
         </div>
 

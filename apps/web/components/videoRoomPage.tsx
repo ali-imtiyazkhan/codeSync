@@ -302,7 +302,7 @@ export function VideoRoomPage({
   }, [screenShareState]);
 
   const copyInvite = () => {
-    navigator.clipboard?.writeText(`${window.location.origin}/room/${roomId}`).catch(() => { });
+    navigator.clipboard?.writeText(roomId).catch(() => { });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -542,7 +542,7 @@ export function VideoRoomPage({
             }}
           >
             {copied ? <Check size={12} /> : <Link2 size={12} />}
-            {copied ? "COPIED" : "COPY LINK"}
+            {copied ? "ID COPIED" : "COPY ID"}
           </button>
 
         </div>
