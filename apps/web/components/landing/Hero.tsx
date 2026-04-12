@@ -133,7 +133,7 @@ export const Hero: React.FC<HeroProps> = ({
                     <button
                         onClick={createRoom}
                         style={{
-                            flex: 2,
+                            flex: 1,
                             padding: "14px",
                             borderRadius: "8px",
                             border: "none",
@@ -158,40 +158,7 @@ export const Hero: React.FC<HeroProps> = ({
                     >
                         + CREATE NEW ROOM
                     </button>
-                    <a 
-                        href="https://github.com/mainkhan/codeSync"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                            flex: 1,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: "8px",
-                            border: "1px solid #2a2a28",
-                            background: "#1c1c1a",
-                            color: "#d4d4cc",
-                            textDecoration: "none",
-                            fontWeight: 800,
-                            fontSize: "12px",
-                            padding: "14px",
-                            cursor: "pointer",
-                            letterSpacing: "0.08em",
-                            transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = "#e94560";
-                            e.currentTarget.style.color = "#e94560";
-                            e.currentTarget.style.background = "rgba(233,69,96,0.05)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = "#2a2a28";
-                            e.currentTarget.style.color = "#d4d4cc";
-                            e.currentTarget.style.background = "#1c1c1a";
-                        }}
-                    >
-                        GITHUB
-                    </a>
+
                 </div>
 
                 <div
