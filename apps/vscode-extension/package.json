@@ -47,6 +47,7 @@
     }
   },
   "scripts": {
+    "dev": "npm run watch",
     "vscode:prepublish": "npm run build",
     "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "watch": "npm run build -- --watch",
