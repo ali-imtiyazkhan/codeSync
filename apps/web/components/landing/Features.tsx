@@ -55,7 +55,7 @@ export const Features: React.FC = () => {
                         marginBottom: "12px",
                     }}
                 >
-          // CAPABILITIES
+                          CAPABILITIES
                 </div>
                 <h2
                     style={{

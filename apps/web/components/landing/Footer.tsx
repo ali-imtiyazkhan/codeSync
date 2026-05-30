@@ -112,7 +112,7 @@ export const Footer: React.FC = () => {
                         {["Twitter", "GitHub", "Discord"].map((s) => (
                             <a
                                 key={s}
-                                href={s === "GitHub" ? "https://github.com/mainkhan/codeSync" : "#"}
+                                href={s === "GitHub" ? "https://github.com/ali-imtiyazkhan/codeSync" : "#"}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{

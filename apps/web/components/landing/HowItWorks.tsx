@@ -37,7 +37,7 @@ export const HowItWorks: React.FC = () => {
                             marginBottom: "12px",
                         }}
                     >
-            // HOW IT WORKS
+                        HOW IT WORKS
                     </div>
                     <h2
                         style={{
