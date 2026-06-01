@@ -6,10 +6,10 @@ export const Stats: React.FC = () => {
     return (
         <section
             style={{
-                borderTop: "1px solid #1e1e1c",
-                borderBottom: "1px solid #1e1e1c",
+                borderTop: "1px solid #1a1a1a",
+                borderBottom: "1px solid #1a1a1a",
                 padding: "40px 32px",
-                background: "#0a0a08",
+                background: "#050505",
                 display: "flex",
                 justifyContent: "center",
                 gap: "clamp(32px, 8vw, 100px)",
@@ -27,7 +27,7 @@ export const Stats: React.FC = () => {
                         style={{
                             fontSize: "clamp(24px, 4vw, 36px)",
                             fontWeight: 900,
-                            color: "#e94560",
+                            color: "#ffffff",
                             letterSpacing: "-0.02em",
                         }}
                     >
@@ -36,7 +36,7 @@ export const Stats: React.FC = () => {
                     <div
                         style={{
                             fontSize: "12px",
-                            color: "#44443c",
+                            color: "#525252",
                             letterSpacing: "0.1em",
                             textTransform: "uppercase",
                             marginTop: "4px",

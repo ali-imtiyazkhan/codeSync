@@ -18,8 +18,8 @@ export default function AIAssistantPanel({ results, isOpen, onClose, isScanning 
             className="animate-slide-left"
             style={{
                 position: "absolute", top: 0, right: 0, bottom: 0, width: 320,
-                background: "rgba(13,17,23,0.95)", backdropFilter: "blur(20px)",
-                borderLeft: "1px solid rgba(0,255,225,0.2)",
+                background: "rgba(0,0,0,0.95)", backdropFilter: "blur(20px)",
+                borderLeft: "1px solid rgba(255,255,255,0.08)",
                 display: "flex", flexDirection: "column", zIndex: 100,
                 boxShadow: "-10px 0 30px rgba(0,0,0,0.5)",
             }}
@@ -85,7 +85,7 @@ export default function AIAssistantPanel({ results, isOpen, onClose, isScanning 
                         {results.map((res, i) => (
                             <div key={i} className="animate-fade-in" style={{
                                 background: "rgba(255,255,255,0.03)", borderRadius: 12,
-                                border: `1px solid ${res.type === 'critical' ? 'rgba(255,45,107,0.3)' : res.type === 'warning' ? 'rgba(255,179,0,0.3)' : 'rgba(0,255,225,0.2)'}`,
+                                border: `1px solid ${res.type === 'critical' ? 'rgba(239,68,68,0.3)' : res.type === 'warning' ? 'rgba(245,158,11,0.3)' : 'rgba(255,255,255,0.12)'}`,
                                 padding: 12, transition: "0.2s",
                             }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
@@ -117,7 +117,7 @@ export default function AIAssistantPanel({ results, isOpen, onClose, isScanning 
         .scanning-loader {
           width: 40px;
           height: 40px;
-          border: 2px solid rgba(0,255,225,0.1);
+          border: 2px solid rgba(255,255,255,0.1);
           border-top: 2px solid var(--neon);
           border-radius: 50%;
           animation: spin 1s linear infinite;

@@ -28,7 +28,7 @@ export function VideoPanel({
 
   return (
     <div
-      className="relative w-full bg-[#0d1117] border-b border-[#30363d] overflow-hidden"
+      className="relative w-full bg-[#000000] border-b border-[#1f1f1f] overflow-hidden"
       style={{ height: "160px" }}
     >
       {stream ? (
@@ -47,7 +47,7 @@ export function VideoPanel({
                 className="w-7 h-7 rounded-full border-2 border-t-transparent animate-spin"
                 style={{ borderColor: color, borderTopColor: "transparent" }}
               />
-              <span className="text-xs font-mono text-[#8b949e]">
+              <span className="text-xs font-mono text-[#737373]">
                 Connecting camera...
               </span>
             </>
@@ -59,7 +59,7 @@ export function VideoPanel({
               >
                 <VideoOff size={24} color={color} />
               </div>
-              <span className="text-xs font-mono text-[#8b949e]">
+              <span className="text-xs font-mono text-[#737373]">
                 Camera unavailable
               </span>
             </>
@@ -76,7 +76,7 @@ export function VideoPanel({
               >
                 {label[0]?.toUpperCase() ?? "?"}
               </div>
-              <span className="text-xs font-mono text-[#8b949e]">
+              <span className="text-xs font-mono text-[#737373]">
                 No camera
               </span>
             </>
@@ -94,7 +94,7 @@ export function VideoPanel({
           {label}
         </span>
         {muted && (
-          <span className="ml-auto text-[#8b949e]">
+          <span className="ml-auto text-[#737373]">
             <MicOff size={12} />
           </span>
         )}

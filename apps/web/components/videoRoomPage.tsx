@@ -19,8 +19,8 @@ import { signOut } from "next-auth/react";
 const CodeEditorPanel = dynamic(() => import("./CodeEditorPanel"), {
   ssr: false,
   loading: () => (
-    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#0d1117" }}>
-      <span style={{ fontSize: "14px", color: "#8b949e", fontFamily: "monospace" }}>Loading editor...</span>
+    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#000000" }}>
+      <span style={{ fontSize: "14px", color: "#737373", fontFamily: "monospace" }}>Loading editor...</span>
     </div>
   ),
 });
@@ -51,12 +51,12 @@ function TileThumbnail({ tile, isActive, onClick }) {
       style={{
         position: "relative", borderRadius: "10px", overflow: "hidden",
         cursor: "pointer", flexShrink: 0,
-        border: isActive ? `2px solid ${tile.color}` : "2px solid #21262d",
+        border: isActive ? `2px solid ${tile.color}` : "2px solid #1f1f1f",
         transition: "border-color 0.2s, transform 0.15s, box-shadow 0.2s",
         transform: hovered && !isActive ? "scale(1.02)" : "scale(1)",
         boxShadow: isActive ? `0 0 16px ${tile.color}44` : hovered ? "0 4px 16px rgba(0,0,0,0.4)" : "none",
         aspectRatio: "16/9",
-        background: "#161b22",
+        background: "#0a0a0a",
       }}
     >
       {tile.stream ? (
@@ -64,7 +64,7 @@ function TileThumbnail({ tile, isActive, onClick }) {
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       ) : tile.id === "editor" ? (
         // Mini editor preview
-        <div style={{ width: "100%", height: "100%", background: "#0d1117", padding: "8px", overflow: "hidden" }}>
+        <div style={{ width: "100%", height: "100%", background: "#000000", padding: "8px", overflow: "hidden" }}>
           <div style={{ display: "flex", gap: "3px", marginBottom: "6px" }}>
             {["#ff5f57", "#febc2e", "#28c840"].map(c => <div key={c} style={{ width: "5px", height: "5px", borderRadius: "50%", background: c }} />)}
           </div>
@@ -73,14 +73,14 @@ function TileThumbnail({ tile, isActive, onClick }) {
           ))}
         </div>
       ) : (
-        <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", background: `linear-gradient(135deg, #161b22 0%, #0d1117 100%)` }}>
+        <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", background: `linear-gradient(135deg, #0a0a0a 0%, #000000 100%)` }}>
           <div style={{
             width: "32px", height: "32px", borderRadius: "8px",
             background: `${tile.color}15`, border: `1px solid ${tile.color}30`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: "14px", color: tile.color,
           }}>{tile.icon}</div>
-          <span style={{ fontSize: "9px", color: "#8b949e", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{tile.sublabel}</span>
+          <span style={{ fontSize: "9px", color: "#737373", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{tile.sublabel}</span>
           {tile.onAction && (
             <button
               onClick={e => { e.stopPropagation(); tile.onAction(); }}
@@ -104,11 +104,11 @@ function TileThumbnail({ tile, isActive, onClick }) {
       }}>
         <div style={{
           width: "5px", height: "5px", borderRadius: "50%",
-          background: tile.stream ? tile.color : "#3d444d",
+          background: tile.stream ? tile.color : "#404040",
           boxShadow: tile.stream ? `0 0 6px ${tile.color}` : "none",
           flexShrink: 0,
         }} />
-        <span style={{ fontSize: "10px", color: "#c9d1d9", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <span style={{ fontSize: "10px", color: "#e5e5e5", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {tile.label}
         </span>
         {isActive && (
@@ -129,8 +129,8 @@ function TileThumbnail({ tile, isActive, onClick }) {
         }}>
           <div style={{
             padding: "4px 10px", borderRadius: "4px",
-            background: "rgba(0,0,0,0.7)", border: "1px solid #30363d",
-            fontSize: "9px", color: "#c9d1d9", fontFamily: "monospace", letterSpacing: "0.1em",
+            background: "rgba(0,0,0,0.7)", border: "1px solid #2a2a2a",
+            fontSize: "9px", color: "#e5e5e5", fontFamily: "monospace", letterSpacing: "0.1em",
           }}>FOCUS →</div>
         </div>
       )}
@@ -173,11 +173,11 @@ function MainStage({
           position: "absolute", top: "16px", left: "16px",
           display: "flex", alignItems: "center", gap: "8px",
           padding: "6px 12px", borderRadius: "8px",
-          background: "rgba(13,17,23,0.8)", backdropFilter: "blur(8px)",
+          background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)",
           border: "1px solid rgba(255,255,255,0.1)",
         }}>
           <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: tile.color, boxShadow: `0 0 8px ${tile.color}` }} />
-          <span style={{ fontSize: "12px", color: "#c9d1d9", fontFamily: "monospace" }}>{tile.label}</span>
+          <span style={{ fontSize: "12px", color: "#e5e5e5", fontFamily: "monospace" }}>{tile.label}</span>
           {tile.id.includes("screen") && (
             <span style={{ fontSize: "9px", color: "#ff6b6b", padding: "1px 6px", border: "1px solid rgba(255,107,107,0.3)", borderRadius: "3px", fontFamily: "monospace" }}>● REC</span>
           )}
@@ -187,7 +187,7 @@ function MainStage({
   }
   // No stream — placeholder
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0d1117", gap: "16px" }}>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#000000", gap: "16px" }}>
       <div style={{
         width: "80px", height: "80px", borderRadius: "20px",
         background: `${tile.color}10`, border: `2px solid ${tile.color}30`,
@@ -195,8 +195,8 @@ function MainStage({
         fontSize: "32px", color: tile.color,
       }}>{tile.icon}</div>
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "18px", fontWeight: 700, color: "#c9d1d9", fontFamily: "monospace", marginBottom: "6px" }}>{tile.label}</div>
-        <div style={{ fontSize: "12px", color: "#8b949e", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{tile.sublabel}</div>
+        <div style={{ fontSize: "18px", fontWeight: 700, color: "#e5e5e5", fontFamily: "monospace", marginBottom: "6px" }}>{tile.label}</div>
+        <div style={{ fontSize: "12px", color: "#737373", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{tile.sublabel}</div>
       </div>
       {tile.onAction && (
         <button onClick={tile.onAction} style={{
@@ -229,9 +229,9 @@ function CtrlBtn({ icon: Icon, label, onClick, active = true, danger = false, pu
         transition: "all 0.15s", transform: hovered ? "scale(1.05)" : "scale(1)",
         background: danger
           ? hovered ? "rgba(255,107,107,0.25)" : "rgba(255,107,107,0.12)"
-          : hovered ? "rgba(88,166,255,0.12)" : "rgba(33,38,45,0.8)",
-        border: danger ? "1px solid rgba(255,107,107,0.35)" : hovered ? "1px solid rgba(88,166,255,0.3)" : "1px solid #30363d",
-        color: danger ? "#ff6b6b" : hovered ? "#58a6ff" : "#c9d1d9",
+          : hovered ? "rgba(255,255,255,0.12)" : "rgba(33,38,45,0.8)",
+        border: danger ? "1px solid rgba(255,107,107,0.35)" : hovered ? "1px solid rgba(255,255,255,0.3)" : "1px solid #2a2a2a",
+        color: danger ? "#ff6b6b" : hovered ? "#ffffff" : "#e5e5e5",
         cursor: "pointer",
         animation: pulse ? "ctrlPulse 1.5s ease infinite" : "none",
       }}
@@ -390,7 +390,7 @@ export function VideoRoomPage({
       sublabel: callStatus === "calling" ? "Connecting..." : "Camera",
       stream: localStream,
       muted: true, mirror: true,
-      color: "#58a6ff", icon: <User size={18} />,
+      color: "#ffffff", icon: <User size={18} />,
     },
     {
       id: "friend-cam",
@@ -398,7 +398,7 @@ export function VideoRoomPage({
       sublabel: friendConnected ? "Remote camera" : "Share invite link",
       stream: remoteStream,
       muted: false, mirror: false,
-      color: "#3fb950", icon: friendConnected ? <User size={18} /> : <Hourglass size={18} />,
+      color: "#a3a3a3", icon: friendConnected ? <User size={18} /> : <Hourglass size={18} />,
     },
     {
       id: "my-screen",
@@ -406,7 +406,7 @@ export function VideoRoomPage({
       sublabel: isSharing ? "Sharing live" : "Ready to share",
       stream: localScreenStream,
       muted: true, mirror: false,
-      color: "#f0883e", icon: <Monitor size={18} />,
+      color: "#737373", icon: <Monitor size={18} />,
       onAction: startScreenShare,
       actionLabel: "START SCREEN SHARE",
     },
@@ -416,7 +416,7 @@ export function VideoRoomPage({
       sublabel: "Not sharing yet",
       stream: remoteScreenStream,
       muted: true, mirror: false,
-      color: "#d2a8ff", icon: <Monitor size={18} />,
+      color: "#525252", icon: <Monitor size={18} />,
     },
     {
       id: "editor",
@@ -424,7 +424,7 @@ export function VideoRoomPage({
       sublabel: isOwner ? "Authoritative" : "Collaborative",
       stream: null,
       muted: true, mirror: false,
-      color: "#a371f7", icon: <Terminal size={18} />,
+      color: "#404040", icon: <Terminal size={18} />,
     },
     {
       id: "canvas",
@@ -432,7 +432,7 @@ export function VideoRoomPage({
       sublabel: "Brainstorming / DSA",
       stream: null,
       muted: true, mirror: false,
-      color: "#ff8c00", icon: <Pencil size={18} />,
+      color: "#d4d4d4", icon: <Pencil size={18} />,
     },
   ];
 
@@ -442,7 +442,7 @@ export function VideoRoomPage({
   return (
     <div style={{
       width: "100vw", height: "100vh", display: "flex", flexDirection: "column",
-      background: "#010409", fontFamily: "'Inter', 'JetBrains Mono', sans-serif",
+      background: "#000000", fontFamily: "'Inter', 'JetBrains Mono', sans-serif",
       overflow: "hidden",
     }}>
 
@@ -451,12 +451,12 @@ export function VideoRoomPage({
         height: "44px", flexShrink: 0,
         display: "flex", alignItems: "center",
         padding: "0 16px", gap: "12px",
-        background: "#0d1117",
-        borderBottom: "1px solid #21262d",
+        background: "#000000",
+        borderBottom: "1px solid #1f1f1f",
       }}>
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Code2 size={16} color="#58a6ff" />
+          <Code2 size={16} color="#ffffff" />
           <span style={{ fontSize: "14px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "0.02em" }}>EDITOR</span>
           <span style={{ fontSize: "12px", color: "#222222" }}>—</span>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -464,14 +464,14 @@ export function VideoRoomPage({
               <img 
                 src={userImage} 
                 alt={userName} 
-                style={{ width: "22px", height: "22px", borderRadius: "50%", border: "1px solid #30363d" }} 
+                style={{ width: "22px", height: "22px", borderRadius: "50%", border: "1px solid #2a2a2a" }} 
               />
             ) : (
               <div style={{ 
                 width: "22px", height: "22px", borderRadius: "50%", 
-                background: "#58a6ff1a", border: "1px solid #58a6ff4d",
+                background: "#ffffff1a", border: "1px solid #ffffff4d",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "10px", fontWeight: 700, color: "#58a6ff"
+                fontSize: "10px", fontWeight: 700, color: "#ffffff"
               }}>
                 {userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
               </div>
@@ -483,12 +483,12 @@ export function VideoRoomPage({
               title="Logout"
               style={{
                 background: "none", border: "none", cursor: "pointer", 
-                color: "#8b949e", padding: "4px", borderRadius: "4px",
+                color: "#737373", padding: "4px", borderRadius: "4px",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 transition: "all 0.2s"
               }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#ff6b6b1a"; (e.currentTarget as HTMLElement).style.color = "#ff6b6b"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "none"; (e.currentTarget as HTMLElement).style.color = "#8b949e"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "none"; (e.currentTarget as HTMLElement).style.color = "#737373"; }}
             >
               <LogOut size={14} />
             </button>
@@ -516,17 +516,17 @@ export function VideoRoomPage({
         {/* Role badge */}
         <div style={{
           padding: "3px 8px", borderRadius: "12px",
-          background: isOwner ? "rgba(88,166,255,0.08)" : "rgba(63,185,80,0.08)",
-          border: isOwner ? "1px solid rgba(88,166,255,0.25)" : "1px solid rgba(63,185,80,0.25)",
+          background: isOwner ? "rgba(255,255,255,0.08)" : "rgba(63,185,80,0.08)",
+          border: isOwner ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(63,185,80,0.25)",
           fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em",
-          color: isOwner ? "#58a6ff" : "#3fb950",
+          color: isOwner ? "#ffffff" : "#a3a3a3",
         }}>
           {isOwner ? "OWNER" : "EDITOR"}
         </div>
 
         {/* Room ID */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontSize: "10px", color: "#8b949e" }}>Room:</span>
+          <span style={{ fontSize: "10px", color: "#737373" }}>Room:</span>
           <code style={{ fontSize: "11px", color: "#FFFFFF", fontWeight: 800, background: "#111111", padding: "2px 8px", borderRadius: "4px", border: "1px solid #222222" }}>
             {roomId}
           </code>
@@ -534,8 +534,8 @@ export function VideoRoomPage({
             onClick={copyInvite}
             style={{
               padding: "4px 10px", borderRadius: "6px", cursor: "pointer",
-              background: copied ? "rgba(63,185,80,0.12)" : "#161b22",
-              border: copied ? "1px solid rgba(63,185,80,0.4)" : "1px solid #21262d",
+              background: copied ? "rgba(63,185,80,0.12)" : "#0a0a0a",
+              border: copied ? "1px solid rgba(63,185,80,0.4)" : "1px solid #1f1f1f",
               color: copied ? "#3fb950" : "#FFFFFF", fontSize: "10px",
               fontWeight: 900, transition: "all 0.2s", letterSpacing: "0.08em",
               display: "flex", alignItems: "center", gap: "6px"
@@ -554,7 +554,7 @@ export function VideoRoomPage({
         {/* MAIN STAGE */}
         <div style={{
           flex: 1, display: "flex", flexDirection: "column",
-          background: "#0d1117", minWidth: 0, overflow: "hidden",
+          background: "#000000", minWidth: 0, overflow: "hidden",
           position: "relative",
         }}>
           <MainStage
@@ -586,11 +586,11 @@ export function VideoRoomPage({
               transform: "translateX(-50%)",
               display: "flex", alignItems: "center", gap: "8px",
               padding: "6px 16px", borderRadius: "20px",
-              background: "rgba(13,17,23,0.85)", backdropFilter: "blur(8px)",
-              border: "1px solid #21262d",
+              background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)",
+              border: "1px solid #1f1f1f",
             }}>
               <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: activeTile.color, boxShadow: `0 0 8px ${activeTile.color}` }} />
-              <span style={{ fontSize: "11px", color: "#c9d1d9", fontFamily: "monospace" }}>{activeTile.label}</span>
+              <span style={{ fontSize: "11px", color: "#e5e5e5", fontFamily: "monospace" }}>{activeTile.label}</span>
             </div>
           )}
         </div>
@@ -598,8 +598,8 @@ export function VideoRoomPage({
         {/* SIDEBAR */}
         <div style={{
           width: "230px", flexShrink: 0,
-          background: "#0d1117",
-          borderLeft: "1px solid #21262d",
+          background: "#000000",
+          borderLeft: "1px solid #1f1f1f",
           display: "flex", flexDirection: "column",
           overflow: "hidden",
         }}>
@@ -631,13 +631,13 @@ export function VideoRoomPage({
           {/* Sidebar footer: participant status */}
           <div style={{
             padding: "10px 14px",
-            borderTop: "1px solid #21262d",
+            borderTop: "1px solid #1f1f1f",
             display: "flex", flexDirection: "column", gap: "6px",
           }}>
-            <div style={{ fontSize: "9px", color: "#3d444d", letterSpacing: "0.1em", marginBottom: "2px" }}>PARTICIPANTS</div>
+            <div style={{ fontSize: "9px", color: "#404040", letterSpacing: "0.1em", marginBottom: "2px" }}>PARTICIPANTS</div>
             {[
-              { name: myName, color: "#58a6ff", you: true },
-              { name: friendName, color: "#3fb950", you: false },
+              { name: myName, color: "#ffffff", you: true },
+              { name: friendName, color: "#a3a3a3", you: false },
             ].map(p => (
               <div key={p.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <div style={{
@@ -649,8 +649,8 @@ export function VideoRoomPage({
                   <User size={12} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "11px", color: "#c9d1d9", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {p.name}{p.you ? <span style={{ color: "#3d444d", marginLeft: "4px" }}>(you)</span> : ""}
+                  <div style={{ fontSize: "11px", color: "#e5e5e5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {p.name}{p.you ? <span style={{ color: "#404040", marginLeft: "4px" }}>(you)</span> : ""}
                   </div>
                 </div>
                 <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: p.color, flexShrink: 0 }} />
@@ -665,24 +665,24 @@ export function VideoRoomPage({
         height: "64px", flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
         gap: "8px",
-        background: "#0d1117",
-        borderTop: "1px solid #21262d",
+        background: "#000000",
+        borderTop: "1px solid #1f1f1f",
         padding: "0 20px",
       }}>
         <div style={{
           display: "flex", alignItems: "center", gap: "6px",
           padding: "8px 16px", borderRadius: "14px",
-          background: "rgba(22,27,34,0.95)", backdropFilter: "blur(12px)",
-          border: "1px solid #21262d",
+          background: "rgba(10,10,10,0.95)", backdropFilter: "blur(12px)",
+          border: "1px solid #1f1f1f",
           boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         }}>
           <CtrlBtn icon={isMicOn ? Mic : MicOff} label={isMicOn ? "MUTE" : "UNMUTE"} onClick={toggleMic} danger={!isMicOn} />
           <CtrlBtn icon={isCameraOn ? Video : VideoOff} label={isCameraOn ? "CAM OFF" : "CAM ON"} onClick={toggleCamera} danger={!isCameraOn} />
-          <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
+          <div style={{ width: "1px", height: "28px", background: "#1f1f1f", margin: "0 4px" }} />
           <CtrlBtn icon={Monitor} label={isSharing ? "STOP" : "SHARE"} onClick={isSharing ? stopScreenShare : startScreenShare} danger={isSharing} pulse={isSharing} />
-          <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
+          <div style={{ width: "1px", height: "28px", background: "#1f1f1f", margin: "0 4px" }} />
           <CtrlBtn icon={Terminal} label="EDITOR" onClick={() => setActiveMainId("editor")} active={activeMainId === "editor"} />
-          <div style={{ width: "1px", height: "28px", background: "#21262d", margin: "0 4px" }} />
+          <div style={{ width: "1px", height: "28px", background: "#1f1f1f", margin: "0 4px" }} />
           <CtrlBtn icon={Pencil} label="CANVAS" onClick={() => setActiveMainId("canvas")} active={activeMainId === "canvas"} />
         </div>
       </div>
@@ -692,9 +692,9 @@ export function VideoRoomPage({
         @keyframes ctrlPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #0d1117; }
-        ::-webkit-scrollbar-thumb { background: #21262d; border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: #30363d; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #1f1f1f; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
       `}</style>
     </div>
   );

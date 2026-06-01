@@ -55,8 +55,8 @@ function SignInForm() {
               <path d="M16 6v20M8 11l8 5 8-5" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
               <defs>
                 <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
-                  <stop stopColor="#58a6ff" />
-                  <stop offset="1" stopColor="#bf91f3" />
+                  <stop stopColor="#ffffff" />
+                  <stop offset="1" stopColor="#737373" />
                 </linearGradient>
               </defs>
             </svg>
@@ -134,9 +134,6 @@ function SignInForm() {
           align-items: center;
           justify-content: center;
           background: var(--bg);
-          background-image:
-            radial-gradient(at 0% 0%, hsla(213, 30%, 15%, 0.2) 0px, transparent 55%),
-            radial-gradient(at 100% 100%, hsla(265, 30%, 15%, 0.15) 0px, transparent 55%);
           padding: 24px;
           position: relative;
           overflow: hidden;
@@ -147,17 +144,17 @@ function SignInForm() {
           border-radius: 50%;
           filter: blur(80px);
           pointer-events: none;
-          opacity: 0.12;
+          opacity: 0.06;
         }
         .auth-blob-1 {
           width: 500px; height: 500px;
-          background: var(--blue);
+          background: #ffffff;
           top: -150px; left: -150px;
           animation: blobFloat 8s ease-in-out infinite;
         }
         .auth-blob-2 {
           width: 400px; height: 400px;
-          background: var(--purple);
+          background: #525252;
           bottom: -100px; right: -100px;
           animation: blobFloat 10s ease-in-out infinite reverse;
         }
@@ -180,8 +177,8 @@ function SignInForm() {
           border-radius: 24px;
           padding: 40px;
           box-shadow:
-            0 0 0 1px rgba(88, 166, 255, 0.05),
-            0 24px 64px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.04),
+            0 24px 64px rgba(0, 0, 0, 0.6),
             inset 0 1px 0 rgba(255, 255, 255, 0.06);
           animation: cardIn 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
         }
@@ -200,7 +197,7 @@ function SignInForm() {
         .auth-logo-text {
           font-size: 18px;
           font-weight: 700;
-          background: linear-gradient(135deg, var(--blue), var(--purple));
+          background: linear-gradient(135deg, #ffffff, #a3a3a3);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -239,9 +236,9 @@ function SignInForm() {
         }
         .auth-oauth-btn:hover {
           background: rgba(255,255,255,0.08);
-          border-color: var(--blue-soft);
+          border-color: rgba(255, 255, 255, 0.2);
           transform: translateY(-1px);
-          box-shadow: 0 4px 16px rgba(88,166,255,0.12);
+          box-shadow: 0 4px 16px rgba(255, 255, 255, 0.06);
         }
         .auth-oauth-github { color: var(--text); }
 
@@ -299,17 +296,17 @@ function SignInForm() {
         }
         .auth-field input::placeholder { color: var(--text-dim); }
         .auth-field input:focus {
-          border-color: var(--blue);
-          background: rgba(88,166,255,0.05);
-          box-shadow: 0 0 0 3px rgba(88,166,255,0.12);
+          border-color: var(--accent);
+          background: rgba(255,255,255,0.04);
+          box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
         }
 
         .auth-submit {
           width: 100%;
           padding: 12px;
           border-radius: 12px;
-          background: linear-gradient(135deg, var(--blue), hsl(213,100%,55%));
-          color: #fff;
+          background: linear-gradient(135deg, #ffffff, #d4d4d4);
+          color: #000000;
           font-size: 14px;
           font-weight: 600;
           cursor: pointer;
@@ -320,12 +317,12 @@ function SignInForm() {
           justify-content: center;
           gap: 8px;
           margin-top: 4px;
-          box-shadow: 0 4px 20px var(--blue-glow);
+          box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
         }
         .auth-submit:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 6px 28px var(--blue-glow);
-          filter: brightness(1.1);
+          box-shadow: 0 6px 28px rgba(255, 255, 255, 0.12);
+          filter: brightness(1.05);
         }
         .auth-submit:active:not(:disabled) { transform: scale(0.98); }
         .auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -333,7 +330,7 @@ function SignInForm() {
         .auth-spinner {
           width: 32px; height: 32px;
           border: 2px solid var(--border-light);
-          border-top-color: var(--blue);
+          border-top-color: var(--accent);
           border-radius: 50%;
           animation: spin 0.7s linear infinite;
         }
@@ -354,7 +351,7 @@ function SignInForm() {
           margin: 20px 0 0;
         }
         .auth-switch a {
-          color: var(--blue);
+          color: var(--accent);
           text-decoration: none;
           font-weight: 500;
         }

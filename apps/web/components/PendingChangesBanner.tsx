@@ -18,9 +18,9 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
       className="animate-slide-up"
       style={{
         flexShrink: 0,
-        background: "linear-gradient(to right, rgba(255,45,107,0.12), rgba(255,45,107,0.06), rgba(255,45,107,0.12))",
-        borderBottom: "1px solid rgba(255,45,107,0.4)",
-        boxShadow: "0 2px 20px rgba(255,45,107,0.15)",
+        background: "linear-gradient(to right, rgba(255,255,255,0.06), rgba(255,255,255,0.02), rgba(255,255,255,0.06))",
+        borderBottom: "1px solid rgba(255,255,255,0.12)",
+        boxShadow: "0 2px 20px rgba(0,0,0,0.4)",
         padding: "8px 16px",
         display: "flex", alignItems: "center", gap: 12,
         position: "relative", overflow: "hidden",
@@ -29,7 +29,7 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
       {/* Animated accent line */}
       <div style={{
         position: "absolute", top: 0, left: 0, height: 2, width: "100%",
-        background: "linear-gradient(to right, transparent, var(--neon3), var(--amber), var(--neon3), transparent)",
+        background: "linear-gradient(to right, transparent, rgba(255,255,255,0.4), rgba(245,158,11,0.5), rgba(255,255,255,0.4), transparent)",
         animation: "border-march 3s linear infinite",
         boxShadow: "var(--glow-red)",
       }} />
@@ -37,7 +37,7 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
       {/* Left accent bar */}
       <div style={{
         width: 3, height: 28, flexShrink: 0,
-        background: "linear-gradient(to bottom, var(--neon3), var(--amber))",
+        background: "linear-gradient(to bottom, #ffffff, var(--warning))",
         boxShadow: "var(--glow-red)",
       }} />
 
@@ -45,11 +45,11 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
       <div style={{
         width: 28, height: 28, flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
-        border: "1px solid var(--neon3)",
-        boxShadow: "var(--glow-red)",
-        background: "rgba(255,45,107,0.1)",
+        border: "1px solid rgba(255,255,255,0.25)",
+        boxShadow: "var(--glow-neon)",
+        background: "rgba(255,255,255,0.06)",
         fontSize: "0.75rem",
-        color: "var(--neon3)", textShadow: "var(--glow-red)",
+        color: "var(--accent)", textShadow: "none",
         animation: "neon-pulse 1s infinite",
         clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))",
       }}>
@@ -59,7 +59,7 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
       {/* Message */}
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.65rem", letterSpacing: "0.12em", color: "var(--neon3)", textShadow: "var(--glow-red)" }}>
+          <span style={{ fontSize: "0.65rem", letterSpacing: "0.12em", color: "var(--accent)" }}>
             INCOMING PATCH REQUEST
           </span>
           <span style={{
@@ -115,14 +115,12 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
             fontSize: "0.6rem", letterSpacing: "0.12em",
             textTransform: "uppercase",
             padding: "6px 16px",
-            background: "rgba(0,255,225,0.1)",
-            border: "1px solid var(--neon)",
-            color: "var(--neon)", textShadow: "var(--glow-neon)",
-            boxShadow: "var(--glow-neon), inset 0 0 15px rgba(0,255,225,0.05)",
+            background: "rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            color: "var(--accent)",
             cursor: "pointer",
             display: "inline-flex", alignItems: "center", gap: 6,
             clipPath: "polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px))",
-            animation: "neon-pulse 2s infinite",
           }}
         >
           <Zap size={14} /> AUTHORIZE &amp; APPLY TO VS CODE
@@ -132,8 +130,8 @@ export default function PendingChangesBanner({ changes, onAccept, onReject }: Pr
       {/* Right accent bar */}
       <div style={{
         width: 3, height: 28, flexShrink: 0,
-        background: "linear-gradient(to bottom, var(--amber), var(--neon3))",
-        boxShadow: "var(--glow-amber)",
+        background: "linear-gradient(to bottom, var(--warning), rgba(255,255,255,0.5))",
+        boxShadow: "var(--glow-neon)",
       }} />
     </div>
   );

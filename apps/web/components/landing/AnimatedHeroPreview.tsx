@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const COLORS = { 
-  AK: '#7F77DD', 
-  SR: '#1D9E75', 
-  MJ: '#D85A30' 
+  AK: '#ffffff', 
+  SR: '#a3a3a3', 
+  MJ: '#525252' 
 };
 
 type CodePart = [string, string]; // [className, text]
@@ -126,17 +126,17 @@ export const AnimatedHeroPreview: React.FC = () => {
     <div style={{ padding: "2rem 1rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem", width: "100%" }}>
       <div style={{ 
         width: "100%", maxWidth: "680px", borderRadius: "12px", 
-        border: "1px solid #2a2a28", overflow: "hidden", background: "#000000",
+        border: "1px solid #1f1f1f", overflow: "hidden", background: "#000000",
         boxShadow: "0 40px 80px rgba(0,0,0,0.6)"
       }}>
         {/* Titlebar */}
-        <div style={{ background: "#0a0a0a", padding: "10px 14px", display: "flex", alignItems: "center", gap: "10px", borderBottom: "1px solid #1a1a18" }}>
+        <div style={{ background: "#0a0a0a", padding: "10px 14px", display: "flex", alignItems: "center", gap: "10px", borderBottom: "1px solid #1a1a1a" }}>
           <div style={{ display: "flex", gap: "6px" }}>
             <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ff5f57" }} />
             <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#febc2e" }} />
             <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#28c840" }} />
           </div>
-          <span style={{ fontSize: "11px", color: "#666", marginLeft: "6px", fontFamily: "monospace" }}>room-sync.ts — CodeSync</span>
+          <span style={{ fontSize: "11px", color: "#737373", marginLeft: "6px", fontFamily: "monospace" }}>room-sync.ts — CodeSync</span>
           <div style={{ marginLeft: "auto", display: "flex", gap: "6px", alignItems: "center" }}>
             {['AK', 'SR', 'MJ'].map((name, i) => (
               <div key={name} style={{ 
@@ -147,7 +147,7 @@ export const AnimatedHeroPreview: React.FC = () => {
               }}>{name}</div>
             ))}
             <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#28c840" }} />
-            <span style={{ fontSize: "10px", color: "#666", fontWeight: 600 }}>3 online</span>
+            <span style={{ fontSize: "10px", color: "#737373", fontWeight: 600 }}>3 online</span>
           </div>
         </div>
 
@@ -155,9 +155,9 @@ export const AnimatedHeroPreview: React.FC = () => {
         <div style={{ padding: "20px 0", minHeight: "280px", position: "relative", fontFamily: "'JetBrains Mono', monospace" }}>
           {visibleLines.map((line, i) => (
             <div key={i} style={{ display: "flex", height: "24px" }}>
-              <span style={{ width: "44px", textAlign: "right", paddingRight: "16px", fontSize: "12px", color: "#333", userSelect: "none", flexShrink: 0 }}>{i + 1}</span>
+              <span style={{ width: "44px", textAlign: "right", paddingRight: "16px", fontSize: "12px", color: "#404040", userSelect: "none", flexShrink: 0 }}>{i + 1}</span>
               <div 
-                style={{ fontSize: "13px", color: "#bbb", whiteSpace: "pre" }}
+                style={{ fontSize: "13px", color: "#e5e5e5", whiteSpace: "pre" }}
                 dangerouslySetInnerHTML={{ __html: line.done ? line.parts.map(([cls, txt]) => `<span class="${cls}">${txt}</span>`).join('') : line.partial }}
               />
               {!line.done && <span style={{ width: "2px", height: "15px", background: COLORS.AK, marginLeft: "1px", marginTop: "4px", animation: "blink 1s step-end infinite" }} />}
@@ -180,7 +180,7 @@ export const AnimatedHeroPreview: React.FC = () => {
         </div>
 
         {/* Status Bar */}
-        <div style={{ background: "#050505", borderTop: "1px solid #111", padding: "5px 16px", display: "flex", gap: "16px", fontSize: "11px", color: "#444", fontWeight: 700 }}>
+        <div style={{ background: "#0a0a0a", borderTop: "1px solid #111111", padding: "5px 16px", display: "flex", gap: "16px", fontSize: "11px", color: "#444", fontWeight: 700 }}>
           <span style={{ color: "#28c840" }}>● connected</span>
           <span>WebSocket</span>
           <span style={{ width: "40px" }}>~{latency}ms</span>
@@ -196,7 +196,7 @@ export const AnimatedHeroPreview: React.FC = () => {
           { color: COLORS.MJ, text: "MJ on canvas" },
         ].map((badge, i) => (
           <div key={i} style={{ 
-            background: "#0a0a0a", border: "1px solid #1a1a18", 
+            background: "#0a0a0a", border: "1px solid #1a1a1a", 
             borderRadius: "8px", padding: "8px 16px", 
             fontSize: "12px", color: "#888", fontWeight: 800,
             display: "flex", alignItems: "center", gap: "10px"

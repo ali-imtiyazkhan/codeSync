@@ -52,7 +52,7 @@ export default function TopBar({
 
       {/* Logo Section */}
       <div className="flex items-center gap-3 px-4 border-r border-[var(--border)] h-full">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--blue)] to-[var(--green)] flex items-center justify-center text-[#0d1117] shadow-lg shadow-[var(--blue-glow)]">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-white to-[#737373] flex items-center justify-center text-black shadow-lg shadow-[var(--accent-glow)]">
           <span className="font-black text-sm tracking-tighter">CS</span>
         </div>
         <div className="flex flex-col leading-none">
@@ -136,7 +136,7 @@ export default function TopBar({
 
         {/* User Card */}
         <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[var(--bg-surface)] to-transparent border border-[var(--border)] group hover:border-[var(--blue-glow)] transition-all">
-          <div className="w-6 h-6 rounded-lg bg-[var(--blue)] flex items-center justify-center text-[10px] font-bold text-[var(--bg)] shadow-md group-hover:scale-110 transition-transform">
+          <div className="w-6 h-6 rounded-lg bg-white flex items-center justify-center text-[10px] font-bold text-black shadow-md group-hover:scale-110 transition-transform">
             {userName[0]?.toUpperCase()}
           </div>
           <span className="text-[11px] font-bold text-[var(--text)] tracking-tight">

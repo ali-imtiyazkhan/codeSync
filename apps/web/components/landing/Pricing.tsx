@@ -54,7 +54,7 @@ export const Pricing: React.FC = () => {
                 <div
                     style={{
                         fontSize: "11px",
-                        color: "#e94560",
+                        color: "#ffffff",
                         letterSpacing: "0.2em",
                         textTransform: "uppercase",
                         marginBottom: "12px",
@@ -66,7 +66,7 @@ export const Pricing: React.FC = () => {
                     style={{
                         fontSize: "clamp(28px, 4vw, 44px)",
                         fontWeight: 900,
-                        color: "#f0f0ec",
+                        color: "#ffffff",
                         letterSpacing: "-0.02em",
                     }}
                 >
@@ -85,13 +85,13 @@ export const Pricing: React.FC = () => {
                     <div
                         key={i}
                         style={{
-                            background: plan.highlight ? "#141412" : "#0e0e0c",
-                            border: `1px solid ${plan.highlight ? "#e94560" : "#1e1e1c"}`,
+                            background: plan.highlight ? "#0a0a0a" : "#000000",
+                            border: `1px solid ${plan.highlight ? "#ffffff" : "#1a1a1a"}`,
                             borderRadius: "14px",
                             padding: "32px",
                             position: "relative",
                             overflow: "hidden",
-                            boxShadow: plan.highlight ? "0 20px 60px rgba(233,69,96,0.15)" : "none",
+                            boxShadow: plan.highlight ? "0 20px 60px rgba(255,255,255,0.15)" : "none",
                         }}
                     >
                         {plan.highlight && (
@@ -103,7 +103,7 @@ export const Pricing: React.FC = () => {
                                         left: "20%",
                                         right: "20%",
                                         height: "1px",
-                                        background: "linear-gradient(90deg, transparent, #e94560, transparent)",
+                                        background: "linear-gradient(90deg, transparent, #ffffff, transparent)",
                                     }}
                                 />
                                 <div
@@ -111,7 +111,7 @@ export const Pricing: React.FC = () => {
                                         position: "absolute",
                                         top: "14px",
                                         right: "14px",
-                                        background: "#e94560",
+                                        background: "#ffffff",
                                         color: "#fff",
                                         fontSize: "10px",
                                         fontWeight: 800,
@@ -127,7 +127,7 @@ export const Pricing: React.FC = () => {
                         <div
                             style={{
                                 fontSize: "13px",
-                                color: "#888880",
+                                color: "#737373",
                                 fontWeight: 700,
                                 letterSpacing: "0.1em",
                                 textTransform: "uppercase",
@@ -143,13 +143,13 @@ export const Pricing: React.FC = () => {
                                 style={{
                                     fontSize: "42px",
                                     fontWeight: 900,
-                                    color: "#f0f0ec",
+                                    color: "#ffffff",
                                     letterSpacing: "-0.04em",
                                 }}
                             >
                                 {plan.price}
                             </span>
-                            <span style={{ fontSize: "13px", color: "#44443c" }}>{plan.period}</span>
+                            <span style={{ fontSize: "13px", color: "#525252" }}>{plan.period}</span>
                         </div>
                         <ul
                             style={{
@@ -164,9 +164,9 @@ export const Pricing: React.FC = () => {
                             {plan.features.map((feat, j) => (
                                 <li
                                     key={j}
-                                    style={{ display: "flex", gap: "10px", fontSize: "13px", color: "#66665e" }}
+                                    style={{ display: "flex", gap: "10px", fontSize: "13px", color: "#737373" }}
                                 >
-                                    <span style={{ color: "#e94560", flexShrink: 0, marginTop: "2px" }}>
+                                    <span style={{ color: "#ffffff", flexShrink: 0, marginTop: "2px" }}>
                                         <Check size={14} strokeWidth={3} />
                                     </span>
                                     {feat}
@@ -178,11 +178,11 @@ export const Pricing: React.FC = () => {
                                 width: "100%",
                                 padding: "12px",
                                 borderRadius: "8px",
-                                border: plan.highlight ? "none" : "1px solid #2a2a28",
+                                border: plan.highlight ? "none" : "1px solid #1f1f1f",
                                 background: plan.highlight
-                                    ? "linear-gradient(135deg, #e94560 0%, #c7253e 100%)"
+                                    ? "linear-gradient(135deg, #ffffff 0%, #d4d4d4 100%)"
                                     : "transparent",
-                                color: plan.highlight ? "#fff" : "#888880",
+                                color: plan.highlight ? "#fff" : "#737373",
                                 fontWeight: 700,
                                 fontSize: "13px",
                                 cursor: "pointer",
@@ -192,14 +192,14 @@ export const Pricing: React.FC = () => {
                             }}
                             onMouseEnter={(e) => {
                                 if (!plan.highlight) {
-                                    e.currentTarget.style.borderColor = "#e94560";
-                                    e.currentTarget.style.color = "#e94560";
+                                    e.currentTarget.style.borderColor = "#ffffff";
+                                    e.currentTarget.style.color = "#ffffff";
                                 }
                             }}
                             onMouseLeave={(e) => {
                                 if (!plan.highlight) {
-                                    e.currentTarget.style.borderColor = "#2a2a28";
-                                    e.currentTarget.style.color = "#888880";
+                                    e.currentTarget.style.borderColor = "#1f1f1f";
+                                    e.currentTarget.style.color = "#737373";
                                 }
                             }}
                         >

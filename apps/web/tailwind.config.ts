@@ -9,22 +9,17 @@ module.exports = {
     extend: {
       fontFamily: {
         mono: ["JetBrains Mono", "Fira Code", "monospace"],
-        display: ["Syne", "sans-serif"],
+        display: ["Inter", "sans-serif"],
       },
       colors: {
-        bg: "#0a0a0f",
-        surface: "#111118",
-        panel: "#13131c",
-        border: "#1e1e2e",
+        bg: "#000000",
+        surface: "#0a0a0a",
+        panel: "#111111",
+        border: "#1a1a1a",
         accent: {
-          DEFAULT: "#7c3aed",
-          light: "#a78bfa",
-        },
-        cyan: {
-          accent: "#06b6d4",
-        },
-        emerald: {
-          accent: "#10b981",
+          DEFAULT: "#ffffff",
+          light: "#d4d4d4",
+          muted: "#a3a3a3",
         },
       },
       animation: {

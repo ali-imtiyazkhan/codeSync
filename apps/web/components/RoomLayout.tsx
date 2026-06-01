@@ -14,8 +14,8 @@ import { useWebRTC } from "../lib/useWebRTC";
 const CodeEditorPanel = dynamic(() => import("../components/CodeEditorPanel"), {
     ssr: false,
     loading: () => (
-        <div className="flex-1 flex items-center justify-center bg-[#0d1117]">
-            <span className="text-[#8b949e] font-mono text-sm animate-pulse">
+        <div className="flex-1 flex items-center justify-center bg-[#000000]">
+            <span className="text-[#737373] font-mono text-sm animate-pulse">
                 Loading editor...
             </span>
         </div>
@@ -126,7 +126,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
 
     const ownerLabel = ownerUser?.name ?? "Owner";
     const editorLabel = editorUser?.name ?? "Waiting...";
-    const ownerColor = ownerUser?.color ?? "#58a6ff";
+    const ownerColor = ownerUser?.color ?? "#ffffff";
     const editorColor = editorUser?.color ?? "#3fb950";
 
     const friendConnected = !!friendUser;
@@ -139,7 +139,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
     const friendScreenState = screenShareState === "viewing" ? "viewing" : ("inactive" as const);
 
     return (
-        <div className="flex flex-col h-screen bg-[#0d1117] text-white overflow-hidden">
+        <div className="flex flex-col h-screen bg-[#000000] text-white overflow-hidden">
 
 
 
@@ -158,13 +158,13 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
             <div className="flex flex-1 overflow-hidden">
 
                 {/* ════ LEFT: OWNER PANEL ════ */}
-                <div className="flex flex-col w-1/2 border-r border-[#30363d] min-h-0">
+                <div className="flex flex-col w-1/2 border-r border-[#1f1f1f] min-h-0">
 
                     <PanelHeader
                         label={ownerLabel}
                         color={ownerColor}
                         badge="Owner"
-                        badgeColor="#58a6ff"
+                        badgeColor="#ffffff"
                         isYou={isOwner}
                     />
 
@@ -207,7 +207,7 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
 
                     <PanelHeader
                         label={editorLabel}
-                        color={friendConnected ? editorColor : "#8b949e"}
+                        color={friendConnected ? editorColor : "#737373"}
                         badge="Editor"
                         badgeColor="#3fb950"
                         isYou={!isOwner}
@@ -256,14 +256,14 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
             </div>
 
             {/* ── Status Bar ── */}
-            <div className="flex items-center gap-4 px-4 py-1 bg-[#161b22] border-t border-[#30363d] text-xs font-mono flex-shrink-0">
+            <div className="flex items-center gap-4 px-4 py-1 bg-[#0a0a0a] border-t border-[#1f1f1f] text-xs font-mono flex-shrink-0">
                 <span className={connected ? "text-[#3fb950]" : "text-[#f85149]"}>
                     ● {connected ? "Connected" : "Disconnected"}
                 </span>
-                <span className="text-[#8b949e]">Room: {(roomId ?? "").slice(0, 12)}...</span>
+                <span className="text-[#737373]">Room: {(roomId ?? "").slice(0, 12)}...</span>
                 <span>
                     Role:{" "}
-                    <span className={isOwner ? "text-[#58a6ff]" : "text-[#3fb950]"}>
+                    <span className={isOwner ? "text-[#ffffff]" : "text-[#3fb950]"}>
                         {myRole ?? "assigning..."}
                     </span>
                 </span>
@@ -278,11 +278,11 @@ export function RoomLayout({ roomId, userId, userName }: RoomLayoutProps) {
                     </span>
                 )}
                 {screenShareState === "viewing" && (
-                    <span className="text-[#58a6ff] flex items-center gap-1">
+                    <span className="text-[#ffffff] flex items-center gap-1">
                         <Monitor size={10} /> Viewing screen
                     </span>
                 )}
-                <span className="ml-auto text-[#8b949e]">ColabCode v1.0</span>
+                <span className="ml-auto text-[#737373]">ColabCode v1.0</span>
             </div>
         </div>
     );
@@ -306,7 +306,7 @@ function PanelHeader({
     dimmed?: boolean;
 }) {
     return (
-        <div className="flex items-center gap-2 px-4 py-2 bg-[#161b22] border-b border-[#30363d] flex-shrink-0">
+        <div className="flex items-center gap-2 px-4 py-2 bg-[#0a0a0a] border-b border-[#1f1f1f] flex-shrink-0">
             <div
                 className={`w-2 h-2 rounded-full transition-opacity ${dimmed ? "opacity-30" : "animate-pulse"}`}
                 style={{ backgroundColor: color }}
@@ -325,7 +325,7 @@ function PanelHeader({
                 {badge}
             </span>
             {isYou && (
-                <span className="text-xs font-mono text-[#8b949e]">← You</span>
+                <span className="text-xs font-mono text-[#737373]">← You</span>
             )}
         </div>
     );
@@ -333,13 +333,13 @@ function PanelHeader({
 
 function WaitingForFriend() {
     return (
-        <div className="flex-1 flex items-center justify-center bg-[#0d1117]">
+        <div className="flex-1 flex items-center justify-center bg-[#000000]">
             <div className="flex flex-col items-center gap-3 text-center px-8">
-                <div className="w-10 h-10 rounded-full border-2 border-[#30363d] border-t-[#3fb950] animate-spin" />
-                <span className="text-sm font-mono text-[#8b949e]">
+                <div className="w-10 h-10 rounded-full border-2 border-[#1f1f1f] border-t-[#3fb950] animate-spin" />
+                <span className="text-sm font-mono text-[#737373]">
                     Waiting for friend to join...
                 </span>
-                <span className="text-xs font-mono text-[#484f58]">
+                <span className="text-xs font-mono text-[#525252]">
                     Share the invite link from the top bar
                 </span>
             </div>

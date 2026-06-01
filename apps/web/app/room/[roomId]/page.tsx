@@ -49,13 +49,13 @@ export default function RoomPage({ params }: PageProps) {
 
   if (status === "loading" || !userId || !userName) {
     return (
-      <div className="flex items-center justify-center h-screen" style={{ background: '#262624' }}>
+      <div className="flex items-center justify-center h-screen" style={{ background: '#000000' }}>
         <div className="flex flex-col items-center gap-3">
           <div
             className="w-8 h-8 rounded-full border-2 animate-spin"
-            style={{ borderColor: '#333330', borderTopColor: '#58a6ff' }}
+            style={{ borderColor: '#1f1f1f', borderTopColor: '#ffffff' }}
           />
-          <span className="font-mono text-sm" style={{ color: '#6b6b68' }}>{status === "loading" ? "Checking session..." : "Joining room..."}</span>
+          <span className="font-mono text-sm" style={{ color: '#737373' }}>{status === "loading" ? "Checking session..." : "Joining room..."}</span>
         </div>
       </div>
     );
