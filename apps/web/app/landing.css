@@ -263,26 +263,43 @@
   position: relative;
 }
 
-.lp-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--lp-border);
-  background: var(--lp-surface);
-  font-size: 13px;
-  color: var(--lp-muted);
+.lp-hero-extension {
   margin-bottom: 24px;
 }
 
-.lp-hero-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--lp-green);
-  box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
-  animation: lp-pulse 2s ease infinite;
+.lp-hero-extension-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--lp-border-hover);
+  background: var(--lp-surface);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lp-text);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.lp-hero-extension-download:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.lp-hero-extension-download:active {
+  transform: scale(0.98);
+}
+
+.lp-hero-extension-hint {
+  margin: 10px 0 0;
+  max-width: 420px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--lp-muted);
 }
 
 .lp-hero h1 {
