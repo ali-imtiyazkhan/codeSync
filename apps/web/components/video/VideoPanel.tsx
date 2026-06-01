@@ -62,7 +62,7 @@ export function VideoPanel({
 
   return (
     <div
-      className="relative w-full bg-[#0d1117] border-b border-[#30363d] overflow-hidden flex-shrink-0"
+      className="relative w-full bg-[#000000] border-b border-[#1f1f1f] overflow-hidden flex-shrink-0"
       style={{ height: showingScreen ? "220px" : "160px", transition: "height 0.3s ease" }}
     >
       {/* ── Screen share takes full area ── */}
@@ -91,7 +91,7 @@ export function VideoPanel({
 
       {/* ── Picture-in-picture camera while screen sharing ── */}
       {showingScreen && stream && (
-        <div className="absolute bottom-8 right-2 w-20 h-14 rounded border border-[#30363d] overflow-hidden shadow-lg">
+        <div className="absolute bottom-8 right-2 w-20 h-14 rounded border border-[#1f1f1f] overflow-hidden shadow-lg">
           <video
             ref={cameraRef}
             autoPlay
@@ -111,8 +111,8 @@ export function VideoPanel({
         </div>
       )}
       {screenShareState === "viewing" && (
-        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#58a6ff18] border border-[#58a6ff44] text-[#58a6ff] text-xs font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#58a6ff] animate-pulse" />
+        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#ffffff18] border border-[#ffffff44] text-white text-xs font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           {label}&apos;s screen
         </div>
       )}
@@ -172,7 +172,7 @@ export function VideoPanel({
                 inactiveIcon="🖥️"
                 activeTitle="Share screen"
                 inactiveTitle="Share screen"
-                inactiveColor="#58a6ff"
+                inactiveColor="#ffffff"
               />
             ) : null}
           </div>
@@ -206,7 +206,7 @@ function NoFeedPlaceholder({
             className="w-7 h-7 rounded-full border-2 animate-spin"
             style={{ borderColor: color, borderTopColor: "transparent" }}
           />
-          <span className="text-xs font-mono text-[#8b949e]">Connecting camera...</span>
+          <span className="text-xs font-mono text-[#737373]">Connecting camera...</span>
         </>
       ) : callStatus === "failed" ? (
         <>
@@ -216,7 +216,7 @@ function NoFeedPlaceholder({
           >
             <span className="text-lg">📷</span>
           </div>
-          <span className="text-xs font-mono text-[#8b949e]">Camera unavailable</span>
+          <span className="text-xs font-mono text-[#737373]">Camera unavailable</span>
         </>
       ) : (
         <>
@@ -226,7 +226,7 @@ function NoFeedPlaceholder({
           >
             {label[0]?.toUpperCase() ?? "?"}
           </div>
-          <span className="text-xs font-mono text-[#8b949e]">No camera</span>
+          <span className="text-xs font-mono text-[#737373]">No camera</span>
         </>
       )}
     </div>
@@ -241,7 +241,7 @@ function ControlBtn({
   activeTitle,
   inactiveTitle,
   activeColor = "#3fb950",
-  inactiveColor = "#8b949e",
+  inactiveColor = "#737373",
 }: {
   active: boolean;
   onClick?: () => void;

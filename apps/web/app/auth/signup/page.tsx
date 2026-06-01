@@ -64,8 +64,8 @@ export default function SignUpPage() {
             <path d="M16 6v20M8 11l8 5 8-5" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
             <defs>
               <linearGradient id="logoGrad2" x1="0" y1="0" x2="32" y2="32">
-                <stop stopColor="#58a6ff"/>
-                <stop offset="1" stopColor="#bf91f3"/>
+                <stop stopColor="#ffffff"/>
+                <stop offset="1" stopColor="#737373"/>
               </linearGradient>
             </defs>
           </svg>
@@ -163,9 +163,6 @@ export default function SignUpPage() {
           align-items: center;
           justify-content: center;
           background: var(--bg);
-          background-image:
-            radial-gradient(at 0% 0%, hsla(213, 30%, 15%, 0.2) 0px, transparent 55%),
-            radial-gradient(at 100% 100%, hsla(265, 30%, 15%, 0.15) 0px, transparent 55%);
           padding: 24px;
           position: relative;
           overflow: hidden;
@@ -175,17 +172,17 @@ export default function SignUpPage() {
           border-radius: 50%;
           filter: blur(80px);
           pointer-events: none;
-          opacity: 0.12;
+          opacity: 0.06;
         }
         .auth-blob-1 {
           width: 500px; height: 500px;
-          background: var(--purple);
+          background: #ffffff;
           top: -150px; right: -150px;
           animation: blobFloat 9s ease-in-out infinite;
         }
         .auth-blob-2 {
           width: 400px; height: 400px;
-          background: var(--blue);
+          background: #525252;
           bottom: -100px; left: -100px;
           animation: blobFloat 11s ease-in-out infinite reverse;
         }
@@ -206,8 +203,8 @@ export default function SignUpPage() {
           border-radius: 24px;
           padding: 40px;
           box-shadow:
-            0 0 0 1px rgba(88, 166, 255, 0.05),
-            0 24px 64px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.04),
+            0 24px 64px rgba(0, 0, 0, 0.6),
             inset 0 1px 0 rgba(255, 255, 255, 0.06);
           animation: cardIn 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
         }
@@ -224,7 +221,7 @@ export default function SignUpPage() {
         .auth-logo-text {
           font-size: 18px;
           font-weight: 700;
-          background: linear-gradient(135deg, var(--blue), var(--purple));
+          background: linear-gradient(135deg, #ffffff, #a3a3a3);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -261,9 +258,9 @@ export default function SignUpPage() {
         }
         .auth-oauth-btn:hover {
           background: rgba(255,255,255,0.08);
-          border-color: var(--blue-soft);
+          border-color: rgba(255, 255, 255, 0.2);
           transform: translateY(-1px);
-          box-shadow: 0 4px 16px rgba(88,166,255,0.12);
+          box-shadow: 0 4px 16px rgba(255, 255, 255, 0.06);
         }
         .oauth-icon { width: 18px; height: 18px; flex-shrink: 0; }
         .auth-divider {
@@ -316,16 +313,16 @@ export default function SignUpPage() {
         }
         .auth-field input::placeholder { color: var(--text-dim); }
         .auth-field input:focus {
-          border-color: var(--blue);
-          background: rgba(88,166,255,0.05);
-          box-shadow: 0 0 0 3px rgba(88,166,255,0.12);
+          border-color: var(--accent);
+          background: rgba(255,255,255,0.04);
+          box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
         }
         .auth-submit {
           width: 100%;
           padding: 12px;
           border-radius: 12px;
-          background: linear-gradient(135deg, var(--blue), hsl(213,100%,55%));
-          color: #fff;
+          background: linear-gradient(135deg, #ffffff, #d4d4d4);
+          color: #000000;
           font-size: 14px;
           font-weight: 600;
           cursor: pointer;
@@ -336,13 +333,13 @@ export default function SignUpPage() {
           justify-content: center;
           gap: 8px;
           margin-top: 4px;
-          box-shadow: 0 4px 20px var(--blue-glow);
+          box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
           font-family: inherit;
         }
         .auth-submit:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 6px 28px var(--blue-glow);
-          filter: brightness(1.1);
+          box-shadow: 0 6px 28px rgba(255, 255, 255, 0.12);
+          filter: brightness(1.05);
         }
         .auth-submit:active:not(:disabled) { transform: scale(0.98); }
         .auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -362,7 +359,7 @@ export default function SignUpPage() {
           margin: 18px 0 0;
         }
         .auth-switch a {
-          color: var(--blue);
+          color: var(--accent);
           text-decoration: none;
           font-weight: 500;
         }

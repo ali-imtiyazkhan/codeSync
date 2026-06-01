@@ -76,7 +76,7 @@ export function EditorPanel({
 
         provider.awareness.setLocalStateField("user", {
             name: isFriendPanel ? "Friend" : "You",
-            color: isFriendPanel ? "#3fb950" : "#58a6ff",
+            color: isFriendPanel ? "#a3a3a3" : "#ffffff",
         });
 
         return () => {
@@ -104,12 +104,12 @@ export function EditorPanel({
         <div className="flex flex-col h-full">
 
             {/* Toolbar */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#161b22] border-b border-[#30363d]">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0a] border-b border-[#1f1f1f]">
 
                 <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="bg-[#0d1117] border border-[#30363d] text-[#8b949e] text-xs rounded px-2 py-1 font-mono focus:outline-none focus:border-[#58a6ff]"
+                    className="bg-[#000000] border border-[#1f1f1f] text-[#737373] text-xs rounded px-2 py-1 font-mono focus:outline-none focus:border-white"
                 >
                     {LANGUAGES.map((l) => (
                         <option key={l} value={l}>
@@ -124,7 +124,7 @@ export function EditorPanel({
                 {isFriendPanel && (
                     <button
                         onClick={handleProposeChange}
-                        className="px-3 py-1 text-xs font-semibold bg-[#3fb950] text-[#0d1117] rounded hover:bg-[#2ea043] transition-colors font-mono"
+                        className="px-3 py-1 text-xs font-semibold bg-[#22c55e] text-black rounded hover:bg-[#16a34a] transition-colors font-mono"
                     >
                         ✓ Propose Change
                     </button>
@@ -141,7 +141,7 @@ export function EditorPanel({
                                 code: editorRef.current.getValue(),
                             });
                         }}
-                        className="px-3 py-1 text-xs font-semibold bg-[#58a6ff22] text-[#58a6ff] border border-[#58a6ff44] rounded hover:bg-[#58a6ff33] transition-colors font-mono"
+                        className="px-3 py-1 text-xs font-semibold bg-[#ffffff15] text-white border border-[#ffffff30] rounded hover:bg-[#ffffff25] transition-colors font-mono"
                     >
                         → Send to Friend
                     </button>

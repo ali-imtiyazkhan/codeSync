@@ -52,7 +52,7 @@ function SafeDiffEditor(props: any) {
 function EditorLoading() {
   return (
     <div className="flex-1 flex items-center justify-center bg-black">
-      <span className="text-[#8b949e] font-mono text-sm animate-pulse">Loading editor...</span>
+      <span className="text-[#737373] font-mono text-sm animate-pulse">Loading editor...</span>
     </div>
   );
 }
@@ -233,7 +233,7 @@ export default function CodeEditorPanel({
               language={language}
               original={code}
               modified={currentPending.newCode}
-              theme="vs-dark"
+              theme="hc-black"
               options={{
                 ...editorOptions,
                 renderSideBySide: false,
@@ -248,7 +248,7 @@ export default function CodeEditorPanel({
               value={code}
               onChange={handleEditorChange}
               onMount={handleEditorMount}
-              theme="vs-dark"
+              theme="hc-black"
               options={editorOptions}
             />
           )}

@@ -63,14 +63,14 @@ export function DiffPanel({
     }, [original, modified]);
 
     return (
-        <div className="flex flex-col border-b border-[#d29922] bg-[#161b22] animate-slideDown">
+        <div className="flex flex-col border-b border-[#525252] bg-[#0a0a0a] animate-slideDown">
             {/* Header */}
-            <div className="flex items-center gap-3 px-4 py-2 bg-[#d2992222] border-b border-[#d2992244]">
-                <div className="w-2 h-2 rounded-full bg-[#d29922] animate-pulse" />
-                <span className="text-sm font-mono text-[#d29922] font-semibold">
+            <div className="flex items-center gap-3 px-4 py-2 bg-[#ffffff10] border-b border-[#ffffff20]">
+                <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                <span className="text-sm font-mono text-white font-semibold">
                     Incoming Change
                 </span>
-                <span className="text-xs text-[#8b949e]">
+                <span className="text-xs text-[#737373]">
                     from <span className="text-[#3fb950]">{authorName}</span> — review and decide
                 </span>
 
@@ -83,7 +83,7 @@ export function DiffPanel({
                     </button>
                     <button
                         onClick={onAccept}
-                        className="px-4 py-1 text-xs font-semibold font-mono rounded bg-[#3fb950] text-[#0d1117] hover:bg-[#2ea043] transition-colors flex items-center gap-1.5"
+                        className="px-4 py-1 text-xs font-semibold font-mono rounded bg-[#22c55e] text-black hover:bg-[#16a34a] transition-colors flex items-center gap-1.5"
                     >
                         <Check size={12} /> Accept
                     </button>
@@ -91,7 +91,7 @@ export function DiffPanel({
             </div>
 
             {/* Diff Editor */}
-            <div ref={containerRef} className="h-[400px] border-t border-[#d2992222]" />
+            <div ref={containerRef} className="h-[400px] border-t border-[#1f1f1f]" />
         </div>
     );
 }
