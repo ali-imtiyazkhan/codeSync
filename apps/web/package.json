@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "extension:copy-vsix": "node scripts/copy-extension-vsix.mjs",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",

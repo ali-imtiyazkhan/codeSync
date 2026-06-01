@@ -1,8 +1,12 @@
 "use client";
 
 import React from "react";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Download, Plus } from "lucide-react";
 import { HeroPreview } from "./HeroPreview";
+import {
+  VSCODE_EXTENSION_DOWNLOAD_PATH,
+  VSCODE_EXTENSION_VSIX,
+} from "@/lib/vscodeExtension";
 
 interface HeroProps {
   createRoom: () => void;
@@ -17,6 +21,32 @@ export const Hero: React.FC<HeroProps> = ({
   joinId,
   setJoinId,
 }) => {
+  const downloadVsix = async () => {
+    try {
+      const res = await fetch(VSCODE_EXTENSION_DOWNLOAD_PATH);
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        const hint =
+          body && typeof body.hint === "string"
+            ? body.hint
+            : "Build the extension first (see apps/vscode-extension).";
+        window.alert(`Extension package not available.\n\n${hint}`);
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = VSCODE_EXTENSION_VSIX;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.alert("Download failed. Check your connection and try again.");
+    }
+  };
+
   return (
     <section className="lp-hero">
       <div className="lp-hero-lights" aria-hidden>
@@ -26,9 +56,19 @@ export const Hero: React.FC<HeroProps> = ({
       <div className="landing-container">
         <div className="lp-hero-grid">
           <div>
-            <div className="lp-hero-badge">
-              <span className="lp-hero-badge-dot" />
-              Live collaboration · no install required
+            <div className="lp-hero-extension">
+              <button
+                type="button"
+                className="lp-hero-extension-download"
+                onClick={downloadVsix}
+              >
+                <Download size={15} aria-hidden />
+                Download VS Code extension
+              </button>
+              <p className="lp-hero-extension-hint">
+                Saves the .vsix file — in VS Code open Extensions, click ⋯, then
+                Install from VSIX…
+              </p>
             </div>
 
             <h1>
