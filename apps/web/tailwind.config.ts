@@ -10,6 +10,7 @@ module.exports = {
       fontFamily: {
         mono: ["JetBrains Mono", "Fira Code", "monospace"],
         display: ["Inter", "sans-serif"],
+        instrument: ["'Instrument Serif'", "serif"],
       },
       colors: {
         bg: "#000000",
